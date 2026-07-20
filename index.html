@@ -7,7 +7,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+    
+    <!-- Real-time GLB renderer. The model itself is only requested after the visitor clicks Load 3D. -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
     
     <style>
         :root {
@@ -226,29 +228,138 @@
         .glasses-3d-stage {
             flex-grow: 1;
             height: 500px;
+            min-width: 0;
             perspective: 1400px;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            cursor: grab;
-            overflow: visible;
+            cursor: default;
+            overflow: hidden;
+            isolation: isolate;
+            border-radius: 28px;
         }
 
-        #heroModelViewer {
+        /* REAL GLB MODEL VIEWER
+           The 54 MB model is deliberately click-to-load so it does not block the portfolio's first paint. */
+        .hero-model-viewer {
+            position: absolute;
+            inset: 0;
             width: 100%;
             height: 100%;
-            --poster-color: transparent;
-            background-color: transparent;
+            display: block;
+            z-index: 3;
             opacity: 0;
-            transform: translateX(60px) scale(0.9);
-            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+            visibility: hidden;
+            background: transparent;
+            --poster-color: transparent;
+            --progress-bar-color: var(--accent-purple);
+            --progress-bar-height: 3px;
+            touch-action: pan-y;
+            transition: opacity 0.55s ease;
         }
 
-        #heroModelViewer.is-loaded {
-            opacity: 1;
-            transform: translateX(0) scale(1);
+        .hero-model-viewer.is-active { visibility: visible; }
+        .hero-model-viewer.is-ready { opacity: 1; }
+
+        .model-poster {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.45s ease, transform 0.55s ease;
         }
+
+        .glasses-3d-stage.model-loaded .model-poster {
+            opacity: 0;
+            transform: scale(0.96);
+            pointer-events: none;
+        }
+
+        .model-load-panel {
+            position: absolute;
+            left: 50%;
+            bottom: 26px;
+            z-index: 6;
+            width: min(330px, calc(100% - 32px));
+            transform: translateX(-50%);
+            padding: 14px 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 18px;
+            background: rgba(246, 241, 235, 0.82);
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.10);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            text-align: center;
+            transition: opacity 0.35s ease, transform 0.35s ease;
+        }
+
+        .glasses-3d-stage.model-loaded .model-load-panel {
+            opacity: 0;
+            transform: translateX(-50%) translateY(10px);
+            pointer-events: none;
+        }
+
+        .model-load-button {
+            width: 100%;
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 18px;
+            background: #000000;
+            color: #ffffff;
+            font: inherit;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 1.3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .model-load-button:hover { transform: translateY(-1px); }
+        .model-load-button:disabled { cursor: wait; opacity: 0.7; transform: none; }
+
+        .model-load-note {
+            display: block;
+            margin-top: 8px;
+            color: var(--text-muted);
+            font-size: 0.62rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            line-height: 1.35;
+        }
+
+        .model-progress-track {
+            display: none;
+            height: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+            border-radius: 999px;
+            background: rgba(0, 0, 0, 0.09);
+        }
+
+        .model-load-panel.is-loading .model-progress-track { display: block; }
+
+        .model-progress-bar {
+            width: 0%;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--accent-purple), #ff7ba3);
+            transition: width 0.18s linear;
+        }
+
+        .model-error {
+            display: none;
+            margin-top: 8px;
+            color: #8a1f1f;
+            font-size: 0.65rem;
+            line-height: 1.35;
+        }
+
+        .model-load-panel.has-error .model-error { display: block; }
 
         @keyframes flyInFromRight {
             0% {
@@ -1271,22 +1382,54 @@
                     </div>
                     
                     <div class="glasses-3d-stage" id="stage3d">
-                        <model-viewer id="heroModelViewer"
-                            src="luxury_eyeglasses_3d_model.glb"
-                            alt="Luxury eyeglasses 3D model"
+                        <!-- Lightweight CSS preview remains visible until the large GLB has fully downloaded. -->
+                        <div class="model-poster" id="modelPoster" aria-hidden="true">
+                            <div class="glasses-3d-object" id="object3d">
+                                <div class="glass-3d-frame-wrap">
+                                    <div class="glass-3d-lens-container left">
+                                        <div class="glass-3d-lens"></div>
+                                        <div class="glass-3d-hinge-block"></div>
+                                        <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
+                                    </div>
+                                    <div class="glass-3d-double-bridge"></div>
+                                    <div class="glass-3d-lens-container right">
+                                        <div class="glass-3d-lens"></div>
+                                        <div class="glass-3d-hinge-block"></div>
+                                        <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <model-viewer
+                            id="luxuryGlassesModel"
+                            class="hero-model-viewer"
+                            data-src="./luxury%20eyeglasses%203d%20model.glb"
+                            alt="Interactive 3D model of luxury eyeglasses"
                             camera-controls
-                            disable-zoom
                             auto-rotate
-                            auto-rotate-delay="0"
+                            auto-rotate-delay="1200"
                             rotation-per-second="18deg"
-                            interaction-prompt="none"
-                            camera-orbit="20deg 78deg 105%"
-                            field-of-view="28deg"
-                            shadow-intensity="0.9"
+                            shadow-intensity="1.1"
                             shadow-softness="0.8"
                             exposure="1.05"
-                            environment-image="neutral">
+                            environment-image="neutral"
+                            camera-orbit="20deg 74deg auto"
+                            field-of-view="30deg"
+                            min-field-of-view="18deg"
+                            max-field-of-view="42deg"
+                            interaction-prompt="none"
+                            loading="lazy">
                         </model-viewer>
+
+                        <div class="model-load-panel" id="modelLoadPanel">
+                            <button class="model-load-button" id="loadModelButton" type="button">Load interactive 3D</button>
+                            <span class="model-load-note" id="modelLoadStatus">Large 54 MB model — loaded only when requested</span>
+                            <div class="model-progress-track" aria-hidden="true">
+                                <div class="model-progress-bar" id="modelProgressBar"></div>
+                            </div>
+                            <span class="model-error" id="modelErrorMessage">The model could not be loaded. Keep the GLB in the same folder as this HTML file and open the site through a web server.</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1778,13 +1921,76 @@
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        // HERO 3D MODEL — fade/slide in once the GLB has loaded, then let
-        // model-viewer's own camera-controls + auto-rotate take over.
-        const heroModel = document.getElementById('heroModelViewer');
-        if (heroModel) {
-            heroModel.addEventListener('load', () => heroModel.classList.add('is-loaded'));
-            // Fallback in case the 'load' event is missed (e.g. cached model)
-            setTimeout(() => heroModel.classList.add('is-loaded'), 1200);
+        // LIGHTWEIGHT PREVIEW PARALLAX + DEFERRED 54 MB GLB LOADING
+        const stage = document.getElementById('stage3d');
+        const object3d = document.getElementById('object3d');
+        const modelViewer = document.getElementById('luxuryGlassesModel');
+        const loadModelButton = document.getElementById('loadModelButton');
+        const modelLoadPanel = document.getElementById('modelLoadPanel');
+        const modelLoadStatus = document.getElementById('modelLoadStatus');
+        const modelProgressBar = document.getElementById('modelProgressBar');
+
+        // The CSS preview reacts to the pointer before the heavy model is requested.
+        setTimeout(() => {
+            if (!stage || !object3d) return;
+
+            stage.addEventListener('mousemove', (e) => {
+                if (stage.classList.contains('model-loaded')) return;
+                const rect = stage.getBoundingClientRect();
+                const rotateX = ((e.clientY - rect.top - (rect.height / 2)) / (rect.height / 2)) * -18 + 8;
+                const rotateY = ((e.clientX - rect.left - (rect.width / 2)) / (rect.width / 2)) * 25 - 40;
+                object3d.style.animation = 'none';
+                object3d.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(0deg)`;
+            });
+
+            stage.addEventListener('mouseleave', () => {
+                if (!stage.classList.contains('model-loaded')) {
+                    object3d.style.transform = 'rotateX(8deg) rotateY(-40deg) rotateZ(0deg)';
+                }
+            });
+        }, 1500);
+
+        function startLuxuryModelLoad() {
+            if (!modelViewer || modelViewer.getAttribute('src')) return;
+
+            loadModelButton.disabled = true;
+            loadModelButton.textContent = 'Loading 3D model…';
+            modelLoadStatus.textContent = 'Downloading and preparing the model';
+            modelLoadPanel.classList.add('is-loading');
+            modelLoadPanel.classList.remove('has-error');
+            modelViewer.classList.add('is-active');
+
+            // Assigning src here is what prevents the 54 MB file from downloading on initial page load.
+            modelViewer.setAttribute('src', modelViewer.dataset.src);
+        }
+
+        if (loadModelButton) loadModelButton.addEventListener('click', startLuxuryModelLoad);
+
+        if (modelViewer) {
+            modelViewer.addEventListener('progress', (event) => {
+                const progress = Math.round((event.detail.totalProgress || 0) * 100);
+                modelProgressBar.style.width = `${progress}%`;
+                modelLoadStatus.textContent = progress < 100
+                    ? `Loading interactive model… ${progress}%`
+                    : 'Preparing the interactive view…';
+            });
+
+            modelViewer.addEventListener('load', () => {
+                modelProgressBar.style.width = '100%';
+                modelViewer.classList.add('is-ready');
+                stage.classList.add('model-loaded');
+                modelLoadStatus.textContent = 'Drag to rotate • Scroll or pinch to zoom';
+            });
+
+            modelViewer.addEventListener('error', () => {
+                loadModelButton.disabled = false;
+                loadModelButton.textContent = 'Retry loading 3D';
+                modelLoadStatus.textContent = 'Model loading failed';
+                modelLoadPanel.classList.remove('is-loading');
+                modelLoadPanel.classList.add('has-error');
+                modelViewer.removeAttribute('src');
+                modelViewer.classList.remove('is-active', 'is-ready');
+            });
         }
     </script>
 </body>
