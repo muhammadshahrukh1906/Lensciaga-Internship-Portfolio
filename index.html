@@ -7,6 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
     
     <style>
         :root {
@@ -232,6 +233,21 @@
             position: relative;
             cursor: grab;
             overflow: visible;
+        }
+
+        #heroModelViewer {
+            width: 100%;
+            height: 100%;
+            --poster-color: transparent;
+            background-color: transparent;
+            opacity: 0;
+            transform: translateX(60px) scale(0.9);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        #heroModelViewer.is-loaded {
+            opacity: 1;
+            transform: translateX(0) scale(1);
         }
 
         @keyframes flyInFromRight {
@@ -1255,21 +1271,22 @@
                     </div>
                     
                     <div class="glasses-3d-stage" id="stage3d">
-                        <div class="glasses-3d-object" id="object3d">
-                            <div class="glass-3d-frame-wrap">
-                                <div class="glass-3d-lens-container left">
-                                    <div class="glass-3d-lens"></div>
-                                    <div class="glass-3d-hinge-block"></div>
-                                    <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
-                                </div>
-                                <div class="glass-3d-double-bridge"></div>
-                                <div class="glass-3d-lens-container right">
-                                    <div class="glass-3d-lens"></div>
-                                    <div class="glass-3d-hinge-block"></div>
-                                    <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
-                                </div>
-                            </div>
-                        </div>
+                        <model-viewer id="heroModelViewer"
+                            src="luxury_eyeglasses_3d_model.glb"
+                            alt="Luxury eyeglasses 3D model"
+                            camera-controls
+                            disable-zoom
+                            auto-rotate
+                            auto-rotate-delay="0"
+                            rotation-per-second="18deg"
+                            interaction-prompt="none"
+                            camera-orbit="20deg 78deg 105%"
+                            field-of-view="28deg"
+                            shadow-intensity="0.9"
+                            shadow-softness="0.8"
+                            exposure="1.05"
+                            environment-image="neutral">
+                        </model-viewer>
                     </div>
                 </div>
 
@@ -1761,22 +1778,14 @@
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        // SMOOTH INTERACTIVE PARALLAX ENGINE
-        const stage = document.getElementById('stage3d');
-        const object3d = document.getElementById('object3d');
-
-        setTimeout(() => {
-            stage.addEventListener('mousemove', (e) => {
-                const rect = stage.getBoundingClientRect();
-                const rotateX = ((e.clientY - rect.top - (rect.height / 2)) / (rect.height / 2)) * -18 + 8; 
-                const rotateY = ((e.clientX - rect.left - (rect.width / 2)) / (rect.width / 2)) * 25 - 40;
-                object3d.style.animation = 'none';
-                object3d.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(0deg)`;
-            });
-            stage.addEventListener('mouseleave', () => {
-                object3d.style.transform = `rotateX(8deg) rotateY(-40deg) rotateZ(0deg)`;
-            });
-        }, 1500);
+        // HERO 3D MODEL — fade/slide in once the GLB has loaded, then let
+        // model-viewer's own camera-controls + auto-rotate take over.
+        const heroModel = document.getElementById('heroModelViewer');
+        if (heroModel) {
+            heroModel.addEventListener('load', () => heroModel.classList.add('is-loaded'));
+            // Fallback in case the 'load' event is missed (e.g. cached model)
+            setTimeout(() => heroModel.classList.add('is-loaded'), 1200);
+        }
     </script>
 </body>
 </html>
