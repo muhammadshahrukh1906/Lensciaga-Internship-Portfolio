@@ -1,13 +1,20 @@
-HOW TO OPEN THE PORTFOLIO
+AUTOMATIC 3D PORTFOLIO
 
-Option 1 — easiest local test:
-1. Double-click index.html.
-2. Click "Load interactive 3D".
-3. Select eyeglasses.glb from this same folder.
+Files:
+- index.html
+- eyeglasses.glb
 
-The file picker is necessary because browsers block an HTML file opened through file:// from automatically reading neighbouring local files.
+The 3D model loads automatically. There is no load button.
 
-Option 2 — hosted website:
-Upload index.html and eyeglasses.glb into the same published folder. The button will then load eyeglasses.glb automatically.
+IMPORTANT FOR LOCAL TESTING
+Do not double-click index.html, because browsers commonly block GLB loading from file:// pages.
+Use VS Code Live Server, or run this command inside the folder:
 
-The model is approximately 54 MB, so loading can take time on slower connections.
+python -m http.server 8000
+
+Then open:
+http://localhost:8000
+
+FOR HOSTING
+Upload index.html and eyeglasses.glb to the same published folder. The model filename must remain exactly:
+eyeglasses.glb

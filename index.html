@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Real-time GLB renderer. The model itself is only requested after the visitor clicks Load 3D. -->
+    <!-- Real-time GLB renderer. The GLB begins loading automatically after the page has painted. -->
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.3.1/model-viewer.min.js"></script>
     
     <style>
@@ -241,7 +241,7 @@
         }
 
         /* REAL GLB MODEL VIEWER
-           The 54 MB model is deliberately click-to-load so it does not block the portfolio's first paint. */
+           The CSS glasses render instantly, while the 54 MB GLB loads automatically behind them. */
         .hero-model-viewer {
             position: absolute;
             inset: 0;
@@ -282,66 +282,43 @@
         .model-load-panel {
             position: absolute;
             left: 50%;
-            bottom: 26px;
+            bottom: 22px;
             z-index: 6;
-            width: min(330px, calc(100% - 32px));
+            width: min(270px, calc(100% - 32px));
             transform: translateX(-50%);
-            padding: 14px 16px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            border-radius: 18px;
-            background: rgba(246, 241, 235, 0.82);
-            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.10);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            padding: 10px 13px;
+            border: 1px solid rgba(0, 0, 0, 0.07);
+            border-radius: 14px;
+            background: rgba(246, 241, 235, 0.76);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             text-align: center;
             transition: opacity 0.35s ease, transform 0.35s ease;
         }
 
         .glasses-3d-stage.model-loaded .model-load-panel {
             opacity: 0;
-            transform: translateX(-50%) translateY(10px);
+            transform: translateX(-50%) translateY(8px);
             pointer-events: none;
         }
 
-        .model-load-button {
-            width: 100%;
-            border: 0;
-            border-radius: 999px;
-            padding: 12px 18px;
-            background: #000000;
-            color: #ffffff;
-            font: inherit;
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 1.3px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: transform 0.2s ease, opacity 0.2s ease;
-        }
-
-        .model-load-button:hover { transform: translateY(-1px); }
-        .model-load-button:disabled { cursor: wait; opacity: 0.7; transform: none; }
-
         .model-load-note {
             display: block;
-            margin-top: 8px;
             color: var(--text-muted);
             font-size: 0.62rem;
-            font-weight: 600;
-            letter-spacing: 0.5px;
+            font-weight: 700;
+            letter-spacing: 0.45px;
             line-height: 1.35;
         }
 
         .model-progress-track {
-            display: none;
-            height: 4px;
-            margin-top: 10px;
+            height: 3px;
+            margin-top: 8px;
             overflow: hidden;
             border-radius: 999px;
             background: rgba(0, 0, 0, 0.09);
         }
-
-        .model-load-panel.is-loading .model-progress-track { display: block; }
 
         .model-progress-bar {
             width: 0%;
@@ -353,13 +330,14 @@
 
         .model-error {
             display: none;
-            margin-top: 8px;
+            margin-top: 7px;
             color: #8a1f1f;
-            font-size: 0.65rem;
+            font-size: 0.62rem;
             line-height: 1.35;
         }
 
         .model-load-panel.has-error .model-error { display: block; }
+        .model-load-panel.has-error .model-progress-track { display: none; }
 
         @keyframes flyInFromRight {
             0% {
@@ -1419,17 +1397,15 @@
                             min-field-of-view="18deg"
                             max-field-of-view="42deg"
                             interaction-prompt="none"
-                            loading="lazy">
+                            loading="eager">
                         </model-viewer>
 
-                        <div class="model-load-panel" id="modelLoadPanel">
-                            <button class="model-load-button" id="loadModelButton" type="button">Load interactive 3D</button>
-                            <span class="model-load-note" id="modelLoadStatus">Large 54 MB model — loaded only when requested</span>
+                        <div class="model-load-panel is-loading" id="modelLoadPanel" role="status" aria-live="polite">
+                            <span class="model-load-note" id="modelLoadStatus">Loading interactive 3D… 0%</span>
                             <div class="model-progress-track" aria-hidden="true">
                                 <div class="model-progress-bar" id="modelProgressBar"></div>
                             </div>
-                            <span class="model-error" id="modelErrorMessage">The model could not be loaded.</span>
-                            <input id="localModelFile" type="file" accept=".glb,model/gltf-binary" hidden>
+                            <span class="model-error" id="modelErrorMessage">The lightweight preview will remain visible.</span>
                         </div>
                     </div>
                 </div>
@@ -1922,28 +1898,17 @@
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        // LIGHTWEIGHT PREVIEW PARALLAX + DEFERRED 54 MB GLB LOADING
+        // LIGHTWEIGHT PREVIEW PARALLAX + AUTOMATIC 54 MB GLB LOADING
         const stage = document.getElementById('stage3d');
         const object3d = document.getElementById('object3d');
         const modelViewer = document.getElementById('luxuryGlassesModel');
-        const loadModelButton = document.getElementById('loadModelButton');
         const modelLoadPanel = document.getElementById('modelLoadPanel');
         const modelLoadStatus = document.getElementById('modelLoadStatus');
         const modelProgressBar = document.getElementById('modelProgressBar');
         const modelErrorMessage = document.getElementById('modelErrorMessage');
-        const localModelFile = document.getElementById('localModelFile');
         const isLocalFile = window.location.protocol === 'file:';
-        let activeModelObjectUrl = null;
-        let attemptedHostedFallback = false;
 
-        // Browsers block automatic access to neighbouring local files when HTML is opened with file://.
-        // In that case, the same Load button opens a file picker and loads the selected GLB as a Blob URL.
-        if (isLocalFile) {
-            modelLoadStatus.textContent = 'Click to select the supplied eyeglasses.glb file';
-            modelErrorMessage.textContent = 'Select the GLB file from the portfolio folder to continue.';
-        }
-
-        // The CSS preview reacts to the pointer before the heavy model is requested.
+        // The lightweight CSS preview remains interactive until the GLB is ready.
         setTimeout(() => {
             if (!stage || !object3d) return;
 
@@ -1963,66 +1928,32 @@
             });
         }, 1500);
 
-        function setLoadingState(message = 'Downloading and preparing the model') {
-            loadModelButton.disabled = true;
-            loadModelButton.textContent = 'Loading 3D model…';
-            modelLoadStatus.textContent = message;
+        function showModelError(status, detail) {
+            if (!modelLoadPanel) return;
+            modelLoadPanel.classList.remove('is-loading');
+            modelLoadPanel.classList.add('has-error');
+            modelLoadStatus.textContent = status;
+            modelErrorMessage.textContent = detail;
             modelProgressBar.style.width = '0%';
-            modelLoadPanel.classList.add('is-loading');
-            modelLoadPanel.classList.remove('has-error');
-            modelViewer.classList.add('is-active');
-        }
-
-        function loadModelFromUrl(url, message) {
-            if (!modelViewer || !url) return;
-            setLoadingState(message);
-            modelViewer.setAttribute('src', url);
-        }
-
-        function chooseLocalModel() {
-            if (!localModelFile) return;
-            localModelFile.value = '';
-            localModelFile.click();
+            modelViewer?.classList.remove('is-active', 'is-ready');
         }
 
         function startLuxuryModelLoad() {
             if (!modelViewer || modelViewer.getAttribute('src')) return;
 
+            // Browsers normally block a neighbouring GLB when an HTML file is opened through file://.
+            // Hosted pages and local web servers load the model automatically.
             if (isLocalFile) {
-                chooseLocalModel();
+                showModelError(
+                    '3D preview requires a web server',
+                    'Open this folder with VS Code Live Server or publish it online. The CSS preview remains visible meanwhile.'
+                );
                 return;
             }
 
-            // Hosted sites can fetch eyeglasses.glb automatically from the same folder.
-            loadModelFromUrl(modelViewer.dataset.src, 'Downloading and preparing the model');
-        }
-
-        if (loadModelButton) {
-            loadModelButton.addEventListener('click', () => {
-                if (modelLoadPanel.classList.contains('has-error') && !isLocalFile) {
-                    // On hosted sites, a retry first tries the expected same-folder file again.
-                    modelViewer.removeAttribute('src');
-                }
-                startLuxuryModelLoad();
-            });
-        }
-
-        if (localModelFile) {
-            localModelFile.addEventListener('change', () => {
-                const file = localModelFile.files && localModelFile.files[0];
-                if (!file) return;
-
-                if (!file.name.toLowerCase().endsWith('.glb')) {
-                    modelLoadPanel.classList.add('has-error');
-                    modelErrorMessage.textContent = 'Please select a .glb model file.';
-                    modelLoadStatus.textContent = 'Unsupported file selected';
-                    return;
-                }
-
-                if (activeModelObjectUrl) URL.revokeObjectURL(activeModelObjectUrl);
-                activeModelObjectUrl = URL.createObjectURL(file);
-                loadModelFromUrl(activeModelObjectUrl, `Opening ${file.name}`);
-            });
+            modelLoadPanel?.classList.add('is-loading');
+            modelViewer.classList.add('is-active');
+            modelViewer.setAttribute('src', modelViewer.dataset.src);
         }
 
         if (modelViewer) {
@@ -2030,51 +1961,30 @@
                 const progress = Math.round((event.detail.totalProgress || 0) * 100);
                 modelProgressBar.style.width = `${progress}%`;
                 modelLoadStatus.textContent = progress < 100
-                    ? `Loading interactive model… ${progress}%`
+                    ? `Loading interactive 3D… ${progress}%`
                     : 'Preparing the interactive view…';
             });
 
             modelViewer.addEventListener('load', () => {
                 modelProgressBar.style.width = '100%';
+                modelLoadStatus.textContent = 'Interactive 3D ready';
                 modelViewer.classList.add('is-ready');
                 stage.classList.add('model-loaded');
-                modelLoadStatus.textContent = 'Drag to rotate • Scroll or pinch to zoom';
             });
 
             modelViewer.addEventListener('error', () => {
-                loadModelButton.disabled = false;
-                modelLoadPanel.classList.remove('is-loading');
-                modelLoadPanel.classList.add('has-error');
                 modelViewer.removeAttribute('src');
-                modelViewer.classList.remove('is-active', 'is-ready');
-                modelProgressBar.style.width = '0%';
+                showModelError(
+                    'Interactive model unavailable',
+                    'Keep eyeglasses.glb in the same published folder as index.html. The lightweight glasses preview is still shown.'
+                );
+            });
 
-                if (isLocalFile) {
-                    loadModelButton.textContent = 'Select GLB file again';
-                    modelLoadStatus.textContent = 'The selected model could not be opened';
-                    modelErrorMessage.textContent = 'Choose the supplied eyeglasses.glb file from the same portfolio folder.';
-                    return;
-                }
-
-                // A hosted deployment may have renamed or omitted the 54 MB asset.
-                // After one normal retry, allow the visitor/developer to select the file manually.
-                if (!attemptedHostedFallback) {
-                    attemptedHostedFallback = true;
-                    loadModelButton.textContent = 'Retry loading 3D';
-                    modelLoadStatus.textContent = 'Could not find eyeglasses.glb beside this HTML file';
-                    modelErrorMessage.textContent = 'Upload eyeglasses.glb into the same published folder as this HTML file.';
-                } else {
-                    loadModelButton.textContent = 'Choose GLB manually';
-                    modelLoadStatus.textContent = 'Automatic loading failed';
-                    modelErrorMessage.textContent = 'Use the button to select the local GLB file.';
-                    loadModelButton.onclick = chooseLocalModel;
-                }
+            // Wait for the custom element and two animation frames so the page text and preview paint first.
+            customElements.whenDefined('model-viewer').then(() => {
+                requestAnimationFrame(() => requestAnimationFrame(startLuxuryModelLoad));
             });
         }
-
-        window.addEventListener('beforeunload', () => {
-            if (activeModelObjectUrl) URL.revokeObjectURL(activeModelObjectUrl);
-        });
     </script>
 </body>
 </html>
