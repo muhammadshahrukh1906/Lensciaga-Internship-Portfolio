@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M. SHAHRUKH // Student Portfolio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-canvas: #f6f1eb; 
+            --text-main: #000000;
+            --text-muted: #6e6e73;
+            --accent-purple: #8247ff;
+            --border-color: rgba(0, 0, 0, 0.06);
+            --font-base: 'Plus Jakarta Sans', sans-serif;
+            
+            /* High-Fidelity Luxury Metallic Gold Shaders */
+            --gold-gradient: linear-gradient(135deg, #ebd087 0%, #fcf4cf 25%, #cc9e3a 50%, #fdf5d2 75%, #a1761c 100%);
+            --gold-wire: #cca025;
+            --lens-tint: linear-gradient(145deg, rgba(15, 15, 18, 0.97) 0%, rgba(30, 30, 36, 0.99) 70%);
+            --temple-dark: #161617;
+
+            /* Reference-matched shader set used ONLY by the hero 3D glasses (.glass-3d-*) */
+            --gold-gradient-3d: linear-gradient(135deg, #7a5a1e 0%, #e9c25c 18%, #fff6d2 32%, #d9a935 48%, #fffbe6 62%, #b8872b 80%, #7a5a1e 100%);
+            --lens-tint-3d: linear-gradient(160deg, rgba(10, 10, 11, 0.98) 0%, rgba(26, 26, 29, 0.99) 60%, rgba(8, 8, 9, 1) 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background-color: var(--bg-canvas);
+            color: var(--text-main);
+            font-family: var(--font-base);
+            overflow-x: hidden;
+            min-height: 100vh;
+            scroll-behavior: smooth;
+        }
+
+        .ambient-mesh {
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 65vw;
+            height: 55vh;
+            pointer-events: none;
+            z-index: 1;
+            background: 
+                radial-gradient(circle at 80% 20%, rgba(130, 71, 255, 0.45) 0%, transparent 50%),
+                radial-gradient(circle at 50% 10%, rgba(255, 120, 180, 0.4) 0%, transparent 60%),
+                radial-gradient(circle at 95% 40%, rgba(50, 140, 255, 0.35) 0%, transparent 50%),
+                radial-gradient(circle at 70% 35%, rgba(255, 210, 140, 0.3) 0%, transparent 40%);
+            filter: blur(80px);
+            opacity: 0.85;
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* FIXED LEFT SIDEBAR PANEL */
+        .sidebar {
+            width: 260px;
+            min-width: 260px;
+            border-right: 1px solid var(--border-color);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            background-color: var(--bg-canvas);
+        }
+
+        .brand-logo {
+            font-size: 1.2rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .nav-item {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.2s ease;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: var(--text-main);
+        }
+
+        .nav-item.active::after {
+            content: '';
+            width: 4px;
+            height: 4px;
+            background-color: var(--accent-purple);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .sidebar-footer {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .footer-quote {
+            font-size: 0.78rem;
+            line-height: 1.5;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-icon {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: opacity 0.2s, transform 0.2s;
+            cursor: pointer;
+        }
+
+        .social-icon:hover {
+            opacity: 1;
+            transform: translateY(-2px);
+        }
+
+        .copyright {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-content {
+            flex-grow: 1;
+            margin-left: 260px;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.3s ease;
+        }
+
+        .portfolio-section {
+            padding: 40px 60px 60px 60px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .overview-interactive-zone {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            margin: 40px 0;
+            flex-grow: 1;
+        }
+
+        .overview-text-block {
+            max-width: 480px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .overview-text-block .hello-tag {
+            font-size: 0.8rem;
+            letter-spacing: 4px;
+            color: #cca025;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .overview-text-block h2 {
+            font-size: clamp(3rem, 5vw, 4.5rem);
+            font-weight: 800;
+            line-height: 0.95;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 20px;
+        }
+
+        .overview-text-block h2 span {
+            display: block;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--text-main);
+            font-weight: 400;
+        }
+
+        .glasses-3d-stage {
+            flex-grow: 1;
+            height: 500px;
+            perspective: 1400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            cursor: grab;
+            overflow: visible;
+        }
+
+        @keyframes flyInFromRight {
+            0% {
+                transform: translateX(100vw) rotateX(15deg) rotateY(-75deg) scale(0.75);
+                opacity: 0;
+            }
+            100% {
+                transform: rotateX(8deg) rotateY(-40deg) rotateZ(0deg) scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* OVERVIEW INTERACTIVE 3D COMPONENT ARCHITECTURE */
+        .glasses-3d-object {
+            position: relative;
+            width: 490px;
+            height: 160px;
+            transform-style: preserve-3d;
+            transform: rotateX(8deg) rotateY(-40deg) rotateZ(0deg);
+            animation: flyInFromRight 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: transform 0.1s ease-out;
+        }
+
+        .glass-3d-frame-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .glass-3d-lens-container {
+            position: absolute;
+            width: 215px;
+            height: 155px;
+            transform-style: preserve-3d;
+            top: 0;
+        }
+
+        .glass-3d-lens-container.left {
+            left: 15px;
+            transform: rotateY(-14deg);
+        }
+
+        .glass-3d-lens-container.right {
+            right: 15px;
+            transform: rotateY(14deg);
+        }
+
+        .glass-3d-lens {
+            width: 100%;
+            height: 100%;
+            background: var(--lens-tint-3d);
+            border: 4px solid transparent;
+            background-image: var(--lens-tint-3d), var(--gold-gradient-3d);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            border-radius: 22px 46px 30px 58px / 22px 34px 46px 72px;
+            position: relative;
+            box-shadow: 0 35px 70px rgba(0,0,0,0.45), inset 0 0 20px rgba(255,255,255,0.05);
+            transform-style: preserve-3d;
+        }
+
+        .glass-3d-lens-container.right .glass-3d-lens {
+            transform: scaleX(-1);
+        }
+
+        .glass-3d-lens::before {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border: 1px solid rgba(235, 208, 135, 0.25);
+            border-radius: inherit;
+            pointer-events: none;
+        }
+
+        .glass-3d-lens::after {
+            content: '';
+            position: absolute;
+            top: 4px; left: 30px; bottom: 4px; width: 45px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.12) 30%, rgba(255,255,255,0.02) 70%, transparent);
+            transform: skewX(-20deg);
+            pointer-events: none;
+        }
+
+        .glass-3d-double-bridge {
+            position: absolute;
+            left: 50%;
+            top: 14px;
+            transform: translateX(-50%);
+            width: 44px;
+            height: 32px;
+            z-index: 20;
+            transform-style: preserve-3d;
+        }
+
+        .glass-3d-double-bridge::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -2px; width: calc(100% + 4px); height: 3.5px;
+            background: var(--gold-gradient-3d);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .glass-3d-double-bridge::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 3px;
+            background: var(--gold-gradient-3d);
+            border-radius: 4px 4px 0 0;
+        }
+
+        .glass-3d-hinge-block {
+            position: absolute;
+            top: 16px;
+            width: 7px;
+            height: 18px;
+            background: var(--gold-gradient-3d);
+            z-index: 15;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+        }
+
+        .glass-3d-lens-container.left .glass-3d-hinge-block {
+            right: -4px;
+            transform: rotateY(14deg);
+        }
+
+        .glass-3d-lens-container.right .glass-3d-hinge-block {
+            left: -4px;
+            transform: rotateY(-14deg);
+        }
+
+        .glass-3d-temple {
+            position: absolute;
+            height: 8px;
+            width: 300px;
+            background: var(--gold-gradient-3d);
+            top: 3.5px;
+            z-index: 2;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .glass-3d-temple-brand {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: var(--font-base);
+            font-size: 7px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: rgba(15, 12, 4, 0.7);
+            white-space: nowrap;
+            pointer-events: none;
+        }
+
+        .glass-3d-lens-container.left .glass-3d-temple {
+            left: -292px;
+            transform-origin: right center;
+            transform: rotateY(-35deg);
+        }
+
+        .glass-3d-lens-container.left .glass-3d-temple-brand {
+            right: 12px;
+        }
+
+        .glass-3d-lens-container.right .glass-3d-temple {
+            right: -292px;
+            transform-origin: left center;
+            transform: rotateY(35deg);
+        }
+
+        .glass-3d-lens-container.right .glass-3d-temple-brand {
+            left: 12px;
+        }
+
+        .glass-3d-lens-container.left .glass-3d-temple::after {
+            content: '';
+            position: absolute;
+            left: 0; top: -2px; width: 95px; height: 9px;
+            background: linear-gradient(to left, #242426, #0a0a0b);
+            border-radius: 3px 0 0 8px;
+            clip-path: polygon(100% 25%, 35% 25%, 0 100%, 12% 100%, 100% 65%);
+        }
+
+        .glass-3d-lens-container.right .glass-3d-temple::after {
+            content: '';
+            position: absolute;
+            right: 0; top: -2px; width: 95px; height: 9px;
+            background: linear-gradient(to right, #242426, #0a0a0b);
+            border-radius: 0 3px 8px 0;
+            clip-path: polygon(0 25%, 65% 25%, 100% 100%, 88% 100%, 0 65%);
+        }
+
+        .top-meta-bar {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .meta-context {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .hamburger-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff7ba3, #8247ff);
+            border: none;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 4px;
+            transition: transform 0.3s ease;
+        }
+
+        .hamburger-btn:hover {
+            transform: scale(1.05) rotate(90deg);
+        }
+
+        .hamburger-btn span {
+            width: 16px;
+            height: 1.5px;
+            background-color: white;
+            display: block;
+        }
+
+        .hero-section {
+            position: relative;
+            margin-bottom: 45px;
+        }
+
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2.5px;
+            color: var(--accent-purple);
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 7vw, 5.5rem);
+            font-weight: 800;
+            line-height: 0.9;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin: 0 0 28px 0;
+        }
+
+        h1 span {
+            display: block;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--text-main);
+            font-weight: 400;
+        }
+
+        .hero-footer-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 40px;
+            max-width: 1100px;
+        }
+
+        .description-text {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            line-height: 1.6;
+            max-width: 430px;
+        }
+
+        .action-pill-btn {
+            border: 1px solid var(--text-main);
+            padding: 12px 28px;
+            border-radius: 30px;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            background: transparent;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        .action-pill-btn:hover {
+            background: var(--text-main);
+            color: #ffffff;
+        }
+
+        .scroll-explore {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .scroll-circle {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .scroll-explore:hover .scroll-circle {
+            background: rgba(0,0,0,0.05);
+            transform: translateY(3px);
+        }
+
+        .instagram-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 16px;
+            margin-top: 20px;
+            margin-bottom: 50px;
+            transition: transform 0.4s ease;
+        }
+
+        .slot-card {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 1 / 1.25; 
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+        }
+
+        .slot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(130, 71, 255, 0.15);
+        }
+
+        .slot-card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .slot-overlay {
+            position: absolute;
+            inset: 0;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.1) 60%);
+            color: #ffffff;
+        }
+
+        .slot-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+
+        .slot-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: #c4a1ff;
+            margin-bottom: 4px;
+        }
+
+        .bottom-nav-bar {
+            border-top: 1px solid var(--border-color);
+            padding-top: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+
+        .bottom-tabs {
+            display: flex;
+            gap: 40px;
+        }
+
+        .tab-link {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-decoration: none;
+            position: relative;
+            padding-bottom: 6px;
+            transition: color 0.2s ease;
+        }
+
+        .tab-link:hover {
+            color: var(--text-main);
+        }
+
+        .tab-link span {
+            opacity: 0.4;
+            margin-right: 6px;
+        }
+
+        .tab-link.active {
+            color: var(--text-main);
+        }
+
+        .tab-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1.5px;
+            background-color: var(--accent-purple);
+        }
+
+        .slider-arrows {
+            display: flex;
+            gap: 8px;
+        }
+
+        .arrow-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .arrow-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .arrow-btn.next-btn {
+            background: linear-gradient(135deg, #8247ff, #ff7ba3);
+            color: white;
+            border: none;
+        }
+
+        .fullscreen-menu {
+            position: fixed;
+            inset: 0;
+            background: #000000;
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        .fullscreen-menu.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .close-menu-btn {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            background: #ffffff;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .menu-links {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            text-align: center;
+        }
+
+        .menu-link {
+            color: #ffffff;
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            text-decoration: none;
+            letter-spacing: -1px;
+            transition: transform 0.2s, color 0.2s;
+        }
+
+        .menu-link:hover {
+            color: #c4a1ff;
+            transform: scale(1.05);
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            right: -350px;
+            width: 300px;
+            background: #ffffff;
+            border-left: 4px solid var(--accent-purple);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 16px;
+            border-radius: 4px;
+            z-index: 300;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-notification.show {
+            right: 30px;
+        }
+
+        /* -------------------------------------------------------------
+           3D KINETIC FOLDING & UNUNFOLDING SYSTEM STYLES
+        ------------------------------------------------------------- */
+        .modal-container {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(236, 231, 224, 0);
+            z-index: 150;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: background-color 0.8s cubic-bezier(0.25, 1, 0.2, 1), opacity 0.8s cubic-bezier(0.25, 1, 0.2, 1);
+            overflow: hidden;
+            perspective: 2000px; /* High-depth perspective field for folding metrics */
+        }
+
+        .modal-mesh-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 12% 15%, rgba(255, 190, 210, 0.85) 0%, transparent 42%),
+                radial-gradient(circle at 38% 8%, rgba(255, 150, 190, 0.6) 0%, transparent 38%),
+                radial-gradient(circle at 50% 45%, rgba(160, 100, 240, 0.55) 0%, transparent 45%),
+                radial-gradient(circle at 78% 20%, rgba(200, 170, 255, 0.65) 0%, transparent 45%),
+                radial-gradient(circle at 8% 60%, rgba(120, 170, 255, 0.55) 0%, transparent 42%),
+                radial-gradient(circle at 30% 85%, rgba(90, 200, 200, 0.55) 0%, transparent 42%),
+                radial-gradient(circle at 62% 88%, rgba(140, 210, 190, 0.5) 0%, transparent 42%),
+                radial-gradient(circle at 90% 70%, rgba(200, 200, 205, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 95% 30%, rgba(255, 210, 180, 0.45) 0%, transparent 40%);
+            filter: blur(70px);
+            opacity: 0;
+            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        .modal-container.active {
+            opacity: 1;
+            background-color: rgba(236, 231, 224, 1);
+            pointer-events: auto;
+        }
+
+        .modal-container.active .modal-mesh-bg {
+            opacity: 1;
+        }
+
+        /* The Kinematic Stage proxy */
+        #kinetic3dStage {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 149;
+            perspective: 2000px;
+            transform-style: preserve-3d;
+            display: none;
+        }
+
+        /* Box Mesh Core Elements */
+        .kinetic-box {
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: all 0.9s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        
+        .box-side {
+            position: absolute;
+            background: #111112;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+        }
+        .box-bottom { width: 100%; height: 100%; transform: translateZ(-60px); background: #09090a; }
+        .box-front  { width: 100%; height: 60px; transform: rotateX(-90deg); transform-origin: bottom center; bottom: 0; }
+        .box-back   { width: 100%; height: 60px; transform: rotateX(90deg); transform-origin: top center; top: 0; }
+        .box-left   { width: 60px; height: 100%; transform: rotateY(-90deg); transform-origin: right center; left: -60px; }
+        .box-right  { width: 60px; height: 100%; transform: rotateY(90deg); transform-origin: left center; right: -60px; }
+
+        /* The rising / unfolding item simulation */
+        .folded-glasses-proxy {
+            position: absolute;
+            width: 210px;
+            height: 200px;
+            left: 50%; top: 50%;
+            margin-left: -105px; margin-top: -100px;
+            transform-style: preserve-3d;
+            transform: translateZ(-50px) scale(0.4) rotateX(10deg);
+            opacity: 0;
+            transition: all 0.9s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        .folded-lens {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.35) 0%, rgba(242, 246, 255, 0.12) 100%);
+            border-radius: 34px;
+            box-shadow: inset 0 0 0 1.5px rgba(255,255,255,0.8), 0 15px 35px rgba(0,0,0,0.3);
+            transform-style: preserve-3d;
+        }
+        /* Overlapped folded position state */
+        .folded-lens.l1 { transform: rotateY(-15deg) translateZ(5px); }
+        .folded-lens.l2 { transform: rotateY(20deg) translateZ(-5px) scaleX(-1); }
+
+        /* Rimless Glasses Assembly Container inside active modal view */
+        .rimless-glasses-assembly {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100vw;
+            max-width: 1180px;
+            position: relative;
+            padding: 0 10px;
+            gap: 0;
+            transform-style: preserve-3d;
+            opacity: 0;
+            transform: scale(0.9) translateZ(-100px);
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.2, 1), opacity 0.5s ease;
+        }
+
+        .modal-container.active .rimless-glasses-assembly {
+            opacity: 1;
+            transform: scale(1) translateZ(0px);
+        }
+
+        .glasses-temple {
+            width: 150px;
+            height: 15px;
+            background: var(--temple-dark);
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            border-radius: 3px;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+        
+        .temple-left {
+            border-radius: 3px 1px 1px 3px;
+            background: linear-gradient(90deg, rgba(22,22,23,0.3) 0%, var(--temple-dark) 35%);
+            transform-origin: right center;
+            transform: rotateY(90deg);
+        }
+        
+        .temple-right {
+            border-radius: 1px 3px 3px 1px;
+            background: linear-gradient(-90deg, rgba(22,22,23,0.3) 0%, var(--temple-dark) 35%);
+            transform-origin: left center;
+            transform: rotateY(-90deg);
+        }
+
+        .modal-container.active .temple-left,
+        .modal-container.active .temple-right {
+            transform: rotateY(0deg);
+        }
+
+        .baroque-gold-inlay {
+            width: 100%;
+            height: 100%;
+            opacity: 0.9;
+            background-repeat: no-repeat;
+            background-size: contain;
+        }
+        .temple-left .baroque-gold-inlay { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 24'%3E%3Cpath d='M0,12 Q6,3 13,12 T26,12 Q32,4 38,12 T51,12' fill='none' stroke='%23dfb74c' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M6,10 Q9,5 12,11' fill='none' stroke='%23fdf5d2' stroke-width='1.2'/%3E%3Cpath d='M31,10 Q34,5 37,11' fill='none' stroke='%23fdf5d2' stroke-width='1.2'/%3E%3Ccircle cx='19' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Ccircle cx='44' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Cpath d='M55,12 Q61,3 68,12 T81,12 Q87,4 93,12 T106,12' fill='none' stroke='%23dfb74c' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='74' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Ccircle cx='99' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Cpath d='M110,12 Q116,3 123,12 T136,12 Q142,5 148,12' fill='none' stroke='%23dfb74c' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='129' cy='12' r='1.6' fill='%23dfb74c'/%3E%3C/svg%3E"); }
+        .temple-right .baroque-gold-inlay { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 150 24'%3E%3Cpath d='M150,12 Q144,3 137,12 T124,12 Q118,4 112,12 T99,12' fill='none' stroke='%23dfb74c' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M144,10 Q141,5 138,11' fill='none' stroke='%23fdf5d2' stroke-width='1.2'/%3E%3Cpath d='M119,10 Q116,5 113,11' fill='none' stroke='%23fdf5d2' stroke-width='1.2'/%3E%3Ccircle cx='131' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Ccircle cx='106' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Cpath d='M95,12 Q89,3 82,12 T69,12 Q63,4 57,12 T44,12' fill='none' stroke='%23dfb74c' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='76' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Ccircle cx='51' cy='12' r='1.6' fill='%23dfb74c'/%3E%3Cpath d='M40,12 Q34,3 27,12 T14,12 Q8,5 2,12' fill='none' stroke='%23dfb74c' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='21' cy='12' r='1.6' fill='%23dfb74c'/%3E%3C/svg%3E"); }
+
+        .gold-hinge-assembly {
+            width: 30px;
+            height: 40px;
+            background: var(--gold-gradient);
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.18), inset 0 1px 2px rgba(255,255,255,0.7);
+            border-radius: 6px;
+            display: block;
+            background-image:
+                linear-gradient(135deg, #ebd087 0%, #fcf4cf 25%, #cc9e3a 50%, #fdf5d2 75%, #a1761c 100%),
+                repeating-linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,0.22) 0px,
+                    rgba(0,0,0,0.22) 1.5px,
+                    transparent 1.5px,
+                    transparent 7px
+                );
+        }
+        .hinge-left { margin-right: -4px; border-radius: 7px 2px 2px 7px; }
+        .hinge-right { margin-left: -4px; border-radius: 2px 7px 7px 2px; }
+
+        .rimless-lens {
+            width: 420px;
+            height: 400px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(242, 246, 255, 0.15) 100%);
+            box-shadow: 
+                inset 0 0 0 1.5px rgba(255, 255, 255, 0.8),
+                0 30px 70px rgba(0, 0, 0, 0.1),
+                0 4px 10px rgba(0, 0, 0, 0.03);
+            position: relative;
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
+            border-radius: 64px;
+        }
+
+        .lens-display-left {
+            z-index: 6;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        .lens-slider-wrapper {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lens-slider-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .lens-slider-slide img, .lens-slider-slide video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .lens-display-left::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(140deg, rgba(255,255,255,0.35) 0%, transparent 45%, rgba(255,255,255,0.1) 100%);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .lens-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.75);
+            color: #ffffff;
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 4;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease, background 0.2s ease;
+        }
+        
+        .lens-nav-btn:hover { background: #000000; }
+        .lens-nav-prev { left: 16px; }
+        .lens-nav-next { right: 16px; }
+
+        .lens-display-left:hover .lens-nav-btn.visible-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .lens-info-right {
+            position: absolute;
+            top: 0;
+            left: 176px;
+            z-index: 4;
+            padding: 48px 44px 40px 44px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transform: translateX(-40%) scale(0.96);
+            opacity: 0;
+            transition: transform 0.8s cubic-bezier(0.34, 1.3, 0.64, 1) 0.2s, opacity 0.6s ease 0.2s;
+        }
+
+        .modal-container.active .lens-info-right {
+            transform: translateX(0%) scale(1);
+            opacity: 1;
+            position: relative;
+            left: auto;
+        }
+
+        .lens-scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 16px;
+            padding-right: 8px;
+        }
+
+        .lens-scroll-area::-webkit-scrollbar { width: 4px; }
+        .lens-scroll-area::-webkit-scrollbar-track { background: transparent; }
+        .lens-scroll-area::-webkit-scrollbar-thumb { background: rgba(0, 0, 0, 0.15); border-radius: 2px; }
+
+        .gold-center-bridge-assembly {
+            width: 60px;
+            height: 46px;
+            position: relative;
+            margin: 0 -2px;
+            z-index: 12;
+            display: flex;
+            justify-content: center;
+            transition: transform 0.8s cubic-bezier(0.25, 1, 0.2, 1);
+        }
+
+        .bridge-arch {
+            width: 100%;
+            height: 30px;
+            border: 4.5px solid #cc9e3a;
+            border-image: linear-gradient(180deg, #fcf4cf 0%, #dfb74c 40%, #a1761c 100%) 1;
+            border-bottom: none;
+            border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+            position: absolute;
+            top: 2px;
+            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.16));
+        }
+
+        .bridge-arch::before, .bridge-arch::after {
+            content: '';
+            position: absolute;
+            top: -5px; width: 10px; height: 10px;
+            background: var(--gold-gradient);
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.15);
+        }
+        .bridge-arch::before { left: -5.5px; }
+        .bridge-arch::after { right: -5.5px; }
+
+        .nose-pads-container {
+            position: absolute;
+            top: 34px; width: 100%; left: 0;
+            display: flex; justify-content: space-between;
+        }
+
+        .nose-pad-arm { width: 3px; height: 13px; background: var(--gold-gradient); position: relative; border-radius: 2px; }
+        .pad-left { transform: rotate(24deg); left: 4px; }
+        .pad-right { transform: rotate(-24deg); right: 4px; }
+
+        .nose-pad-arm::after {
+            content: '';
+            position: absolute;
+            bottom: -13px; left: -4px; width: 10px; height: 16px;
+            background: rgba(255, 255, 255, 0.85);
+            border: 1.5px solid #dcb34c;
+            border-radius: 50%;
+        }
+
+        .modal-body-title {
+            font-size: 1.72rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            color: #000000;
+            margin-bottom: 10px;
+            line-height: 1.1;
+        }
+
+        .modal-title-divider { width: 30px; height: 3px; background: var(--accent-purple); border-radius: 2px; margin-bottom: 20px; }
+        .modal-side-spec { display: flex; flex-direction: column; gap: 14px; }
+        .modal-spec-block h4 { text-transform: uppercase; font-size: 0.66rem; letter-spacing: 1.5px; color: var(--accent-purple); font-weight: 800; margin-bottom: 4px; }
+        .modal-spec-block p { font-size: 0.82rem; line-height: 1.5; color: #1c1c1e; font-weight: 500; }
+        .modal-action-btn { background: #000000; color: #ffffff; text-decoration: none; padding: 15px 0; border-radius: 30px; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; text-align: center; display: block; box-shadow: 0 4px 14px rgba(0,0,0,0.15); }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 40px; right: 40px;
+            background: #000000; color: #ffffff; border: none;
+            width: 36px; height: 36px; border-radius: 50%;
+            cursor: pointer; font-size: 0.8rem;
+            display: flex; align-items: center; justify-content: center;
+            z-index: 160; opacity: 0; transition: opacity 0.3s ease;
+        }
+
+        .modal-container.active .modal-close-btn { opacity: 1; }
+
+        @media (max-width: 1400px) { .instagram-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 1120px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .portfolio-section { padding: 40px; }
+            .rimless-glasses-assembly { flex-direction: column; width: 90vw; }
+            .glasses-temple, .gold-hinge-assembly, .gold-center-bridge-assembly { display: none; }
+            .rimless-lens { width: 100%; max-width: 460px; height: auto; margin-bottom: 20px; }
+            .lens-display-left { display: none; }
+            .lens-info-right { border-radius: 28px; padding: 40px 30px; transform: none !important; opacity: 1 !important; position: relative !important; left: auto !important; }
+            .instagram-grid { grid-template-columns: repeat(3, 1fr); }
+            .overview-interactive-zone { flex-direction: column; text-align: center; }
+            .glasses-3d-stage { width: 100%; height: 300px; }
+        }
+        @media (max-width: 768px) { .instagram-grid { grid-template-columns: repeat(2, 1fr); } .hero-footer-row { flex-direction: column; gap: 20px; } .scroll-explore { display: none; } }
+        @media (max-width: 480px) { .instagram-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <div class="ambient-mesh"></div>
+
+    <!-- 3D Kinetic Transport Layer (Stage container) -->
+    <div id="kinetic3dStage">
+        <div class="kinetic-box" id="kineticBox">
+            <div class="box-side box-bottom"></div>
+            <div class="box-side box-front"></div>
+            <div class="box-side box-back"></div>
+            <div class="box-side box-left"></div>
+            <div class="box-side box-right"></div>
+            
+            <!-- Embedded Folded Elements inside the container matrix -->
+            <div class="folded-glasses-proxy" id="foldedGlasses">
+                <div class="folded-lens l1"></div>
+                <div class="folded-lens l2"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fullscreen-menu" id="fullScreenMenu">
+        <button class="close-menu-btn" onclick="toggleMenu(false)">✕</button>
+        <div class="menu-links">
+            <a href="#" class="menu-link" onclick="handleMenuClick('Overview')">Overview</a>
+            <a href="#" class="menu-link" onclick="handleMenuClick('Featured Work')">Featured Work</a>
+            <a href="#" class="menu-link" onclick="handleMenuClick('Brand Strategy')">Brand Strategy</a>
+            <a href="#" class="menu-link" onclick="handleMenuClick('Creative Copy')">Creative Copy</a>
+            <a href="#" class="menu-link" onclick="handleMenuClick('About Me')">About Me</a>
+        </div>
+    </div>
+
+    <div class="toast-notification" id="toastBox">
+        <span style="font-size: 1.2rem;">⚡</span>
+        <div>
+            <strong style="display:block; font-size:0.8rem;">External Hook Connected</strong>
+            <span style="font-size:0.75rem; color:var(--text-muted);" id="toastMessage">Routing to source hub...</span>
+        </div>
+    </div>
+
+    <div class="app-container">
+        
+        <aside class="sidebar">
+            <div class="brand-logo" onclick="handleMenuClick('Overview')">M.<br>SHAHRUKH</div>
+            
+            <nav class="sidebar-nav" id="sidebarNav">
+                <a href="#overview-section" class="nav-item active">Overview</a>
+                <a href="#featured-section" class="nav-item">Featured Work</a>
+                <a href="#brand-section" class="nav-item">Brand Strategy</a>
+                <a href="#creative-section" class="nav-item">Creative Copy</a>
+                <a href="#about-section" class="nav-item">About Me</a>
+                <a href="#contact-section" class="nav-item">Contact</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div><p class="footer-quote">Good design creates clarity. Great design creates impact.</p></div>
+                <div class="social-links">
+                    <a class="social-icon" onclick="triggerToast('Opening LinkedIn profile ecosystem...')">💼</a>
+                    <a class="social-icon" onclick="triggerToast('Opening Behance project deck catalogs...')">Bē</a>
+                    <a class="social-icon" onclick="triggerToast('Opening global networking link...')">🌐</a>
+                </div>
+                <div class="copyright">© 2026 M. Shahrukh</div>
+            </div>
+        </aside>
+
+        <main class="main-content" id="mainContentArea">
+            
+            <!-- SECTION 1: OVERVIEW -->
+            <section class="portfolio-section" id="overview-section">
+                <div class="top-meta-bar">
+                    <div class="meta-context">SYSTEMS CORE ARCHITECTURE<br>STUDENT PORTFOLIO / 2026</div>
+                    <button class="hamburger-btn" onclick="toggleMenu(true)">
+                        <span></span><span></span>
+                    </button>
+                </div>
+
+                <div class="overview-interactive-zone">
+                    <div class="overview-text-block">
+                        <div class="hello-tag">Hello, I'm</div>
+                        <h2>M. <span>Shahrukh</span></h2>
+                        <span class="section-label" style="margin-bottom: 20px;">/ Creative Marketer</span>
+                        <p class="description-text">I craft meaningful brand experiences and impactful campaigns that connect, engage and inspire action.</p>
+                    </div>
+                    
+                    <div class="glasses-3d-stage" id="stage3d">
+                        <div class="glasses-3d-object" id="object3d">
+                            <div class="glass-3d-frame-wrap">
+                                <div class="glass-3d-lens-container left">
+                                    <div class="glass-3d-lens"></div>
+                                    <div class="glass-3d-hinge-block"></div>
+                                    <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
+                                </div>
+                                <div class="glass-3d-double-bridge"></div>
+                                <div class="glass-3d-lens-container right">
+                                    <div class="glass-3d-lens"></div>
+                                    <div class="glass-3d-hinge-block"></div>
+                                    <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-footer-row" style="max-width: 100%;">
+                    <button class="action-pill-btn" onclick="scrollToSection('featured-section')">View Selected Work <span>↗</span></button>
+                </div>
+            </section>
+            
+            <!-- SECTION 2: FEATURED WORK -->
+            <section class="portfolio-section" id="featured-section">
+                <div class="top-meta-bar">
+                    <div class="meta-context">CREATIVE DIRECTION & BRAND CONCEPTS<br>STUDENT PORTFOLIO / 2026</div>
+                </div>
+
+                <div class="hero-section">
+                    <span class="section-label">/ Academic & Freelance Projects</span>
+                    <h1>Selected <span>Work</span></h1>
+                    
+                    <div class="hero-footer-row">
+                        <p class="description-text">A collection of visual stories crafted for style-driven brands and concepts. Click any card preview to unlock project details.</p>
+                        <button class="action-pill-btn" onclick="scrolledToWork()">View Case Decks <span>↗</span></button>
+                        
+                        <div class="scroll-explore" onclick="scrolledToWork()">
+                            <span>Scroll to explore</span>
+                            <div class="scroll-circle">↓</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="instagram-grid" id="portfolioGrid">
+                    <!-- Dynamic Interactive Cards Layout Mapping -->
+                    <div class="slot-card" onclick="openShowcase(this, 'Intelligent Glasses', 'Premium visual campaign layout asset mapping out tech glasses features side by side.', 'Engineered clean vector micro-grids with adaptive lens transparency scales.', 'Shifts presentation values directly away from simple cosmetic previews to utility understanding.', 'https://www.instagram.com/p/DTN3WlGCLr8/', 'default')">
+                        <img class="slot-card-img" src="glasses.png" alt="Glasses Slot Asset">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 01</div>
+                            <div class="slot-title">Intelligent Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Tinted Luxury Glasses', 'Premium tinted configuration exploring interactive viewport aesthetics, layered protective filters, and customized structural frame outlines.', 'Rendered progressive color density shaders synchronized with dynamic layout frames.', 'Delivers contextual product validation overlays alongside luxury video playback frames.', 'https://www.instagram.com/reel/DTe4BrTiO12/', 'tinted')">
+                        <img class="slot-card-img" src="tinted.png" alt="Tinted Luxury Glasses Frame Asset">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 02</div>
+                            <div class="slot-title">Tinted Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Doffy Frameless Design', 'An architectural exploration of space, future shapes and dynamic content balance values featuring tailored gradient optics.', 'Applied customized grid geometry alongside asset file arrays.', 'Designed for interactive digital interface clarity updates.', '#', 'doffy')">
+                        <img class="slot-card-img" src="glasses3.png" alt="Doffy Frame Slot Asset">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 03</div>
+                            <div class="slot-title">Doffy Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Butty Glasses', 'Premium visual configuration utilizing high fidelity custom lens overlays combined with dynamic motion playback layers.', 'Synchronized local video processing with frame element arrays.', 'Optimizing presentation density profiles for interactive showcase displays.', 'https://www.instagram.com/reel/DUH-ET0iOxz/', 'butty')">
+                        <img class="slot-card-img" src="butty1.png" alt="Butty Glasses Active Slot">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 04</div>
+                            <div class="slot-title">Butty Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Clip Glasses', 'Minimalist tactical attachment blueprint integrating structural engineering layouts with sharp custom optics.', 'Configured localized frame assets and single layer picture alignments.', 'Refining structural precision metrics within close-up frame presentations.', 'https://www.instagram.com/reel/DUsIzl6CPwA/', 'clip')">
+                        <img class="slot-card-img" src="clip1.png" alt="Clip Glasses Front Asset View">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 05</div>
+                            <div class="slot-title">Clip Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Pink Glasses', 'Vibrant luxury frames combining striking modern aesthetics with carefully balanced soft-tone glass dynamics.', 'Executed clean spatial gradient curves and local image layering matrices.', 'Elevating product visibility profiles through vibrant contrast frame alignments.', 'https://www.instagram.com/p/DTdHglQCJBB/', 'pink')">
+                        <img class="slot-card-img" src="pink1.png" alt="Pink Glasses Preview Asset">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 06</div>
+                            <div class="slot-title">Pink Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Gold Glasses', 'High-end structural concept displaying refined architectural styling cues and signature luxurious trim levels.', 'Assembled multi-layered hardware frameworks paired with fine geometric accents.', 'Setting definitive branding precedents for upscale high-precision product rollouts.', '#', 'gold')">
+                        <img class="slot-card-img" src="gold1.png" alt="Gold Glasses Active Preview">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 07</div>
+                            <div class="slot-title">Gold Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Circle Glasses', 'Advanced sleek geometry concept utilizing structured radius alignments and pristine presentation elements.', 'Calculated precise lens concentric metrics paired with multi-layer image staging.', 'Establishing continuous flow aesthetics across high-contrast premium design optics.', '#', 'circle')">
+                        <img class="slot-card-img" src="circle1.png" alt="Circle Glasses Active Thumbnail">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 08</div>
+                            <div class="slot-title">Circle Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Multi Glasses Campaign', 'High precision product array tracking custom layered styles and variable density frame structures.', 'Synchronized multimain video output layouts across unified asset packages.', 'To scale presentation fidelity models within comprehensive dynamic showcases.', '#', 'multi')">
+                        <img class="slot-card-img" src="multi7.png" alt="Multi Glasses Thumbnail Preview Layout">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 09</div>
+                            <div class="slot-title">Multi Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Hand Campaign Focus', 'Macro close-up interactive presentation exploring form, natural geometry, and continuous product flow dynamics.', 'Isolated handmain motion framework streaming localized configurations.', 'Establishing immediate utility focus profiles within minimal presentation bounds.', '#', 'hand')">
+                        <img class="slot-card-img" src="hand1.png" alt="Hand Glasses Creative Focus Mapping">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 10</div>
+                            <div class="slot-title">Hand Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Aura Glasses', 'Luminescent design concept tracking modern dynamic frame outlines alongside pristine environmental reflections.', 'Configured isolated single-layer spatial hardware definitions.', 'Emphasizing elegant standalone brand value matrices within minimal structures.', '#', 'aura')">
+                        <img class="slot-card-img" src="auramain.png" alt="Aura Glasses Main Preview">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 11</div>
+                            <div class="slot-title">Aura Glasses</div>
+                        </div>
+                    </div>
+
+                    <div class="slot-card" onclick="openShowcase(this, 'Cat Glasses', 'Aggressive sleek architectural contour design emphasizing sharp geometry and multi-tonal lens dynamics.', 'Configured an interactive five-stage image carousel inside the left viewport mapping close-up angles.', 'Delivering granular technical asset insights across variable depth planes.', '#', 'cat')">
+                        <img class="slot-card-img" src="catmain.png" alt="Cat Glasses Main Preview">
+                        <div class="slot-overlay">
+                            <div class="slot-label">Case Study 12</div>
+                            <div class="slot-title">Cat Glasses</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION 3: BRAND STRATEGY -->
+            <section class="portfolio-section" id="brand-section">
+                <div class="top-meta-bar"><div class="meta-context">MARKET POSITIONING DECK STACKS<br>STUDENT PORTFOLIO / 2026</div></div>
+                <div class="hero-section">
+                    <span class="section-label">/ Corporate Identity Blueprints</span>
+                    <h1>Brand <span>Systems</span></h1>
+                    <p class="description-text" style="margin-top: 20px;">Deep research maps detailing audience alignment matrices, modern typographic guidelines, and tone formulation rules for corporate applications.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 4: CREATIVE COPY -->
+            <section class="portfolio-section" id="creative-section">
+                <div class="top-meta-bar"><div class="meta-context">VERBAL SYNTAX SYSTEMS<br>STUDENT PORTFOLIO / 2026</div></div>
+                <div class="hero-section">
+                    <span class="section-label">/ Tone of Voice & Copywriting</span>
+                    <h1>Strategic <span>Copy</span></h1>
+                    <p class="description-text" style="margin-top: 20px;">A showcase of verbal communication, short-form advertising hooks, editorial taglines, and long-form luxury design breakdowns.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 5: ABOUT ME -->
+            <section class="portfolio-section" id="about-section">
+                <div class="top-meta-bar"><div class="meta-context">BIOGRAPHY & COMPETENCY INDICES<br>STUDENT PORTFOLIO / 2026</div></div>
+                <div class="hero-section">
+                    <span class="section-label">/ Personal Design Philosophy</span>
+                    <h1>The <span>Designer</span></h1>
+                    <p class="description-text" style="margin-top: 20px;">Currently investigating minimal design patterns and luxury interfaces. Bridging high precision spatial design layout forms with interactive user loops.</p>
+                </div>
+            </section>
+
+            <!-- SECTION 6: CONTACT -->
+            <section class="portfolio-section" id="contact-section">
+                <div class="top-meta-bar"><div class="meta-context">INBOUND TRANSMISSION HUD<br>STUDENT PORTFOLIO / 2026</div></div>
+                <div class="hero-section">
+                    <span class="section-label">/ Open for Collaboration</span>
+                    <h1>Get In <span>Touch</span></h1>
+                    <p class="description-text" style="margin-top: 20px;">Looking to scale concept pipelines or test system interactions? Let us setup structural loops or direct review frameworks.</p>
+                </div>
+
+                <footer class="bottom-nav-bar">
+                    <div class="bottom-tabs" id="bottomTabs">
+                        <a href="#overview-section" class="tab-link active"><span>01</span>Overview</a>
+                        <a href="#featured-section" class="tab-link"><span>02</span>Featured Work</a>
+                        <a href="#brand-section" class="tab-link"><span>03</span>Brand Strategy</a>
+                        <a href="#creative-section" class="tab-link"><span>04</span>Creative Copy</a>
+                        <a href="#about-section" class="tab-link"><span>05</span>About Me</a>
+                    </div>
+                    <div class="slider-arrows">
+                        <button class="arrow-btn" id="prevBtn">←</button>
+                        <button class="arrow-btn next-btn" id="nextBtn">→</button>
+                    </div>
+                </footer>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL ASSEMBLY -->
+    <div class="modal-container" id="showcaseModal" onclick="closeShowcase(event)">
+        <div class="modal-mesh-bg"></div>
+        <button class="modal-close-btn" onclick="document.getElementById('showcaseModal').classList.remove('active')">✕</button>
+        
+        <div class="rimless-glasses-assembly" id="mainAssembly" onclick="event.stopPropagation()">
+            <div class="glasses-temple temple-left"><div class="baroque-gold-inlay"></div></div>
+            <div class="gold-hinge-assembly hinge-left"></div>
+            
+            <div class="rimless-lens lens-display-left" id="leftLensAnchor">
+                <button class="lens-nav-btn lens-nav-prev" id="modalLensPrevBtn" onclick="moveLensSlider(-1)">‹</button>
+                <button class="lens-nav-btn lens-nav-next" id="modalLensNextBtn" onclick="moveLensSlider(1)">›</button>
+                <div class="lens-slider-wrapper" id="lensSliderWrapper"></div>
+            </div>
+            
+            <div class="gold-center-bridge-assembly">
+                <div class="bridge-arch"></div>
+                <div class="nose-pads-container">
+                    <div class="nose-pad-arm pad-left"></div>
+                    <div class="nose-pad-arm pad-right"></div>
+                </div>
+            </div>
+            
+            <div class="rimless-lens lens-info-right">
+                <div class="lens-scroll-area">
+                    <h3 class="modal-body-title" id="modalTargetTitle">INTELLIGENT GLASSES</h3>
+                    <div class="modal-title-divider"></div>
+                    
+                    <div class="modal-side-spec">
+                        <div class="modal-spec-block">
+                            <h4>Description</h4>
+                            <p id="modalTargetDesc">Premium visual campaign layout asset mapping out tech glasses features side by side.</p>
+                        </div>
+                        <div class="modal-spec-block">
+                            <h4>Procedure</h4>
+                            <p id="modalTargetProc">Engineered clean vector micro-grids with adaptive lens transparency scales.</p>
+                        </div>
+                        <div class="modal-spec-block">
+                            <h4>Purpose</h4>
+                            <p id="modalTargetPurp">Shifts presentation values directly away from simple cosmetic previews to utility understanding.</p>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="modal-action-btn" id="modalTargetLink" target="_blank" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;">View Project Source</a>
+            </div>
+            
+            <div class="gold-hinge-assembly hinge-right"></div>
+            <div class="glasses-temple temple-right"><div class="baroque-gold-inlay"></div></div>
+        </div>
+    </div>
+
+    <script>
+        let activeLensSlide = 0;
+        let totalLensSlides = 5; 
+        let lastClickedCard = null;
+
+        function moveLensSlider(direction) {
+            activeLensSlide = (activeLensSlide + direction + totalLensSlides) % totalLensSlides;
+            document.getElementById('lensSliderWrapper').style.transform = `translateX(-${activeLensSlide * 100}%)`;
+        }
+
+        function openShowcase(cardElement, title, desc, procedure, purpose, instaLink, contextMode = 'default') {
+            lastClickedCard = cardElement;
+            const modal = document.getElementById('showcaseModal');
+            const wrapper = document.getElementById('lensSliderWrapper');
+            const prevBtn = document.getElementById('modalLensPrevBtn');
+            const nextBtn = document.getElementById('modalLensNextBtn');
+            
+            const stage3d = document.getElementById('kinetic3dStage');
+            const box3d = document.getElementById('kineticBox');
+            const foldedGlasses = document.getElementById('foldedGlasses');
+            const assembly = document.getElementById('mainAssembly');
+            
+            activeLensSlide = 0;
+            wrapper.style.transform = 'translateX(0%)';
+            prevBtn.classList.add('visible-btn');
+            nextBtn.classList.add('visible-btn');
+            
+            // Content setup matrices
+            if (contextMode === 'multi') {
+                totalLensSlides = 14; 
+                let multiHTML = `<div class="lens-slider-slide"><video src="multimain.mp4" autoplay loop muted playsinline preload="auto"></video></div>`;
+                for(let i = 1; i <= 13; i++) { multiHTML += `<div class="lens-slider-slide"><img src="multi${i}.png"></div>`; }
+                wrapper.innerHTML = multiHTML;
+            } else if (contextMode === 'hand') {
+                totalLensSlides = 1; prevBtn.classList.remove('visible-btn'); nextBtn.classList.remove('visible-btn');
+                wrapper.innerHTML = `<div class="lens-slider-slide"><video src="handmain.mp4" autoplay loop muted playsinline preload="auto"></video></div>`;
+            } else if (contextMode === 'aura') {
+                totalLensSlides = 1; prevBtn.classList.remove('visible-btn'); nextBtn.classList.remove('visible-btn');
+                wrapper.innerHTML = `<div class="lens-slider-slide"><img src="auramain.png"></div>`;
+            } else if (contextMode === 'cat') {
+                totalLensSlides = 5; 
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><img src="catmain.png"></div>
+                    <div class="lens-slider-slide"><img src="cat1.png"></div>
+                    <div class="lens-slider-slide"><img src="cat2.png"></div>
+                    <div class="lens-slider-slide"><img src="cat3.png"></div>
+                    <div class="lens-slider-slide"><img src="cat4.png"></div>
+                `;
+            } else if (contextMode === 'tinted') {
+                totalLensSlides = 5; 
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><video src="tintedmain.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+                    <div class="lens-slider-slide"><img src="tinted.png"></div>
+                    <div class="lens-slider-slide"><img src="tinted1.png"></div>
+                    <div class="lens-slider-slide"><img src="tinted2.png"></div>
+                    <div class="lens-slider-slide"><img src="tinted3.png"></div>
+                `;
+            } else if (contextMode === 'doffy') {
+                totalLensSlides = 4; 
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><video src="doffymain.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+                    <div class="lens-slider-slide"><img src="doffy1.png"></div>
+                    <div class="lens-slider-slide"><img src="doffy2.png"></div>
+                    <div class="lens-slider-slide"><img src="doffy3.png"></div>
+                `;
+            } else if (contextMode === 'butty') {
+                totalLensSlides = 4;
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><video src="buttymain.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+                    <div class="lens-slider-slide"><img src="butty1.png"></div>
+                    <div class="lens-slider-slide"><img src="butty2.png"></div>
+                    <div class="lens-slider-slide"><img src="butty3.png"></div>
+                `;
+            } else if (contextMode === 'clip') {
+                totalLensSlides = 2;
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><video src="clipmain.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+                    <div class="lens-slider-slide"><img src="clip1.png"></div>
+                `;
+            } else if (contextMode === 'pink') {
+                totalLensSlides = 3;
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><img src="pink1.png"></div>
+                    <div class="lens-slider-slide"><img src="pink2.png"></div>
+                    <div class="lens-slider-slide"><img src="pink.png"></div>
+                `;
+            } else if (contextMode === 'gold') {
+                totalLensSlides = 3;
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><img src="gold2.png"></div>
+                    <div class="lens-slider-slide"><img src="gold3.png"></div>
+                    <div class="lens-slider-slide"><img src="gold4.png"></div>
+                `;
+            } else if (contextMode === 'circle') {
+                totalLensSlides = 4;
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><video src="circlemain.mp4" autoplay loop muted playsinline preload="auto"></video></div>
+                    <div class="lens-slider-slide"><img src="circle1.png"></div>
+                    <div class="lens-slider-slide"><img src="circle2.png"></div>
+                    <div class="lens-slider-slide"><img src="circle3.png"></div>
+                `;
+            } else {
+                totalLensSlides = 5; 
+                wrapper.innerHTML = `
+                    <div class="lens-slider-slide"><img src="glasses.png"></div>
+                    <div class="lens-slider-slide"><img src="glasses2.png"></div>
+                    <div class="lens-slider-slide"><img src="glasses3.png"></div>
+                    <div class="lens-slider-slide"><img src="glasses4.png"></div>
+                    <div class="lens-slider-slide"><img src="glasses5.png"></div>
+                `;
+            }
+
+            document.getElementById('modalTargetTitle').innerText = title;
+            document.getElementById('modalTargetDesc').innerText = desc;
+            document.getElementById('modalTargetProc').innerText = procedure;
+            document.getElementById('modalTargetPurp').innerText = purpose;
+            document.getElementById('modalTargetLink').href = instaLink;
+
+            // Zero lag playback protection handler
+            const initialVideoElement = wrapper.querySelector('video');
+            if (initialVideoElement) {
+                initialVideoElement.play().catch(err => console.log("Lag protection intercept handling complete:", err));
+            }
+
+            // GET SLOT MATRIX BOUNDS FOR INTRINSIC 3D GENERATION
+            const cardRect = cardElement.getBoundingClientRect();
+            cardElement.style.opacity = '0';
+            
+            // 1. Initialize Stage at pure 2D Card Coordinates
+            stage3d.style.display = 'block';
+            box3d.style.transition = 'none';
+            box3d.style.top = cardRect.top + 'px';
+            box3d.style.left = cardRect.left + 'px';
+            box3d.style.width = cardRect.width + 'px';
+            box3d.style.height = cardRect.height + 'px';
+            box3d.style.transform = 'rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(0px)';
+            
+            // Set base side constraints perfectly matching flat card bounding boxes
+            box3d.querySelectorAll('.box-side').forEach(side => side.style.backgroundColor = '#111112');
+            
+            foldedGlasses.style.transition = 'none';
+            foldedGlasses.style.opacity = '0';
+            foldedGlasses.style.transform = 'translateZ(-50px) scale(0.4) rotateY(0deg)';
+            
+            assembly.style.transition = 'none';
+            assembly.style.opacity = '0';
+
+            // Force layout sync
+            box3d.offsetHeight;
+            
+            // 2. Extrude Square Into 3D Box & Pull to Center
+            box3d.style.transition = 'all 0.6s cubic-bezier(0.25, 1, 0.2, 1)';
+            box3d.style.top = 'calc(50vh - 150px)';
+            box3d.style.left = 'calc(50vw - 160px)';
+            box3d.style.width = '320px';
+            box3d.style.height = '300px';
+            box3d.style.transform = 'rotateX(60deg) rotateY(0deg) rotateZ(-35deg) translateZ(50px)';
+            
+            // 3. Eject Folded Glasses from open container matrix
+            setTimeout(() => {
+                foldedGlasses.style.transition = 'all 0.7s cubic-bezier(0.34, 1.56, 0.64, 1)';
+                foldedGlasses.style.opacity = '1';
+                foldedGlasses.style.transform = 'translateZ(140px) scale(1) rotateX(-20deg) rotateY(25deg)';
+            }, 450);
+
+            // 4. Unfold glasses out gracefully and deploy final UI presentation
+            setTimeout(() => {
+                modal.classList.add('active');
+                
+                // Vanish kinematic tracking actors safely
+                box3d.style.transition = 'all 0.5s ease';
+                box3d.style.opacity = '0';
+                foldedGlasses.style.transition = 'all 0.5s ease';
+                foldedGlasses.style.opacity = '0';
+                
+                // Bring in main content assembly
+                assembly.style.transition = 'all 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+                assembly.style.opacity = '1';
+                
+                setTimeout(() => {
+                    stage3d.style.display = 'none';
+                    box3d.style.opacity = '1';
+                }, 500);
+            }, 1050);
+        }
+
+        function closeShowcase(e) {
+            if(e.target.id === 'showcaseModal' || e.target.classList.contains('modal-close-btn')) {
+                const modal = document.getElementById('showcaseModal');
+                modal.classList.remove('active');
+                
+                const videos = document.querySelectorAll('#lensSliderWrapper video');
+                videos.forEach(video => { if(video) video.pause(); });
+
+                if(lastClickedCard) {
+                    lastClickedCard.style.opacity = '1';
+                }
+            }
+        }
+
+        const sidebarLinks = Array.from(document.querySelectorAll('#sidebarNav .nav-item'));
+        const bottomLinks = Array.from(document.querySelectorAll('#bottomTabs .tab-link'));
+        const sections = Array.from(document.querySelectorAll('.portfolio-section'));
+
+        function syncActiveState(targetHref) {
+            sidebarLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('href') === targetHref); });
+            bottomLinks.forEach(link => { link.classList.toggle('active', link.getAttribute('href') === targetHref); });
+        }
+
+        function scrollToSection(id) {
+            const target = document.getElementById(id);
+            if(target) target.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        [...sidebarLinks, ...bottomLinks].forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                scrollToSection(link.getAttribute('href').substring(1));
+            });
+        });
+
+        const observerOptions = { root: null, rootMargin: '-50% 0px -50% 0px', threshold: 0 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) syncActiveState(`#${entry.target.getAttribute('id')}`);
+            });
+        }, observerOptions);
+
+        sections.forEach(section => observer.observe(section));
+
+        function cycleTabs(direction) {
+            let activeIndex = bottomLinks.findIndex(link => link.classList.contains('active'));
+            activeIndex = direction === 'next' ? (activeIndex + 1) % bottomLinks.length : (activeIndex - 1 + bottomLinks.length) % bottomLinks.length;
+            scrollToSection(bottomLinks[activeIndex].getAttribute('href').substring(1));
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', () => cycleTabs('next'));
+        document.getElementById('prevBtn').addEventListener('click', () => cycleTabs('prev'));
+        function scrolledToWork() { document.getElementById('portfolioGrid').scrollIntoView({ behavior: 'smooth' }); }
+        function toggleMenu(open) { document.getElementById('fullScreenMenu').classList.toggle('active', open); }
+
+        function handleMenuClick(page) {
+            toggleMenu(false);
+            const mapping = { 'Overview': 'overview-section', 'Featured Work': 'featured-section', 'Brand Strategy': 'brand-section', 'Creative Copy': 'creative-section', 'About Me': 'about-section' };
+            if(mapping[page]) scrollToSection(mapping[page]);
+        }
+
+        function triggerToast(message) {
+            const toast = document.getElementById('toastBox');
+            document.getElementById('toastMessage').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        // SMOOTH INTERACTIVE PARALLAX ENGINE
+        const stage = document.getElementById('stage3d');
+        const object3d = document.getElementById('object3d');
+
+        setTimeout(() => {
+            stage.addEventListener('mousemove', (e) => {
+                const rect = stage.getBoundingClientRect();
+                const rotateX = ((e.clientY - rect.top - (rect.height / 2)) / (rect.height / 2)) * -18 + 8; 
+                const rotateY = ((e.clientX - rect.left - (rect.width / 2)) / (rect.width / 2)) * 25 - 40;
+                object3d.style.animation = 'none';
+                object3d.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(0deg)`;
+            });
+            stage.addEventListener('mouseleave', () => {
+                object3d.style.transform = `rotateX(8deg) rotateY(-40deg) rotateZ(0deg)`;
+            });
+        }, 1500);
+    </script>
+</body>
+</html>
