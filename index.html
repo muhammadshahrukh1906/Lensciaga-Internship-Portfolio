@@ -1404,7 +1404,7 @@
                         <model-viewer
                             id="luxuryGlassesModel"
                             class="hero-model-viewer"
-                            data-src="./luxury%20eyeglasses%203d%20model.glb"
+                            data-src="./eyeglasses.glb"
                             alt="Interactive 3D model of luxury eyeglasses"
                             camera-controls
                             auto-rotate
@@ -1428,7 +1428,8 @@
                             <div class="model-progress-track" aria-hidden="true">
                                 <div class="model-progress-bar" id="modelProgressBar"></div>
                             </div>
-                            <span class="model-error" id="modelErrorMessage">The model could not be loaded. Keep the GLB in the same folder as this HTML file and open the site through a web server.</span>
+                            <span class="model-error" id="modelErrorMessage">The model could not be loaded.</span>
+                            <input id="localModelFile" type="file" accept=".glb,model/gltf-binary" hidden>
                         </div>
                     </div>
                 </div>
@@ -1929,16 +1930,28 @@
         const modelLoadPanel = document.getElementById('modelLoadPanel');
         const modelLoadStatus = document.getElementById('modelLoadStatus');
         const modelProgressBar = document.getElementById('modelProgressBar');
+        const modelErrorMessage = document.getElementById('modelErrorMessage');
+        const localModelFile = document.getElementById('localModelFile');
+        const isLocalFile = window.location.protocol === 'file:';
+        let activeModelObjectUrl = null;
+        let attemptedHostedFallback = false;
+
+        // Browsers block automatic access to neighbouring local files when HTML is opened with file://.
+        // In that case, the same Load button opens a file picker and loads the selected GLB as a Blob URL.
+        if (isLocalFile) {
+            modelLoadStatus.textContent = 'Click to select the supplied eyeglasses.glb file';
+            modelErrorMessage.textContent = 'Select the GLB file from the portfolio folder to continue.';
+        }
 
         // The CSS preview reacts to the pointer before the heavy model is requested.
         setTimeout(() => {
             if (!stage || !object3d) return;
 
-            stage.addEventListener('mousemove', (e) => {
+            stage.addEventListener('mousemove', (event) => {
                 if (stage.classList.contains('model-loaded')) return;
                 const rect = stage.getBoundingClientRect();
-                const rotateX = ((e.clientY - rect.top - (rect.height / 2)) / (rect.height / 2)) * -18 + 8;
-                const rotateY = ((e.clientX - rect.left - (rect.width / 2)) / (rect.width / 2)) * 25 - 40;
+                const rotateX = ((event.clientY - rect.top - (rect.height / 2)) / (rect.height / 2)) * -18 + 8;
+                const rotateY = ((event.clientX - rect.left - (rect.width / 2)) / (rect.width / 2)) * 25 - 40;
                 object3d.style.animation = 'none';
                 object3d.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) rotateZ(0deg)`;
             });
@@ -1950,21 +1963,67 @@
             });
         }, 1500);
 
-        function startLuxuryModelLoad() {
-            if (!modelViewer || modelViewer.getAttribute('src')) return;
-
+        function setLoadingState(message = 'Downloading and preparing the model') {
             loadModelButton.disabled = true;
             loadModelButton.textContent = 'Loading 3D model…';
-            modelLoadStatus.textContent = 'Downloading and preparing the model';
+            modelLoadStatus.textContent = message;
+            modelProgressBar.style.width = '0%';
             modelLoadPanel.classList.add('is-loading');
             modelLoadPanel.classList.remove('has-error');
             modelViewer.classList.add('is-active');
-
-            // Assigning src here is what prevents the 54 MB file from downloading on initial page load.
-            modelViewer.setAttribute('src', modelViewer.dataset.src);
         }
 
-        if (loadModelButton) loadModelButton.addEventListener('click', startLuxuryModelLoad);
+        function loadModelFromUrl(url, message) {
+            if (!modelViewer || !url) return;
+            setLoadingState(message);
+            modelViewer.setAttribute('src', url);
+        }
+
+        function chooseLocalModel() {
+            if (!localModelFile) return;
+            localModelFile.value = '';
+            localModelFile.click();
+        }
+
+        function startLuxuryModelLoad() {
+            if (!modelViewer || modelViewer.getAttribute('src')) return;
+
+            if (isLocalFile) {
+                chooseLocalModel();
+                return;
+            }
+
+            // Hosted sites can fetch eyeglasses.glb automatically from the same folder.
+            loadModelFromUrl(modelViewer.dataset.src, 'Downloading and preparing the model');
+        }
+
+        if (loadModelButton) {
+            loadModelButton.addEventListener('click', () => {
+                if (modelLoadPanel.classList.contains('has-error') && !isLocalFile) {
+                    // On hosted sites, a retry first tries the expected same-folder file again.
+                    modelViewer.removeAttribute('src');
+                }
+                startLuxuryModelLoad();
+            });
+        }
+
+        if (localModelFile) {
+            localModelFile.addEventListener('change', () => {
+                const file = localModelFile.files && localModelFile.files[0];
+                if (!file) return;
+
+                if (!file.name.toLowerCase().endsWith('.glb')) {
+                    modelLoadPanel.classList.add('has-error');
+                    modelErrorMessage.textContent = 'Please select a .glb model file.';
+                    modelLoadStatus.textContent = 'Unsupported file selected';
+                    return;
+                }
+
+                if (activeModelObjectUrl) URL.revokeObjectURL(activeModelObjectUrl);
+                activeModelObjectUrl = URL.createObjectURL(file);
+                loadModelFromUrl(activeModelObjectUrl, `Opening ${file.name}`);
+            });
+        }
 
         if (modelViewer) {
             modelViewer.addEventListener('progress', (event) => {
@@ -1984,14 +2043,38 @@
 
             modelViewer.addEventListener('error', () => {
                 loadModelButton.disabled = false;
-                loadModelButton.textContent = 'Retry loading 3D';
-                modelLoadStatus.textContent = 'Model loading failed';
                 modelLoadPanel.classList.remove('is-loading');
                 modelLoadPanel.classList.add('has-error');
                 modelViewer.removeAttribute('src');
                 modelViewer.classList.remove('is-active', 'is-ready');
+                modelProgressBar.style.width = '0%';
+
+                if (isLocalFile) {
+                    loadModelButton.textContent = 'Select GLB file again';
+                    modelLoadStatus.textContent = 'The selected model could not be opened';
+                    modelErrorMessage.textContent = 'Choose the supplied eyeglasses.glb file from the same portfolio folder.';
+                    return;
+                }
+
+                // A hosted deployment may have renamed or omitted the 54 MB asset.
+                // After one normal retry, allow the visitor/developer to select the file manually.
+                if (!attemptedHostedFallback) {
+                    attemptedHostedFallback = true;
+                    loadModelButton.textContent = 'Retry loading 3D';
+                    modelLoadStatus.textContent = 'Could not find eyeglasses.glb beside this HTML file';
+                    modelErrorMessage.textContent = 'Upload eyeglasses.glb into the same published folder as this HTML file.';
+                } else {
+                    loadModelButton.textContent = 'Choose GLB manually';
+                    modelLoadStatus.textContent = 'Automatic loading failed';
+                    modelErrorMessage.textContent = 'Use the button to select the local GLB file.';
+                    loadModelButton.onclick = chooseLocalModel;
+                }
             });
         }
+
+        window.addEventListener('beforeunload', () => {
+            if (activeModelObjectUrl) URL.revokeObjectURL(activeModelObjectUrl);
+        });
     </script>
 </body>
 </html>
