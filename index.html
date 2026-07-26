@@ -10416,11 +10416,27 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 <div class="lens-scroll-area">
 <h3 class="modal-body-title" id="modalTargetTitle">INTELLIGENT GLASSES</h3>
 <div class="modal-title-divider"></div>
-<div class="modal-side-spec">
-<div class="modal-spec-block">
+<div class="project-overview-layout">
+<div class="modal-spec-block modal-spec-description">
 <h4>Description</h4>
 <p id="modalTargetDesc">Premium visual campaign layout asset mapping out tech glasses features side by side.</p>
 </div>
+<aside class="project-snapshot" aria-label="Project snapshot">
+<div class="project-fact">
+<span class="project-fact-label">Format</span>
+<strong class="project-fact-value" id="modalProjectFormat">Image series</strong>
+</div>
+<div class="project-fact">
+<span class="project-fact-label">View</span>
+<strong class="project-fact-value" id="modalProjectProgress">01 / 05</strong>
+</div>
+<div class="project-fact">
+<span class="project-fact-label">Focus</span>
+<strong class="project-fact-value" id="modalProjectFocus">Feature clarity</strong>
+</div>
+</aside>
+</div>
+<div class="modal-side-spec modal-detail-grid">
 <div class="modal-spec-block">
 <h4>Procedure</h4>
 <p id="modalTargetProc">Engineered clean vector micro-grids with adaptive lens transparency scales.</p>
@@ -10899,6 +10915,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 
             totalLensSlides = slideCount;
             activeLensSlide = (activeLensSlide + direction + slideCount) % slideCount;
+            updateShowcaseSnapshotProgress();
             wrapper.classList.add('is-sliding');
             wrapper.style.transform = `translate3d(-${activeLensSlide * 100}%, 0, 0)`;
             hydrateLensMediaAroundActiveSlide();
@@ -10910,17 +10927,47 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             }, reduceShowcaseMotion ? 0 : 680);
         }
 
-        function populateShowcaseContent(title, desc, procedure, purpose, instaLink) {
+        const showcaseProjectFacts = {
+            default: { format: 'Image series', focus: 'Feature clarity' },
+            tinted: { format: 'Motion + stills', focus: 'Tint & finish' },
+            doffy: { format: 'Motion study', focus: 'Silhouette' },
+            butty: { format: 'Motion + stills', focus: 'Visual impact' },
+            clip: { format: 'Reel + detail', focus: 'Precision' },
+            pink: { format: 'Image series', focus: 'Colour direction' },
+            gold: { format: 'Image series', focus: 'Premium styling' },
+            circle: { format: 'Motion study', focus: 'Form & balance' },
+            multi: { format: 'Campaign set', focus: 'System consistency' },
+            hand: { format: 'Video study', focus: 'Product in use' },
+            aura: { format: 'Hero visual', focus: 'Atmosphere' },
+            cat: { format: 'Image carousel', focus: 'Angle study' }
+        };
+
+        function updateShowcaseSnapshotProgress() {
+            const progressTarget = document.getElementById('modalProjectProgress');
+            const wrapper = document.getElementById('lensSliderWrapper');
+            const count = wrapper ? wrapper.querySelectorAll('.lens-slider-slide').length : totalLensSlides;
+            const safeCount = Math.max(1, count || totalLensSlides || 1);
+            if (progressTarget) {
+                progressTarget.textContent = `${String(activeLensSlide + 1).padStart(2, '0')} / ${String(safeCount).padStart(2, '0')}`;
+            }
+        }
+
+        function populateShowcaseContent(title, desc, procedure, purpose, instaLink, contextMode = 'default') {
             const titleTarget = document.getElementById('modalTargetTitle');
             const descTarget = document.getElementById('modalTargetDesc');
             const procTarget = document.getElementById('modalTargetProc');
             const purposeTarget = document.getElementById('modalTargetPurp');
+            const formatTarget = document.getElementById('modalProjectFormat');
+            const focusTarget = document.getElementById('modalProjectFocus');
             const sourceLink = document.getElementById('modalTargetLink');
+            const facts = showcaseProjectFacts[contextMode] || showcaseProjectFacts.default;
 
             if (titleTarget) titleTarget.textContent = title || 'Internship Project';
             if (descTarget) descTarget.textContent = desc || 'Project details are being prepared.';
             if (procTarget) procTarget.textContent = procedure || 'The work process is documented in this portfolio.';
             if (purposeTarget) purposeTarget.textContent = purpose || 'This project demonstrates practical internship experience.';
+            if (formatTarget) formatTarget.textContent = facts.format;
+            if (focusTarget) focusTarget.textContent = facts.focus;
 
             const validLink = typeof instaLink === 'string'
                 && instaLink.trim()
@@ -11032,7 +11079,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             });
             
             // Copy is populated first so project information never waits for media.
-            populateShowcaseContent(title, desc, procedure, purpose, instaLink);
+            populateShowcaseContent(title, desc, procedure, purpose, instaLink, contextMode);
 
             // Content setup matrices
             if (contextMode === 'multi') {
@@ -11123,6 +11170,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 `);
             }
 
+            updateShowcaseSnapshotProgress();
             prepareLensMediaForOnDemandLoading();
             updateLensNavigationState();
             scheduleLensNavigationPosition();
@@ -13635,6 +13683,188 @@ ${message}`;
     max-inline-size: 100% !important;
     white-space: normal !important;
     overflow-wrap: anywhere !important;
+}
+</style>
+
+
+<style id="showcase-right-lens-information-architecture">
+/* Use the right lens as a compact project dashboard. The main description and
+   a concise project snapshot share the widest part of the lens; process and
+   purpose then use a balanced two-column row. */
+#showcaseModal .project-overview-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(105px, .72fr);
+    align-items: stretch;
+    gap: clamp(7px, .65vw, 11px);
+    margin: 0 0 var(--lens-fit-gap);
+    min-width: 0;
+}
+
+#showcaseModal .modal-spec-description {
+    min-width: 0;
+}
+
+#showcaseModal .project-snapshot {
+    min-width: 0;
+    display: grid;
+    grid-template-rows: repeat(3, minmax(0, 1fr));
+    gap: clamp(4px, .34vw, 6px);
+}
+
+#showcaseModal .project-fact {
+    min-width: 0;
+    padding: clamp(5px, .45vw, 8px) clamp(6px, .52vw, 9px);
+    border: 1px solid rgba(var(--lens-theme-accent-rgb), .24);
+    border-radius: clamp(8px, .7vw, 11px);
+    background: rgba(var(--lens-theme-text-rgb), .08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    overflow: hidden;
+}
+
+#showcaseModal .project-fact-label {
+    color: rgb(var(--lens-theme-accent-rgb)) !important;
+    font-size: max(7.6px, calc(var(--lens-fit-label) * .82));
+    line-height: 1;
+    font-weight: 800;
+    letter-spacing: .85px;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+#showcaseModal .project-fact-value {
+    min-width: 0;
+    color: rgb(var(--lens-theme-text-rgb)) !important;
+    font-size: max(8.5px, calc(var(--lens-fit-body) * .88));
+    line-height: 1.14;
+    font-weight: 750;
+    overflow-wrap: anywhere;
+}
+
+#showcaseModal .modal-detail-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--lens-fit-gap) clamp(8px, .7vw, 12px) !important;
+}
+
+#showcaseModal .modal-detail-grid .modal-spec-block {
+    min-width: 0;
+}
+
+/* The more sculpted frames have narrower inscribed rectangles. Their snapshot
+   becomes a shallow three-part rail instead of a side column. */
+#showcaseModal.shape-third-slot .project-overview-layout,
+#showcaseModal.shape-fourth-slot .project-overview-layout,
+#showcaseModal.shape-fifth-slot .project-overview-layout,
+#showcaseModal.shape-sixth-slot .project-overview-layout,
+#showcaseModal.shape-seventh-slot .project-overview-layout,
+#showcaseModal.shape-eighth-slot .project-overview-layout,
+#showcaseModal.shape-eleventh-slot .project-overview-layout,
+#showcaseModal.shape-twelfth-slot .project-overview-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: max(4px, calc(var(--lens-fit-gap) * .72));
+}
+
+#showcaseModal.shape-third-slot .project-snapshot,
+#showcaseModal.shape-fourth-slot .project-snapshot,
+#showcaseModal.shape-fifth-slot .project-snapshot,
+#showcaseModal.shape-sixth-slot .project-snapshot,
+#showcaseModal.shape-seventh-slot .project-snapshot,
+#showcaseModal.shape-eighth-slot .project-snapshot,
+#showcaseModal.shape-eleventh-slot .project-snapshot,
+#showcaseModal.shape-twelfth-slot .project-snapshot {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto;
+    gap: 4px;
+}
+
+#showcaseModal.shape-third-slot .project-fact,
+#showcaseModal.shape-fourth-slot .project-fact,
+#showcaseModal.shape-fifth-slot .project-fact,
+#showcaseModal.shape-sixth-slot .project-fact,
+#showcaseModal.shape-seventh-slot .project-fact,
+#showcaseModal.shape-eighth-slot .project-fact,
+#showcaseModal.shape-eleventh-slot .project-fact,
+#showcaseModal.shape-twelfth-slot .project-fact {
+    padding: 4px 5px;
+    border-radius: 7px;
+}
+
+#showcaseModal.shape-third-slot .project-fact-label,
+#showcaseModal.shape-fourth-slot .project-fact-label,
+#showcaseModal.shape-fifth-slot .project-fact-label,
+#showcaseModal.shape-sixth-slot .project-fact-label,
+#showcaseModal.shape-seventh-slot .project-fact-label,
+#showcaseModal.shape-eighth-slot .project-fact-label,
+#showcaseModal.shape-eleventh-slot .project-fact-label,
+#showcaseModal.shape-twelfth-slot .project-fact-label {
+    font-size: max(6.7px, calc(var(--lens-fit-label) * .72));
+    letter-spacing: .55px;
+}
+
+#showcaseModal.shape-third-slot .project-fact-value,
+#showcaseModal.shape-fourth-slot .project-fact-value,
+#showcaseModal.shape-fifth-slot .project-fact-value,
+#showcaseModal.shape-sixth-slot .project-fact-value,
+#showcaseModal.shape-seventh-slot .project-fact-value,
+#showcaseModal.shape-eighth-slot .project-fact-value,
+#showcaseModal.shape-eleventh-slot .project-fact-value,
+#showcaseModal.shape-twelfth-slot .project-fact-value {
+    font-size: max(7.2px, calc(var(--lens-fit-body) * .72));
+    line-height: 1.08;
+}
+
+/* The butterfly frame has the smallest safe capsule. Keep its new rail very
+   slim and let the existing measured fitter add scrolling only if necessary. */
+@media (min-width: 1121px) {
+    #showcaseModal.shape-fourth-slot .project-overview-layout {
+        margin-bottom: 4px;
+        gap: 3px;
+    }
+    #showcaseModal.shape-fourth-slot .project-snapshot { gap: 3px; }
+    #showcaseModal.shape-fourth-slot .project-fact {
+        min-height: 28px;
+        padding: 3px 4px;
+        border-color: rgba(236, 211, 92, .34);
+        background: rgba(10, 12, 5, .28);
+    }
+    #showcaseModal.shape-fourth-slot .project-fact-label {
+        color: #ead568 !important;
+        font-size: 6.2px;
+    }
+    #showcaseModal.shape-fourth-slot .project-fact-value {
+        color: rgba(255,255,239,.9) !important;
+        font-size: 7px;
+    }
+    #showcaseModal.shape-fourth-slot .modal-detail-grid {
+        gap: 4px 6px !important;
+    }
+}
+
+@media (max-width: 1120px) {
+    #showcaseModal .project-overview-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 6px;
+    }
+    #showcaseModal .project-snapshot {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-rows: auto;
+        gap: 5px;
+    }
+    #showcaseModal .project-fact {
+        padding: 5px 6px;
+    }
+}
+
+@media (max-width: 620px) {
+    #showcaseModal .modal-detail-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    #showcaseModal .project-fact-label { font-size: 7px; }
+    #showcaseModal .project-fact-value { font-size: 8px; }
 }
 </style>
 
