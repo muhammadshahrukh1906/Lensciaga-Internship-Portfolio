@@ -9590,6 +9590,257 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 }
 </style>
 
+
+<style id="showcase-final-shape-fit-and-media-patch">
+/* Final authoritative popup layer. It intentionally comes last so earlier
+   per-shape experiments cannot override the usable content rectangle. */
+#showcaseModal {
+    --final-safe-top: clamp(42px, 3.2vw, 54px);
+    --final-safe-right: clamp(42px, 3.1vw, 54px);
+    --final-safe-bottom: clamp(38px, 2.9vw, 50px);
+    --final-safe-left: clamp(42px, 3.1vw, 54px);
+}
+
+#showcaseModal .lens-info-right {
+    overflow: hidden !important;
+    contain: layout paint style;
+}
+
+#showcaseModal .lens-content-fit {
+    position: absolute !important;
+    top: var(--final-safe-top) !important;
+    right: var(--final-safe-right) !important;
+    bottom: var(--final-safe-bottom) !important;
+    left: var(--final-safe-left) !important;
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    box-sizing: border-box;
+    display: grid !important;
+    grid-template-rows: minmax(0, 1fr) auto;
+    align-content: stretch;
+    gap: clamp(7px, .65vw, 11px);
+    padding: clamp(10px, .9vw, 15px) !important;
+    overflow: hidden !important;
+}
+
+#showcaseModal .lens-content-fit .lens-scroll-area {
+    min-width: 0;
+    min-height: 0;
+    height: auto !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 1px 8px 2px 1px !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(var(--lens-theme-accent-rgb), .55) transparent;
+}
+
+#showcaseModal .lens-content-fit.allow-scroll .lens-scroll-area {
+    overflow-y: auto !important;
+    scrollbar-gutter: stable;
+}
+
+#showcaseModal .lens-content-fit .lens-scroll-area::-webkit-scrollbar { width: 4px; }
+#showcaseModal .lens-content-fit .lens-scroll-area::-webkit-scrollbar-track { background: transparent; }
+#showcaseModal .lens-content-fit .lens-scroll-area::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: rgba(var(--lens-theme-accent-rgb), .55);
+}
+
+#showcaseModal .lens-content-fit .modal-body-title {
+    margin: 0 0 5px !important;
+    max-width: 100% !important;
+    font-size: var(--lens-fit-title) !important;
+    line-height: 1.04 !important;
+    overflow-wrap: normal !important;
+    word-break: normal !important;
+    hyphens: auto;
+    text-wrap: balance;
+}
+
+#showcaseModal .lens-content-fit .modal-title-divider { margin: 0 0 8px !important; }
+#showcaseModal .lens-content-fit .modal-side-spec { gap: var(--lens-fit-gap) !important; }
+#showcaseModal .lens-content-fit .modal-spec-block { min-width: 0; }
+#showcaseModal .lens-content-fit .modal-spec-block p {
+    font-size: var(--lens-fit-body) !important;
+    line-height: 1.34 !important;
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: auto;
+}
+#showcaseModal .lens-content-fit .modal-spec-block h4 {
+    font-size: var(--lens-fit-label) !important;
+    line-height: 1.15 !important;
+}
+#showcaseModal .lens-content-fit .modal-action-btn {
+    position: relative !important;
+    inset: auto !important;
+    grid-row: 2;
+    width: min(94%, 350px) !important;
+    min-width: 0 !important;
+    min-height: var(--lens-fit-button-height) !important;
+    height: var(--lens-fit-button-height) !important;
+    margin: 0 auto !important;
+    padding: 8px 15px !important;
+    font-size: var(--lens-fit-button) !important;
+    white-space: nowrap;
+}
+
+/* Shape-safe rectangles for the right lens. Values are deliberately inside
+   the visible silhouette, not its rectangular CSS bounding box. */
+@media (min-width: 1121px) {
+    #showcaseModal.shape-second-slot {
+        --final-safe-top: clamp(44px, 3vw, 54px);
+        --final-safe-right: clamp(54px, 3.8vw, 68px);
+        --final-safe-bottom: clamp(35px, 2.5vw, 44px);
+        --final-safe-left: clamp(62px, 4.25vw, 78px);
+    }
+    #showcaseModal.shape-third-slot {
+        --final-safe-top: clamp(68px, 4.6vw, 82px);
+        --final-safe-right: clamp(46px, 3.2vw, 58px);
+        --final-safe-bottom: clamp(34px, 2.4vw, 46px);
+        --final-safe-left: clamp(88px, 5.9vw, 104px);
+    }
+    #showcaseModal.shape-fourth-slot {
+        --final-safe-top: clamp(84px, 5.7vw, 104px);
+        --final-safe-right: clamp(39px, 2.75vw, 50px);
+        --final-safe-bottom: clamp(58px, 4vw, 76px);
+        --final-safe-left: clamp(158px, 10.6vw, 184px);
+    }
+    #showcaseModal.shape-fifth-slot {
+        --final-safe-top: clamp(64px, 4.25vw, 78px);
+        --final-safe-right: clamp(67px, 4.5vw, 82px);
+        --final-safe-bottom: clamp(52px, 3.55vw, 68px);
+        --final-safe-left: clamp(67px, 4.5vw, 82px);
+    }
+    #showcaseModal.shape-sixth-slot {
+        --final-safe-top: clamp(62px, 4.1vw, 76px);
+        --final-safe-right: clamp(65px, 4.35vw, 80px);
+        --final-safe-bottom: clamp(50px, 3.4vw, 64px);
+        --final-safe-left: clamp(70px, 4.65vw, 84px);
+    }
+    #showcaseModal.shape-seventh-slot {
+        --final-safe-top: clamp(62px, 4.1vw, 76px);
+        --final-safe-right: clamp(68px, 4.55vw, 83px);
+        --final-safe-bottom: clamp(52px, 3.55vw, 67px);
+        --final-safe-left: clamp(72px, 4.8vw, 87px);
+    }
+    #showcaseModal.shape-eighth-slot {
+        --final-safe-top: clamp(72px, 4.8vw, 88px);
+        --final-safe-right: clamp(76px, 5.05vw, 92px);
+        --final-safe-bottom: clamp(60px, 4.05vw, 77px);
+        --final-safe-left: clamp(76px, 5.05vw, 92px);
+    }
+    #showcaseModal.shape-eleventh-slot {
+        --final-safe-top: clamp(80px, 5.35vw, 98px);
+        --final-safe-right: clamp(80px, 5.35vw, 98px);
+        --final-safe-bottom: clamp(66px, 4.45vw, 84px);
+        --final-safe-left: clamp(80px, 5.35vw, 98px);
+    }
+    #showcaseModal.shape-twelfth-slot {
+        --final-safe-top: clamp(73px, 4.9vw, 90px);
+        --final-safe-right: clamp(56px, 3.8vw, 70px);
+        --final-safe-bottom: clamp(39px, 2.7vw, 50px);
+        --final-safe-left: clamp(82px, 5.5vw, 99px);
+    }
+}
+
+/* Media should remain visible rather than being cropped out of unusual lenses. */
+#showcaseModal .lens-slider-slide {
+    position: relative;
+    background:
+        radial-gradient(circle at 50% 42%, rgba(255,255,255,.13), transparent 58%),
+        rgba(8,10,14,.72);
+}
+#showcaseModal .lens-slider-slide img,
+#showcaseModal .lens-slider-slide video {
+    width: 100% !important;
+    height: 100% !important;
+    object-position: center !important;
+}
+#showcaseModal .lens-slider-slide img { object-fit: contain !important; }
+#showcaseModal .lens-slider-slide video { object-fit: cover !important; }
+
+#showcaseModal .lens-slider-slide.is-media-loading::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 7;
+    width: 30px;
+    height: 30px;
+    margin: -15px 0 0 -15px;
+    border: 2px solid rgba(255,255,255,.22);
+    border-top-color: rgba(255,255,255,.9);
+    border-radius: 50%;
+    animation: lensMediaSpin .75s linear infinite;
+    pointer-events: none;
+}
+#showcaseModal .lens-slider-slide.is-media-ready::before,
+#showcaseModal .lens-slider-slide.is-media-error::before { display: none; }
+#showcaseModal .lens-slider-slide.is-media-error::after {
+    content: 'Project preview unavailable';
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    z-index: 8;
+    transform: translateX(-50%);
+    width: max-content;
+    max-width: calc(100% - 36px);
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.62);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .75px;
+    text-transform: uppercase;
+    text-align: center;
+    pointer-events: none;
+}
+@keyframes lensMediaSpin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1120px) {
+    #showcaseModal {
+        --final-safe-top: 24px;
+        --final-safe-right: 22px;
+        --final-safe-bottom: 22px;
+        --final-safe-left: 22px;
+    }
+    #showcaseModal .lens-content-fit {
+        position: relative !important;
+        inset: auto !important;
+        width: 100% !important;
+        min-height: min(62vh, 470px) !important;
+        padding: clamp(22px, 4vw, 32px) !important;
+    }
+}
+
+@media (max-width: 768px) {
+    #showcaseModal .lens-content-fit {
+        min-height: 0 !important;
+        display: flex !important;
+        flex-direction: column;
+        overflow: visible !important;
+    }
+    #showcaseModal .lens-content-fit .lens-scroll-area,
+    #showcaseModal .lens-content-fit.allow-scroll .lens-scroll-area {
+        overflow: visible !important;
+        padding-right: 0 !important;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #showcaseModal .lens-slider-slide.is-media-loading::before { animation: none; }
+}
+</style>
+
 </head>
 <body>
 <!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
@@ -10790,8 +11041,11 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 for(let i = 1; i <= 13; i++) { multiHTML += `<div class="lens-slider-slide"><img loading="lazy" decoding="async" src="multi${i}.png"></div>`; }
                 renderLensMarkup(wrapper, multiHTML);
             } else if (contextMode === 'hand') {
-                totalLensSlides = 1; prevBtn.classList.remove('visible-btn'); nextBtn.classList.remove('visible-btn');
-                renderLensMarkup(wrapper, `<div class="lens-slider-slide"><video src="handmain.mp4" autoplay loop muted playsinline preload="metadata"></video></div>`);
+                totalLensSlides = 2;
+                renderLensMarkup(wrapper, `
+                    <div class="lens-slider-slide"><video src="handmain.mp4" autoplay loop muted playsinline preload="metadata"></video></div>
+                    <div class="lens-slider-slide"><img loading="lazy" decoding="async" src="hand1.png"></div>
+                `);
             } else if (contextMode === 'aura') {
                 totalLensSlides = 1; prevBtn.classList.remove('visible-btn'); nextBtn.classList.remove('visible-btn');
                 renderLensMarkup(wrapper, `<div class="lens-slider-slide"><img loading="lazy" decoding="async" src="auramain.png"></div>`);
@@ -10843,8 +11097,9 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     <div class="lens-slider-slide"><img loading="lazy" decoding="async" src="pink.png"></div>
                 `);
             } else if (contextMode === 'gold') {
-                totalLensSlides = 3;
+                totalLensSlides = 4;
                 renderLensMarkup(wrapper, `
+                    <div class="lens-slider-slide"><img loading="lazy" decoding="async" src="gold1.png"></div>
                     <div class="lens-slider-slide"><img loading="lazy" decoding="async" src="gold2.png"></div>
                     <div class="lens-slider-slide"><img loading="lazy" decoding="async" src="gold3.png"></div>
                     <div class="lens-slider-slide"><img loading="lazy" decoding="async" src="gold4.png"></div>
@@ -11846,7 +12101,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             butty: { type: 'video', src: 'buttymain.mp4', poster: 'butty1.png' },
             clip: { type: 'video', src: 'clipmain.mp4', poster: 'clip1.png' },
             pink: { type: 'image', src: 'pink1.png', poster: 'pink1.png' },
-            gold: { type: 'image', src: 'gold2.png', poster: 'gold2.png' },
+            gold: { type: 'image', src: 'gold1.png', poster: 'gold1.png' },
             circle: { type: 'video', src: 'circlemain.mp4', poster: 'circle1.png' },
             multi: { type: 'video', src: 'multimain.mp4', poster: 'multi7.png' },
             hand: { type: 'video', src: 'handmain.mp4', poster: 'hand1.png' },
@@ -12977,6 +13232,298 @@ ${message}`;
         showStatus('Email copied.');
         window.setTimeout(() => { copyButton.textContent = 'Copy email'; }, 1800);
     });
+})();
+</script>
+
+
+<script id="showcase-final-fit-and-media-script">
+(() => {
+    const modal = document.getElementById('showcaseModal');
+    const wrapper = document.getElementById('lensSliderWrapper');
+    if (!modal || !wrapper) return;
+
+    const originalRenderLensMarkup = renderLensMarkup;
+    const originalHydrateLensMedia = hydrateLensMediaAroundActiveSlide;
+
+    function projectTitle() {
+        return document.getElementById('modalTargetTitle')?.textContent?.trim() || 'Project preview';
+    }
+
+    function escapeXml(value) {
+        return String(value).replace(/[<>&'\"]/g, char => ({
+            '<': '&lt;', '>': '&gt;', '&': '&amp;', "'": '&apos;', '"': '&quot;'
+        }[char]));
+    }
+
+    function inlinePlaceholder(label) {
+        const text = escapeXml(label).slice(0, 54);
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="850" viewBox="0 0 1200 850">
+            <defs>
+                <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                    <stop offset="0" stop-color="#15151a"/>
+                    <stop offset=".58" stop-color="#302942"/>
+                    <stop offset="1" stop-color="#121216"/>
+                </linearGradient>
+            </defs>
+            <rect width="1200" height="850" fill="url(#g)"/>
+            <circle cx="1010" cy="145" r="210" fill="#8247ff" opacity=".18"/>
+            <circle cx="180" cy="760" r="245" fill="#d2a843" opacity=".10"/>
+            <rect x="80" y="80" width="1040" height="690" rx="62" fill="none" stroke="#d2a843" stroke-opacity=".35" stroke-width="3"/>
+            <text x="600" y="405" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="46" font-weight="700">${text}</text>
+            <text x="600" y="468" text-anchor="middle" fill="#cfc5e9" font-family="Arial, sans-serif" font-size="24" letter-spacing="5">PROJECT PREVIEW</text>
+        </svg>`;
+        return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+    }
+
+    function unique(values) {
+        return [...new Set(values.filter(Boolean))];
+    }
+
+    function sourceCandidates(source, kind) {
+        if (!source || source.startsWith('data:') || source.startsWith('blob:')) return [source].filter(Boolean);
+        const clean = String(source).trim();
+        const match = clean.match(/^(.*?)(\.[a-zA-Z0-9]+)([?#].*)?$/);
+        if (!match) return unique([clean, encodeURI(clean)]);
+        const [, stem, extension, suffix = ''] = match;
+        const lowerExt = extension.toLowerCase();
+        const capitalStem = stem.replace(/(^|\/)([a-z])/, (_, slash, letter) => slash + letter.toUpperCase());
+        const mainStem = stem.replace(/main$/i, matched => matched === 'main' ? 'Main' : 'main');
+        const candidates = [clean, encodeURI(clean), `${stem}${extension.toUpperCase()}${suffix}`];
+        if (capitalStem !== stem) candidates.push(`${capitalStem}${extension}${suffix}`);
+        if (mainStem !== stem) candidates.push(`${mainStem}${extension}${suffix}`);
+        if (kind === 'image') {
+            ['.png', '.jpg', '.jpeg', '.webp'].forEach(ext => {
+                if (ext !== lowerExt) candidates.push(`${stem}${ext}${suffix}`);
+            });
+        } else {
+            ['.mp4', '.webm'].forEach(ext => {
+                if (ext !== lowerExt) candidates.push(`${stem}${ext}${suffix}`);
+            });
+        }
+        return unique(candidates);
+    }
+
+    function inferVideoPoster(source) {
+        const filename = String(source || '').split('/').pop().toLowerCase();
+        const posters = {
+            'tintedmain.mp4': 'tinted.png',
+            'doffymain.mp4': 'doffy1.png',
+            'buttymain.mp4': 'butty1.png',
+            'clipmain.mp4': 'clip1.png',
+            'circlemain.mp4': 'circle1.png',
+            'multimain.mp4': 'multi7.png',
+            'handmain.mp4': 'hand1.png'
+        };
+        return posters[filename] || '';
+    }
+
+    function markReady(media, slide) {
+        if (!slide || !media) return;
+        const ready = media.tagName === 'VIDEO' ? media.readyState >= 2 : media.complete && media.naturalWidth > 0;
+        if (!ready) return;
+        slide.classList.remove('is-media-loading', 'is-media-error');
+        slide.classList.add('is-media-ready');
+    }
+
+    function configureSlide(slide, index) {
+        const media = slide.querySelector('img, video');
+        if (!media) return;
+        const title = projectTitle();
+        slide.classList.add('is-media-loading');
+        slide.classList.remove('is-media-ready', 'is-media-error');
+        media.setAttribute('aria-label', `${title} preview ${index + 1}`);
+        if (media.tagName === 'IMG') {
+            media.alt = `${title} project preview ${index + 1}`;
+        } else {
+            const source = media.dataset.src || media.getAttribute('src') || '';
+            const poster = inferVideoPoster(source);
+            if (poster && !media.poster) media.poster = poster;
+            media.muted = true;
+            media.playsInline = true;
+            media.loop = true;
+        }
+        const readyEvent = media.tagName === 'VIDEO' ? 'loadeddata' : 'load';
+        media.addEventListener(readyEvent, () => markReady(media, slide), { once: true });
+        media.addEventListener('canplay', () => markReady(media, slide), { once: true });
+        requestAnimationFrame(() => markReady(media, slide));
+    }
+
+    renderLensMarkup = function patchedRenderLensMarkup(targetWrapper, markup) {
+        originalRenderLensMarkup(targetWrapper, markup);
+        Array.from(targetWrapper.children).forEach(configureSlide);
+    };
+
+    function replaceWithFallbackImage(video, slide, sources, placeholder) {
+        const image = new Image();
+        image.alt = `${projectTitle()} project preview`;
+        image.decoding = 'async';
+        image.loading = 'eager';
+        image.fetchPriority = 'high';
+        video.replaceWith(image);
+        installImageRetries(image, slide, sources, placeholder);
+    }
+
+    function installImageRetries(image, slide, fallbackSources, placeholder) {
+        const original = image.dataset.src || image.getAttribute('src') || '';
+        const candidates = unique([
+            ...sourceCandidates(original, 'image'),
+            ...fallbackSources.flatMap(source => sourceCandidates(source, 'image')),
+            placeholder
+        ]);
+        let cursor = Math.max(0, candidates.indexOf(image.currentSrc || image.src));
+        let finished = false;
+
+        const tryNext = () => {
+            if (finished) return;
+            const next = candidates[cursor++];
+            if (!next) {
+                finished = true;
+                slide.classList.remove('is-media-loading');
+                slide.classList.add('is-media-error');
+                return;
+            }
+            image.dataset.src = next;
+            if (image.getAttribute('src')) image.src = next;
+        };
+
+        image.addEventListener('load', () => {
+            finished = true;
+            image.removeAttribute('data-src');
+            slide.classList.remove('is-media-loading', 'is-media-error');
+            slide.classList.add('is-media-ready');
+        });
+        image.addEventListener('error', tryNext);
+
+        if (image.complete && image.naturalWidth > 0) {
+            finished = true;
+            slide.classList.remove('is-media-loading', 'is-media-error');
+            slide.classList.add('is-media-ready');
+        } else if (image.complete && image.getAttribute('src') && image.naturalWidth === 0) {
+            tryNext();
+        }
+    }
+
+    function installVideoRetries(video, slide, fallbackSources, placeholder) {
+        const original = video.dataset.src || video.getAttribute('src') || '';
+        const candidates = sourceCandidates(original, 'video');
+        let cursor = Math.max(0, candidates.indexOf(video.currentSrc || video.src));
+        let replaced = false;
+
+        const failToPoster = () => {
+            if (replaced) return;
+            const next = candidates[cursor++];
+            if (next) {
+                video.dataset.src = next;
+                if (video.getAttribute('src')) {
+                    video.src = next;
+                    video.load();
+                }
+                return;
+            }
+            replaced = true;
+            const posterSources = unique([
+                video.poster,
+                inferVideoPoster(original),
+                ...fallbackSources,
+                placeholder
+            ]);
+            replaceWithFallbackImage(video, slide, posterSources, placeholder);
+            slide.classList.add('is-fallback-media');
+        };
+
+        video.addEventListener('loadeddata', () => {
+            slide.classList.remove('is-media-loading', 'is-media-error');
+            slide.classList.add('is-media-ready');
+        });
+        video.addEventListener('canplay', () => {
+            slide.classList.remove('is-media-loading', 'is-media-error');
+            slide.classList.add('is-media-ready');
+        });
+        video.addEventListener('error', failToPoster);
+        window.setTimeout(() => {
+            if (!replaced && video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE) failToPoster();
+        }, 0);
+    }
+
+    installLensMediaFallbacks = function patchedInstallLensMediaFallbacks(cardImageSource = '', preferredPoster = '') {
+        const placeholder = inlinePlaceholder(projectTitle());
+        const fallbacks = unique([preferredPoster, cardImageSource]);
+        Array.from(wrapper.children).forEach((slide, index) => {
+            configureSlide(slide, index);
+            const image = slide.querySelector('img');
+            const video = slide.querySelector('video');
+            if (image) installImageRetries(image, slide, fallbacks, placeholder);
+            if (video) {
+                if (!video.poster) video.poster = preferredPoster || cardImageSource || inferVideoPoster(video.dataset.src || video.src) || placeholder;
+                installVideoRetries(video, slide, fallbacks, placeholder);
+            }
+        });
+    };
+
+    hydrateLensMediaAroundActiveSlide = function patchedHydrateLensMediaAroundActiveSlide() {
+        originalHydrateLensMedia();
+        Array.from(wrapper.children).forEach((slide, index) => {
+            const media = slide.querySelector('img, video');
+            if (!media) return;
+            if (index === activeLensSlide) {
+                slide.classList.add('is-media-loading');
+                markReady(media, slide);
+            }
+        });
+    };
+
+    function applyMeasuredScale(scale) {
+        const contextMultiplier = currentShowcaseContext === 'butty' ? .88
+            : currentShowcaseContext === 'doffy' ? .92
+            : currentShowcaseContext === 'cat' ? .91
+            : currentShowcaseContext === 'aura' ? .92
+            : currentShowcaseContext === 'circle' ? .94
+            : 1;
+        const value = scale * contextMultiplier;
+        modal.style.setProperty('--lens-fit-title', `${Math.max(15.5, 24 * value).toFixed(2)}px`);
+        modal.style.setProperty('--lens-fit-body', `${Math.max(9.3, 12.8 * value).toFixed(2)}px`);
+        modal.style.setProperty('--lens-fit-label', `${Math.max(8.2, 10.6 * value).toFixed(2)}px`);
+        modal.style.setProperty('--lens-fit-gap', `${Math.max(4, 7 * value).toFixed(2)}px`);
+        modal.style.setProperty('--lens-fit-button', `${Math.max(8.9, 11.2 * value).toFixed(2)}px`);
+        modal.style.setProperty('--lens-fit-button-height', `${Math.max(35, 43 * value).toFixed(2)}px`);
+    }
+
+    fitLensContent = function measuredFitLensContent() {
+        const fit = document.getElementById('lensContentFit');
+        const scrollArea = fit?.querySelector('.lens-scroll-area');
+        if (!modal.classList.contains('active') || !fit || !scrollArea) return;
+
+        fit.classList.remove('allow-scroll');
+        scrollArea.style.overflowY = 'hidden';
+
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            applyMeasuredScale(1);
+            return;
+        }
+
+        const minimum = currentShowcaseContext === 'butty' ? .72 : .76;
+        let scale = 1;
+        applyMeasuredScale(scale);
+
+        // Two measurements per step are inexpensive here because this runs only
+        // when a popup settles or the viewport changes.
+        while (scale > minimum && scrollArea.scrollHeight > scrollArea.clientHeight + 2) {
+            scale = Math.max(minimum, scale - .045);
+            applyMeasuredScale(scale);
+        }
+
+        if (scrollArea.scrollHeight > scrollArea.clientHeight + 2) {
+            fit.classList.add('allow-scroll');
+            scrollArea.style.overflowY = 'auto';
+        }
+        scrollArea.scrollTop = 0;
+    };
+
+    // Re-fit when web fonts finish loading and whenever the active media settles.
+    document.fonts?.ready?.then(() => scheduleLensFitAndTheme());
+    wrapper.addEventListener('load', () => scheduleLensFitAndTheme(), true);
+    wrapper.addEventListener('loadeddata', () => scheduleLensFitAndTheme(), true);
+    wrapper.addEventListener('error', () => scheduleLensFitAndTheme(), true);
 })();
 </script>
 
