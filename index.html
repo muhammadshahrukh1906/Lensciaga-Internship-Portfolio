@@ -9841,6 +9841,90 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 }
 </style>
 
+
+
+<!-- LEFT LENS ADAPTIVE MEDIA FILL -->
+<style id="left-lens-adaptive-media-fill">
+    /* Fill the complete lens without forcing every image into an aggressive crop.
+       Images close to the lens aspect ratio use cover; very wide/tall images keep
+       their full composition over a soft, image-derived full-bleed backdrop. */
+    #showcaseModal .lens-slider-slide {
+        overflow: hidden !important;
+        isolation: isolate;
+        background-color: rgba(12, 13, 17, 0.88) !important;
+    }
+
+    #showcaseModal .lens-slider-slide .lens-media-backdrop {
+        position: absolute;
+        inset: -10%;
+        z-index: 0;
+        display: block;
+        pointer-events: none;
+        background-repeat: no-repeat;
+        background-position: var(--adaptive-media-position, 50% 50%);
+        background-size: cover;
+        opacity: 0;
+        filter: blur(16px) saturate(0.92) brightness(0.72);
+        transform: scale(1.12);
+        transition: opacity 260ms ease;
+    }
+
+    #showcaseModal .lens-slider-slide.has-adaptive-backdrop .lens-media-backdrop {
+        opacity: 0.88;
+    }
+
+    #showcaseModal .lens-slider-slide.media-cover-fill .lens-media-backdrop {
+        opacity: 0.18;
+        filter: blur(10px) saturate(0.92) brightness(0.72);
+    }
+
+    #showcaseModal .lens-slider-slide > img,
+    #showcaseModal .lens-slider-slide > video {
+        position: relative !important;
+        z-index: 1 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-position: var(--adaptive-media-position, 50% 50%) !important;
+        background: transparent !important;
+    }
+
+    /* Moderate aspect-ratio differences: fill edge-to-edge with restrained crop. */
+    #showcaseModal .lens-slider-slide.media-cover-fill > img,
+    #showcaseModal .lens-slider-slide.media-cover-fill > video {
+        object-fit: cover !important;
+    }
+
+    /* Extreme aspect-ratio differences: preserve the whole subject while the
+       derived backdrop fills the lens, avoiding empty/grey bars. */
+    #showcaseModal .lens-slider-slide.media-soft-fill > img {
+        object-fit: contain !important;
+        filter: drop-shadow(0 10px 22px rgba(0, 0, 0, 0.18));
+    }
+
+    #showcaseModal .lens-slider-slide.media-soft-fill > video {
+        object-fit: cover !important;
+    }
+
+    /* The existing instant poster already fills the frame. Keep it visible beneath
+       pending media and blend it with the adaptive backdrop rather than exposing bars. */
+    #showcaseModal .lens-slider-slide.has-instant-poster {
+        background-size: cover !important;
+        background-position: var(--adaptive-media-position, 50% 50%) !important;
+    }
+
+    @media (max-width: 768px) {
+        #showcaseModal .lens-slider-slide .lens-media-backdrop {
+            filter: blur(12px) saturate(0.9) brightness(0.74);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #showcaseModal .lens-slider-slide .lens-media-backdrop {
+            transition: none;
+        }
+    }
+</style>
+
 </head>
 <body>
 <!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
@@ -13867,6 +13951,142 @@ ${message}`;
     #showcaseModal .project-fact-value { font-size: 8px; }
 }
 </style>
+
+
+
+<script id="left-lens-adaptive-media-fill-script">
+(() => {
+    'use strict';
+
+    const COVER_VISIBLE_FRACTION = 0.72;
+    let fitFrame = 0;
+
+    function mediaSource(media) {
+        if (!media) return '';
+        if (media.tagName === 'VIDEO') {
+            return media.poster || media.dataset.poster || '';
+        }
+        return media.currentSrc || media.getAttribute('src') || media.dataset.src || '';
+    }
+
+    function ensureBackdrop(slide, media) {
+        if (!slide) return null;
+        let backdrop = slide.querySelector(':scope > .lens-media-backdrop');
+        if (!backdrop) {
+            backdrop = document.createElement('span');
+            backdrop.className = 'lens-media-backdrop';
+            backdrop.setAttribute('aria-hidden', 'true');
+            slide.insertBefore(backdrop, slide.firstChild);
+        }
+
+        const source = mediaSource(media);
+        if (source) {
+            backdrop.style.backgroundImage = `url(${JSON.stringify(source)})`;
+            slide.classList.add('has-adaptive-backdrop');
+        }
+        return backdrop;
+    }
+
+    function applyAdaptiveFit(media) {
+        const slide = media?.closest?.('.lens-slider-slide');
+        if (!slide) return;
+        ensureBackdrop(slide, media);
+
+        let sourceWidth = 0;
+        let sourceHeight = 0;
+        if (media.tagName === 'VIDEO') {
+            sourceWidth = media.videoWidth;
+            sourceHeight = media.videoHeight;
+        } else {
+            sourceWidth = media.naturalWidth;
+            sourceHeight = media.naturalHeight;
+        }
+
+        const rect = slide.getBoundingClientRect();
+        if (!sourceWidth || !sourceHeight || rect.width < 2 || rect.height < 2) return;
+
+        const sourceRatio = sourceWidth / sourceHeight;
+        const lensRatio = rect.width / rect.height;
+        const visibleFraction = Math.min(sourceRatio / lensRatio, lensRatio / sourceRatio);
+        const softFill = media.tagName === 'IMG' && visibleFraction < COVER_VISIBLE_FRACTION;
+
+        slide.classList.toggle('media-soft-fill', softFill);
+        slide.classList.toggle('media-cover-fill', !softFill);
+        slide.dataset.visibleFraction = visibleFraction.toFixed(3);
+    }
+
+    function bindMedia(media) {
+        if (!media || media.dataset.adaptiveFillBound === 'true') return;
+        media.dataset.adaptiveFillBound = 'true';
+        const slide = media.closest('.lens-slider-slide');
+        ensureBackdrop(slide, media);
+
+        const refresh = () => {
+            ensureBackdrop(slide, media);
+            requestAnimationFrame(() => applyAdaptiveFit(media));
+        };
+
+        if (media.tagName === 'VIDEO') {
+            media.addEventListener('loadedmetadata', refresh);
+            media.addEventListener('loadeddata', refresh);
+        } else {
+            media.addEventListener('load', refresh);
+            if (media.complete && media.naturalWidth) refresh();
+        }
+        media.addEventListener('error', () => slide?.classList.remove('media-cover-fill', 'media-soft-fill'));
+    }
+
+    function enhanceSlides(root = document) {
+        root.querySelectorAll?.('#showcaseModal .lens-slider-slide').forEach(slide => {
+            const media = slide.querySelector(':scope > img, :scope > video');
+            if (!media) return;
+            bindMedia(media);
+            ensureBackdrop(slide, media);
+            applyAdaptiveFit(media);
+        });
+    }
+
+    function scheduleAllFits() {
+        cancelAnimationFrame(fitFrame);
+        fitFrame = requestAnimationFrame(() => enhanceSlides(document));
+    }
+
+    function start() {
+        const wrapper = document.getElementById('lensSliderWrapper');
+        if (!wrapper) return;
+
+        enhanceSlides(wrapper);
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(mutation => {
+                mutation.addedNodes.forEach(node => {
+                    if (node.nodeType !== 1) return;
+                    if (node.matches?.('.lens-slider-slide, img, video')) enhanceSlides(wrapper);
+                    else if (node.querySelector?.('.lens-slider-slide, img, video')) enhanceSlides(wrapper);
+                });
+                if (mutation.type === 'attributes') enhanceSlides(wrapper);
+            });
+        });
+        observer.observe(wrapper, {
+            childList: true,
+            subtree: true,
+            attributes: true,
+            attributeFilter: ['src', 'poster', 'data-src']
+        });
+
+        if ('ResizeObserver' in window) {
+            const lens = document.getElementById('leftLensAnchor');
+            if (lens) new ResizeObserver(scheduleAllFits).observe(lens);
+        }
+        window.addEventListener('resize', scheduleAllFits, { passive: true });
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') scheduleAllFits();
+        });
+    }
+
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });
+    else start();
+})();
+</script>
 
 </body>
 </html>
