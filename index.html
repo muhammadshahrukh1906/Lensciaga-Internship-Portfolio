@@ -8819,6 +8819,167 @@
 }
 </style>
 
+
+<style id="showcase-content-priority-optimization">
+    /* Reliable right-lens content layer shared by every project shape. */
+    #showcaseModal .lens-info-right {
+        z-index: 18 !important;
+        pointer-events: auto !important;
+        contain: layout paint style;
+    }
+
+    #showcaseModal .lens-content-fit {
+        top: clamp(26px, 3.2vw, 48px) !important;
+        right: clamp(25px, 3vw, 46px) !important;
+        bottom: clamp(24px, 2.8vw, 42px) !important;
+        left: clamp(25px, 3vw, 46px) !important;
+        padding: clamp(12px, 1.25vw, 18px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.13);
+        border-radius: clamp(20px, 2.2vw, 30px);
+        background: rgba(7, 9, 13, 0.28);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,0.10);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        filter: none !important;
+        pointer-events: auto !important;
+    }
+
+    #showcaseModal.active .lens-info-right > .lens-content-fit,
+    #showcaseModal.is-content-prep .lens-info-right > .lens-content-fit,
+    #showcaseModal.is-content-synced .lens-info-right > .lens-content-fit,
+    #showcaseModal.is-handoff .lens-info-right > .lens-content-fit {
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+        filter: none !important;
+        pointer-events: auto !important;
+    }
+
+    #showcaseModal .lens-content-fit .lens-scroll-area,
+    #showcaseModal .lens-content-fit.allow-scroll .lens-scroll-area {
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        overscroll-behavior: contain;
+        touch-action: pan-y;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-gutter: stable;
+        padding-right: 8px !important;
+    }
+
+    #showcaseModal .lens-content-fit .modal-body-title,
+    #showcaseModal .lens-content-fit .modal-title-divider,
+    #showcaseModal .lens-content-fit .modal-spec-block,
+    #showcaseModal .lens-content-fit .modal-action-btn {
+        opacity: 1 !important;
+        visibility: visible !important;
+        filter: none !important;
+        transform: none !important;
+    }
+
+    #showcaseModal .lens-content-fit .modal-body-title {
+        font-size: clamp(18px, 1.7vw, 24px) !important;
+        line-height: 1.06 !important;
+    }
+
+    #showcaseModal .lens-content-fit .modal-spec-block p {
+        font-size: clamp(10.5px, 0.92vw, 13px) !important;
+        line-height: 1.36 !important;
+    }
+
+    #showcaseModal .lens-content-fit .modal-spec-block h4 {
+        font-size: clamp(8.8px, 0.72vw, 10.5px) !important;
+    }
+
+    #showcaseModal .lens-content-fit .modal-action-btn {
+        flex: 0 0 42px !important;
+        min-height: 42px !important;
+        pointer-events: auto !important;
+        touch-action: manipulation;
+    }
+
+    #showcaseModal .modal-action-btn[hidden],
+    #showcaseModal .modal-action-btn.is-unavailable {
+        display: none !important;
+    }
+
+    #showcaseModal .lens-slider-slide.is-fallback-media::after {
+        content: 'Preview image';
+        position: absolute;
+        right: 14px;
+        bottom: 14px;
+        z-index: 5;
+        padding: 6px 9px;
+        border-radius: 999px;
+        background: rgba(0,0,0,0.58);
+        color: #fff;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
+        pointer-events: none;
+    }
+
+    html.performance-lite #showcaseModal .lens-content-fit {
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        background: rgba(7, 9, 13, 0.48);
+    }
+
+    @media (max-width: 1120px) {
+        #showcaseModal .lens-content-fit {
+            top: 24px !important;
+            right: 22px !important;
+            bottom: 22px !important;
+            left: 22px !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        #showcaseModal .lens-info-right {
+            contain: layout style;
+            overflow: hidden !important;
+        }
+
+        #showcaseModal .lens-content-fit {
+            position: relative !important;
+            inset: auto !important;
+            min-height: 0 !important;
+            max-height: none !important;
+            padding: 26px 20px 22px !important;
+            border-radius: 26px;
+            background: rgba(7, 9, 13, 0.32);
+            overflow: visible !important;
+        }
+
+        #showcaseModal .lens-content-fit .lens-scroll-area,
+        #showcaseModal .lens-content-fit.allow-scroll .lens-scroll-area {
+            overflow: visible !important;
+            padding-right: 0 !important;
+            margin-bottom: 16px !important;
+        }
+
+        #showcaseModal .lens-content-fit .modal-body-title {
+            font-size: clamp(22px, 7vw, 29px) !important;
+        }
+
+        #showcaseModal .lens-content-fit .modal-spec-block p {
+            font-size: 13px !important;
+            line-height: 1.48 !important;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        #showcaseModal .lens-content-fit,
+        #showcaseModal .lens-content-fit * {
+            transition-duration: 1ms !important;
+            animation-duration: 1ms !important;
+        }
+    }
+</style>
+
 </head>
 <body>
 <!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
@@ -9325,7 +9486,7 @@
         // The first desktop row (or the first mobile row) is requested immediately.
         // These are the cards a visitor can reach first, so their imagery wins network
         // priority over decorative or below-the-fold media.
-        const urgentThumbnailCount = compactShowcaseMedia.matches ? 3 : 6;
+        const urgentThumbnailCount = compactShowcaseMedia.matches ? 2 : 4;
         portfolioThumbs.slice(0, urgentThumbnailCount).forEach(image => hydratePortfolioThumbnail(image, 'high'));
         const deferredPortfolioThumbs = portfolioThumbs.slice(urgentThumbnailCount);
 
@@ -9756,6 +9917,77 @@
             }, reduceShowcaseMotion ? 0 : 680);
         }
 
+        function populateShowcaseContent(title, desc, procedure, purpose, instaLink) {
+            const titleTarget = document.getElementById('modalTargetTitle');
+            const descTarget = document.getElementById('modalTargetDesc');
+            const procTarget = document.getElementById('modalTargetProc');
+            const purposeTarget = document.getElementById('modalTargetPurp');
+            const sourceLink = document.getElementById('modalTargetLink');
+
+            if (titleTarget) titleTarget.textContent = title || 'Internship Project';
+            if (descTarget) descTarget.textContent = desc || 'Project details are being prepared.';
+            if (procTarget) procTarget.textContent = procedure || 'The work process is documented in this portfolio.';
+            if (purposeTarget) purposeTarget.textContent = purpose || 'This project demonstrates practical internship experience.';
+
+            const validLink = typeof instaLink === 'string'
+                && instaLink.trim()
+                && instaLink.trim() !== '#'
+                && !instaLink.trim().toLowerCase().startsWith('javascript:');
+
+            if (sourceLink) {
+                sourceLink.hidden = !validLink;
+                sourceLink.classList.toggle('is-unavailable', !validLink);
+                sourceLink.setAttribute('aria-hidden', String(!validLink));
+                sourceLink.tabIndex = validLink ? 0 : -1;
+                if (validLink) {
+                    sourceLink.href = instaLink;
+                    sourceLink.textContent = 'View Project Source';
+                } else {
+                    sourceLink.removeAttribute('href');
+                }
+            }
+
+            const scrollArea = document.querySelector('#lensContentFit .lens-scroll-area');
+            if (scrollArea) scrollArea.scrollTop = 0;
+        }
+
+        function installLensMediaFallbacks(cardImageSource = '', preferredPoster = '') {
+            const wrapper = document.getElementById('lensSliderWrapper');
+            if (!wrapper) return;
+            const fallbackSource = preferredPoster || cardImageSource;
+
+            wrapper.querySelectorAll('.lens-slider-slide').forEach((slide) => {
+                const image = slide.querySelector('img');
+                const video = slide.querySelector('video');
+
+                if (image) {
+                    image.addEventListener('error', () => {
+                        if (!fallbackSource || image.dataset.fallbackApplied === 'true') return;
+                        image.dataset.fallbackApplied = 'true';
+                        image.removeAttribute('data-src');
+                        image.src = fallbackSource;
+                        slide.classList.add('is-fallback-media');
+                    }, { once: true });
+                }
+
+                if (video) {
+                    if (fallbackSource && !video.poster) video.poster = fallbackSource;
+                    video.addEventListener('error', () => {
+                        if (!fallbackSource || slide.dataset.fallbackApplied === 'true') return;
+                        slide.dataset.fallbackApplied = 'true';
+                        const fallbackImage = new Image();
+                        fallbackImage.alt = 'Project preview';
+                        fallbackImage.decoding = 'async';
+                        fallbackImage.loading = 'eager';
+                        fallbackImage.fetchPriority = 'high';
+                        fallbackImage.src = fallbackSource;
+                        video.replaceWith(fallbackImage);
+                        slide.classList.add('is-fallback-media', 'is-media-ready');
+                    }, { once: true });
+                }
+            });
+        }
+
         async function openShowcase(cardElement, title, desc, procedure, purpose, instaLink, contextMode = 'default') {
             if (showcaseAnimating || document.getElementById('showcaseModal').classList.contains('active')) return;
             showcaseAnimating = true;
@@ -9806,6 +10038,9 @@
                 button.setAttribute('aria-hidden', 'true');
             });
             
+            // Copy is populated first so project information never waits for media.
+            populateShowcaseContent(title, desc, procedure, purpose, instaLink);
+
             // Content setup matrices
             if (contextMode === 'multi') {
                 totalLensSlides = 14; 
@@ -9895,12 +10130,6 @@
             updateLensNavigationState();
             scheduleLensNavigationPosition();
 
-            document.getElementById('modalTargetTitle').innerText = title;
-            document.getElementById('modalTargetDesc').innerText = desc;
-            document.getElementById('modalTargetProc').innerText = procedure;
-            document.getElementById('modalTargetPurp').innerText = purpose;
-            document.getElementById('modalTargetLink').href = instaLink;
-
             // Capture the clicked card before locking page scroll.
             const cardRect = cardElement.getBoundingClientRect();
             const cardImage = cardElement.querySelector('.slot-card-img');
@@ -9914,13 +10143,14 @@
             prewarmShowcaseMedia(contextMode, 'high', true);
             const instantPosterSource = getShowcasePoster(contextMode, imageSource);
             attachInstantFirstMedia(contextMode, wrapper, instantPosterSource);
+            installLensMediaFallbacks(imageSource, instantPosterSource);
 
             // Continue decoding in parallel with the case morph. The popup never
             // waits for this promise because the decoded poster is already visible.
             const activeMediaReady = primeActiveLensMedia(instantPosterSource);
             activeMediaReady.catch?.(() => {});
 
-            if (compactShowcaseMedia.matches) {
+            if (compactShowcaseMedia.matches || document.documentElement.classList.contains('performance-lite')) {
                 try {
                     resetKineticTransition();
                     modal.classList.remove('is-closing', 'is-animating', 'is-handoff', 'is-content-revealing', 'is-content-synced');
@@ -10953,8 +11183,7 @@
         // approaching the viewport. Loading every project video at page startup was
         // the largest source of network, decode and main-thread contention.
         const showcasePreloadOrder = [
-            'default', 'tinted', 'doffy', 'butty', 'clip', 'pink',
-            'gold', 'circle', 'multi', 'hand', 'aura', 'cat'
+            'default', 'tinted', 'doffy', 'butty'
         ];
 
         let showcasePosterQueueStarted = false;
@@ -10997,7 +11226,7 @@
                 if (!entries.some(entry => entry.isIntersecting)) return;
                 startShowcasePosterQueue();
                 observer.disconnect();
-            }, { rootMargin: '1400px 0px', threshold: 0.01 });
+            }, { rootMargin: '420px 0px', threshold: 0.01 });
             showcasePosterObserver.observe(featuredPreloadTarget);
         } else {
             window.addEventListener('load', startShowcasePosterQueue, { once: true });
@@ -11034,18 +11263,28 @@
         }
 
         document.querySelectorAll('#portfolioGrid .slot-card').forEach(card => {
-            let intentWarmed = false;
-            const warmSelectedProject = () => {
-                if (intentWarmed) return;
-                intentWarmed = true;
+            let posterWarmed = false;
+            let mediaWarmed = false;
+
+            const warmPoster = () => {
+                if (posterWarmed) return;
+                posterWarmed = true;
+                const contextMode = getCardShowcaseContext(card);
+                hydratePortfolioThumbnail(card.querySelector('.slot-card-img'), 'high');
+                prewarmShowcaseMedia(contextMode, 'auto', false);
+            };
+
+            const warmSelectedMedia = () => {
+                if (mediaWarmed) return;
+                mediaWarmed = true;
                 const contextMode = getCardShowcaseContext(card);
                 hydratePortfolioThumbnail(card.querySelector('.slot-card-img'), 'high');
                 prewarmShowcaseMedia(contextMode, 'high', true);
             };
 
-            card.addEventListener('pointerenter', warmSelectedProject, { once: true, passive: true });
-            card.addEventListener('focusin', warmSelectedProject, { once: true });
-            card.addEventListener('pointerdown', warmSelectedProject, { once: true, passive: true });
+            card.addEventListener('pointerenter', warmPoster, { once: true, passive: true });
+            card.addEventListener('focusin', warmPoster, { once: true });
+            card.addEventListener('pointerdown', warmSelectedMedia, { once: true, passive: true });
         });
 
         // Apply a lighter effects tier only on constrained hardware or data-saving
@@ -11545,60 +11784,24 @@
             const modal = document.getElementById('showcaseModal');
             const fit = document.getElementById('lensContentFit');
             const scrollArea = fit?.querySelector('.lens-scroll-area');
-            const button = fit?.querySelector('.modal-action-btn');
-            if (!modal?.classList.contains('active') || !fit || !scrollArea || !button) return;
+            if (!modal?.classList.contains('active') || !fit || !scrollArea) return;
 
-            fit.classList.remove('allow-scroll');
+            // Keep typography consistent and make overflow scrollable instead of
+            // repeatedly shrinking text and forcing expensive layout measurements.
             setLensFitScale(1);
-
-            const availableTextHeight = Math.max(1, scrollArea.clientHeight);
-            const requiredTextHeight = Math.max(1, scrollArea.scrollHeight);
-            const initialRatio = Math.min(1, availableTextHeight / requiredTextHeight);
-            const estimatedScale = Math.max(0.68, Math.min(1, initialRatio * 0.985));
-            setLensFitScale(estimatedScale);
-
-            // One verification read handles line-wrap differences that are not
-            // perfectly proportional without cycling through nine forced layouts.
-            const fitRect = fit.getBoundingClientRect();
-            const buttonRect = button.getBoundingClientRect();
-            const textFits = scrollArea.scrollHeight <= scrollArea.clientHeight + 2;
-            const buttonFits = buttonRect.bottom <= fitRect.bottom + 1 && buttonRect.top >= fitRect.top - 1;
-
-            if (!textFits || !buttonFits) {
-                setLensFitScale(Math.max(0.68, estimatedScale * 0.94));
-                const finalTextFits = scrollArea.scrollHeight <= scrollArea.clientHeight + 2;
-                const finalFitRect = fit.getBoundingClientRect();
-                const finalButtonRect = button.getBoundingClientRect();
-                const finalButtonFits = finalButtonRect.bottom <= finalFitRect.bottom + 1 && finalButtonRect.top >= finalFitRect.top - 1;
-                if (!finalTextFits || !finalButtonFits) fit.classList.add('allow-scroll');
-            }
-
-            scrollArea.scrollTop = 0;
+            fit.classList.add('allow-scroll');
+            scrollArea.style.overflowY = 'auto';
         }
 
         function scheduleLensFitAndTheme() {
             cancelAnimationFrame(lensFitResizeFrame);
-            if (lensThemeIdleHandle && 'cancelIdleCallback' in window) cancelIdleCallback(lensThemeIdleHandle);
-
             lensFitResizeFrame = requestAnimationFrame(() => {
                 requestAnimationFrame(() => {
                     const modal = document.getElementById('showcaseModal');
                     if (!modal?.classList.contains('active')) return;
                     if (modal.classList.contains('is-animating') || modal.classList.contains('is-handoff')) return;
-
                     fitLensContent();
-
-                    const sampleTheme = () => {
-                        const activeModal = document.getElementById('showcaseModal');
-                        if (!activeModal?.classList.contains('active') || showcaseAnimating) return;
-                        sampleActiveLensMediaTheme();
-                    };
-
-                    if ('requestIdleCallback' in window) {
-                        lensThemeIdleHandle = requestIdleCallback(sampleTheme, { timeout: 900 });
-                    } else {
-                        lensThemeIdleHandle = window.setTimeout(sampleTheme, 180);
-                    }
+                    scheduleLensNavigationPosition();
                 });
             });
         }
@@ -11832,5 +12035,39 @@
             setAccessibleState(false);
         })();
     </script>
+
+<script id="showcase-content-priority-runtime">
+(() => {
+    const modal = document.getElementById('showcaseModal');
+    const contentFit = document.getElementById('lensContentFit');
+    const sourceLink = document.getElementById('modalTargetLink');
+    if (!modal || !contentFit) return;
+
+    sourceLink?.addEventListener('click', (event) => {
+        if (sourceLink.hidden || !sourceLink.getAttribute('href')) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+        }
+    }, true);
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || !modal.classList.contains('active')) return;
+        const closeButton = modal.querySelector('.modal-close-btn');
+        closeButton?.click();
+    });
+
+    if ('ResizeObserver' in window) {
+        const observer = new ResizeObserver(() => {
+            if (!modal.classList.contains('active')) return;
+            requestAnimationFrame(() => {
+                window.fitLensContent?.();
+                window.scheduleLensNavigationPosition?.();
+            });
+        });
+        observer.observe(contentFit);
+    }
+})();
+</script>
+
 </body>
 </html>
