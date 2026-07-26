@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap" rel="stylesheet"></noscript>
     
-    <!-- The model-viewer library is intentionally injected only after every normal page asset has finished loading. -->
+    <!-- The 54 MB 3D viewer remains dormant until deliberate desktop interaction. -->
     
     <style>
         :root {
@@ -60,7 +60,7 @@
                 radial-gradient(circle at 50% 10%, rgba(255, 120, 180, 0.4) 0%, transparent 60%),
                 radial-gradient(circle at 95% 40%, rgba(50, 140, 255, 0.35) 0%, transparent 50%),
                 radial-gradient(circle at 70% 35%, rgba(255, 210, 140, 0.3) 0%, transparent 40%);
-            filter: blur(64px);
+            filter: blur(38px);
             opacity: 0.85;
         }
 
@@ -352,6 +352,52 @@
 
         .model-load-panel.has-error .model-error { display: block; }
         .model-load-panel.has-error .model-progress-track { display: none; }
+
+
+        .model-load-button {
+            position: absolute;
+            left: 50%;
+            bottom: 22px;
+            z-index: 7;
+            transform: translateX(-50%);
+            min-width: 190px;
+            padding: 12px 22px;
+            border: 1px solid rgba(0, 0, 0, 0.14);
+            border-radius: 999px;
+            background: rgba(246, 241, 235, 0.92);
+            color: var(--text-main);
+            font-family: var(--font-base);
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 1.15px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.10);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            transition: transform 0.35s ease, opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .model-load-button:hover {
+            transform: translateX(-50%) translateY(-2px);
+            background: #000000;
+            color: #ffffff;
+        }
+
+        .model-load-button:disabled {
+            cursor: wait;
+        }
+
+        .glasses-3d-stage.model-loading .model-load-button,
+        .glasses-3d-stage.model-loaded .model-load-button {
+            opacity: 0;
+            transform: translateX(-50%) translateY(8px);
+            pointer-events: none;
+        }
+
+        .model-load-panel {
+            bottom: 72px;
+        }
 
         @keyframes flyInFromRight {
             0% {
@@ -971,7 +1017,7 @@
                 radial-gradient(circle at 62% 88%, rgba(140, 210, 190, 0.5) 0%, transparent 42%),
                 radial-gradient(circle at 90% 70%, rgba(200, 200, 205, 0.6) 0%, transparent 45%),
                 radial-gradient(circle at 95% 30%, rgba(255, 210, 180, 0.45) 0%, transparent 40%);
-            filter: blur(54px);
+            filter: blur(34px);
             opacity: 0;
             transition: opacity 0.8s cubic-bezier(0.25, 1, 0.2, 1);
         }
@@ -7478,6 +7524,54 @@
                 filter 640ms var(--showcase-weave) 680ms !important;
         }
 
+        /* Lock every first-frame content layer into its final visible state before
+           the proxy-to-popup crossfade starts. This prevents residual CSS opacity
+           transitions from making the media appear after the eyewear shell. */
+        .modal-container.is-content-synced .lens-slider-slide:first-child > img,
+        .modal-container.is-content-synced .lens-slider-slide:first-child > video {
+            opacity: 1 !important;
+            filter: none !important;
+            transform: scale(1) !important;
+            transition: none !important;
+        }
+
+        .modal-container.is-content-synced .modal-body-title,
+        .modal-container.is-content-synced .modal-spec-block {
+            opacity: 1 !important;
+            filter: none !important;
+            transform: translate3d(0, 0, 0) scale(1) !important;
+            transition: none !important;
+        }
+
+        .modal-container.is-content-synced .modal-title-divider {
+            opacity: 1 !important;
+            filter: none !important;
+            transform: translate3d(0, 0, 0) scaleX(1) !important;
+            transition: none !important;
+        }
+
+        .modal-container.is-content-synced .modal-action-btn,
+        .modal-container.is-content-synced .modal-close-btn {
+            opacity: 1 !important;
+            filter: none !important;
+            transform: translate3d(0, 0, 0) scale(1) !important;
+            transition-delay: 0ms !important;
+        }
+
+        /* Seamless popup content handoff: content never runs as a second animation
+           after the eyewear has completed. If the preparation state survives a
+           fallback frame, revealing it is immediate and simultaneous. */
+        .modal-container.is-content-prep.is-content-revealing .lens-slider-slide:first-child > img,
+        .modal-container.is-content-prep.is-content-revealing .lens-slider-slide:first-child > video,
+        .modal-container.is-content-prep.is-content-revealing .modal-body-title,
+        .modal-container.is-content-prep.is-content-revealing .modal-title-divider,
+        .modal-container.is-content-prep.is-content-revealing .modal-spec-block,
+        .modal-container.is-content-prep.is-content-revealing .modal-action-btn,
+        .modal-container.is-content-prep.is-content-revealing .modal-close-btn {
+            transition-delay: 0ms !important;
+            transition-duration: 160ms !important;
+        }
+
         @media (max-width: 768px) {
             .modal-container.is-content-prep .lens-slider-slide:first-child > img,
             .modal-container.is-content-prep .lens-slider-slide:first-child > video {
@@ -7580,7 +7674,12 @@
         .lens-slider-slide img,
         .lens-slider-slide video {
             image-rendering: auto;
+        }
+
+        .lens-slider-slide img,
+        .lens-slider-slide video {
             transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         body {
@@ -7594,7 +7693,885 @@
             }
         }
 
+
+        /* =============================================================
+           INSTANT POPUP CONTENT — NO SECOND REVEAL PHASE
+           The populated lens content is fully resolved while the real frame
+           is hidden behind the animated proxy. When the handoff happens,
+           media and copy are already visible in the very first frame.
+        ============================================================= */
+        .modal-container.is-content-prep .lens-slider-slide:first-child > img,
+        .modal-container.is-content-prep .lens-slider-slide:first-child > video,
+        .modal-container.is-content-prep .modal-body-title,
+        .modal-container.is-content-prep .modal-title-divider,
+        .modal-container.is-content-prep .modal-spec-block,
+        .modal-container.is-content-prep .modal-action-btn,
+        .modal-container.is-content-prep .modal-close-btn,
+        .modal-container.is-content-prep.is-content-revealing .lens-slider-slide:first-child > img,
+        .modal-container.is-content-prep.is-content-revealing .lens-slider-slide:first-child > video,
+        .modal-container.is-content-prep.is-content-revealing .modal-body-title,
+        .modal-container.is-content-prep.is-content-revealing .modal-title-divider,
+        .modal-container.is-content-prep.is-content-revealing .modal-spec-block,
+        .modal-container.is-content-prep.is-content-revealing .modal-action-btn,
+        .modal-container.is-content-prep.is-content-revealing .modal-close-btn {
+            opacity: 1 !important;
+            filter: none !important;
+            transition: none !important;
+        }
+
+        .modal-container.is-content-prep .lens-slider-slide:first-child > img,
+        .modal-container.is-content-prep .lens-slider-slide:first-child > video,
+        .modal-container.is-content-prep .modal-body-title,
+        .modal-container.is-content-prep .modal-spec-block,
+        .modal-container.is-content-prep .modal-action-btn,
+        .modal-container.is-content-prep .modal-close-btn {
+            transform: none !important;
+        }
+
+        .modal-container.is-content-prep .modal-title-divider {
+            transform: scaleX(1) !important;
+        }
+
+        .lens-slider-slide.has-instant-poster {
+            background-image: var(--instant-poster, none);
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
+        .lens-slider-slide.has-instant-poster > img,
+        .lens-slider-slide.has-instant-poster > video {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+
+
+        /* =============================================================
+           SEAMLESS MEDIA HANDOFF + LOWER COMPOSITING COST
+           A guaranteed card/poster frame is visible throughout the proxy
+           crossfade. The actual image/video fades over it only after it is
+           decoded, so slow media can never expose an empty lens.
+        ============================================================= */
+        .lens-slider-slide.has-instant-poster.is-media-pending > img,
+        .lens-slider-slide.has-instant-poster.is-media-pending > video,
+        .modal-container.is-content-synced .lens-slider-slide.has-instant-poster.is-media-pending > img,
+        .modal-container.is-content-synced .lens-slider-slide.has-instant-poster.is-media-pending > video {
+            opacity: 0 !important;
+            visibility: visible !important;
+            transition: opacity 360ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+        }
+
+        .lens-slider-slide.has-instant-poster.is-media-ready > img,
+        .lens-slider-slide.has-instant-poster.is-media-ready > video,
+        .modal-container.is-content-synced .lens-slider-slide.has-instant-poster.is-media-ready > img,
+        .modal-container.is-content-synced .lens-slider-slide.has-instant-poster.is-media-ready > video {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transition: opacity 360ms cubic-bezier(0.22, 1, 0.36, 1) !important;
+        }
+
+        #kinetic3dStage.is-running,
+        #kinetic3dStage.is-running .kinetic-box,
+        #kinetic3dStage.is-running .folded-glasses-proxy {
+            backface-visibility: hidden;
+        }
+
+        .modal-container.is-animating .modal-mesh-bg {
+            /* Opacity is animated; keeping the blurred mesh spatially still
+               avoids re-rasterising a full-screen blur on every frame. */
+            transform: translate3d(0, 0, 0) scale(1) !important;
+        }
+
+        html.performance-lite .ambient-mesh { filter: blur(26px); }
+        html.performance-lite .modal-mesh-bg { filter: blur(24px); }
+        html.performance-lite .slot-card:hover { box-shadow: 0 8px 22px rgba(130, 71, 255, 0.12); }
+
+
+
+        /* =============================================================
+           RELIABLE LEFT-LENS CAROUSEL CONTROLS
+           The controls sit at modal level rather than inside a clipped lens.
+           This prevents custom clip paths from blocking clicks and allows
+           each silhouette to use a shape-safe visual anchor.
+        ============================================================= */
+        .modal-container {
+            --lens-nav-prev-x: 13;
+            --lens-nav-next-x: 87;
+            --lens-nav-y: 50;
+        }
+        .modal-container.shape-second-slot { --lens-nav-prev-x: 16; --lens-nav-next-x: 85; --lens-nav-y: 52; }
+        .modal-container.shape-third-slot { --lens-nav-prev-x: 24; --lens-nav-next-x: 83; --lens-nav-y: 57; }
+        .modal-container.shape-fourth-slot { --lens-nav-prev-x: 29; --lens-nav-next-x: 84; --lens-nav-y: 55; }
+        .modal-container.shape-fifth-slot { --lens-nav-prev-x: 18; --lens-nav-next-x: 84; --lens-nav-y: 52; }
+        .modal-container.shape-sixth-slot { --lens-nav-prev-x: 18; --lens-nav-next-x: 84; --lens-nav-y: 52; }
+        .modal-container.shape-seventh-slot { --lens-nav-prev-x: 18; --lens-nav-next-x: 84; --lens-nav-y: 52; }
+        .modal-container.shape-eighth-slot { --lens-nav-prev-x: 19; --lens-nav-next-x: 82; --lens-nav-y: 50; }
+        .modal-container.shape-eleventh-slot { --lens-nav-prev-x: 19; --lens-nav-next-x: 81; --lens-nav-y: 50; }
+        .modal-container.shape-twelfth-slot { --lens-nav-prev-x: 22; --lens-nav-next-x: 83; --lens-nav-y: 57; }
+
+        #showcaseModal > .lens-nav-btn {
+            position: fixed !important;
+            left: var(--lens-nav-left, -200px) !important;
+            right: auto !important;
+            top: var(--lens-nav-top, -200px) !important;
+            z-index: 190 !important;
+            transform: translate(-50%, -50%) scale(0.96) !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Carousel controls are enabled only after the case-to-glasses
+           handoff is completely finished. This prevents a stray arrow from
+           appearing beside the case while it has no usable function. */
+        #showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn.is-positioned {
+            visibility: visible !important;
+            opacity: 0.96 !important;
+            pointer-events: auto !important;
+            transform: translate(-50%, -50%) scale(1) !important;
+        }
+
+        #showcaseModal:not(.carousel-ready) > .lens-nav-btn {
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        #showcaseModal.is-animating > .lens-nav-btn,
+        #showcaseModal.is-handoff > .lens-nav-btn,
+        #showcaseModal.is-closing > .lens-nav-btn {
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }
+
+        #showcaseModal > .lens-nav-btn:hover,
+        #showcaseModal > .lens-nav-btn:focus-visible {
+            opacity: 1 !important;
+            transform: translate(-50%, -50%) scale(1.06) !important;
+        }
+
+        #showcaseModal > .lens-nav-btn:active {
+            transform: translate(-50%, -50%) scale(0.94) !important;
+        }
+
+        @media (max-width: 768px) {
+            #showcaseModal > .lens-nav-btn { display: none !important; }
+        }
+
 </style>
+<style>
+
+        /* =============================================================
+           INTERNSHIP OVERVIEW — LIGHTWEIGHT CASE-TO-3D EXPERIENCE
+           The closed case and unfolding glasses are pure CSS. The large
+           GLB and model-viewer library remain dormant until hover intent
+           or a click reaches the final reveal stage.
+        ============================================================= */
+        #overview-section.internship-overview {
+            position: relative;
+            min-height: 100vh;
+            padding: 34px 54px 34px;
+            justify-content: flex-start;
+            overflow: hidden;
+            background:
+                radial-gradient(circle at 76% 28%, rgba(130, 71, 255, 0.10), transparent 31%),
+                radial-gradient(circle at 62% 75%, rgba(204, 160, 37, 0.07), transparent 30%),
+                var(--bg-canvas);
+        }
+
+        #overview-section.internship-overview::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            opacity: 0.42;
+            background-image:
+                linear-gradient(rgba(0,0,0,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,0,0,0.018) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to right, transparent 4%, rgba(0,0,0,0.65) 45%, transparent 96%);
+        }
+
+        .overview-menu-row {
+            min-height: 48px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-start;
+            position: relative;
+            z-index: 20;
+        }
+
+        .internship-overview-grid {
+            position: relative;
+            z-index: 5;
+            width: 100%;
+            max-width: 1240px;
+            margin: 2px auto 0;
+            display: grid;
+            grid-template-columns: minmax(330px, 0.82fr) minmax(470px, 1.18fr);
+            align-items: center;
+            gap: clamp(28px, 4.5vw, 76px);
+            min-height: min(62vh, 610px);
+        }
+
+        .internship-overview-copy {
+            align-self: center;
+            max-width: 510px;
+            padding-left: clamp(0px, 1.2vw, 18px);
+        }
+
+        .overview-index {
+            margin-bottom: 22px;
+            font-size: 0.64rem;
+            font-weight: 800;
+            letter-spacing: 2.1px;
+            color: #202024;
+        }
+
+        .internship-overview-title {
+            margin: 0 0 24px;
+            font-size: clamp(2.75rem, 4.35vw, 5rem);
+            line-height: 0.98;
+            letter-spacing: -0.055em;
+            text-transform: none;
+            max-width: 700px;
+        }
+
+        .internship-overview-description {
+            max-width: 440px;
+            color: #4f4f55;
+            font-size: clamp(0.78rem, 0.92vw, 0.94rem);
+            font-weight: 500;
+            line-height: 1.72;
+        }
+
+        .overview-explore-link {
+            position: relative;
+            width: min(180px, 100%);
+            margin-top: 28px;
+            padding: 0 0 11px;
+            border: 0;
+            border-bottom: 1px solid rgba(130, 71, 255, 0.72);
+            background: transparent;
+            color: #111113;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font: 800 0.67rem/1 var(--font-base);
+            letter-spacing: 1.05px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1), color 0.25s ease;
+        }
+
+        .overview-explore-link::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: -1px;
+            width: 44%;
+            height: 2px;
+            background: var(--accent-purple);
+            transition: width 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .overview-explore-link:hover { width: 196px; color: var(--accent-purple); }
+        .overview-explore-link:hover::after { width: 100%; }
+
+        .overview-visual-column {
+            position: relative;
+            min-width: 0;
+            height: clamp(390px, 45vw, 590px);
+            display: grid;
+            place-items: center;
+        }
+
+        .overview-visual-outline {
+            position: absolute;
+            width: min(92%, 650px);
+            aspect-ratio: 1.12 / 1;
+            border: 1px solid rgba(130, 71, 255, 0.26);
+            clip-path: polygon(21% 0, 82% 0, 100% 27%, 92% 81%, 69% 100%, 15% 93%, 0 60%, 5% 25%);
+            transform: rotate(-3deg);
+            pointer-events: none;
+        }
+
+        .overview-visual-outline::after {
+            content: '';
+            position: absolute;
+            right: -12px;
+            bottom: 10%;
+            width: 90px;
+            height: 90px;
+            opacity: 0.35;
+            background-image: radial-gradient(circle, var(--accent-purple) 1.2px, transparent 1.3px);
+            background-size: 12px 12px;
+        }
+
+        .overview-case-stage.glasses-3d-stage {
+            --case-gold: #d1a438;
+            --case-gold-light: #fff1b7;
+            --case-black: #111114;
+            --case-black-soft: #232328;
+            width: min(100%, 690px);
+            height: min(48vw, 560px);
+            min-height: 420px;
+            overflow: visible;
+            border-radius: 34px;
+            isolation: isolate;
+            cursor: pointer;
+            outline: none;
+            touch-action: pan-y;
+        }
+
+        .overview-case-stage:focus-visible {
+            box-shadow: 0 0 0 3px rgba(130,71,255,0.28);
+        }
+
+        .overview-case-stage::before {
+            content: '';
+            position: absolute;
+            inset: 9% 4% 4%;
+            z-index: -1;
+            border-radius: 50%;
+            background: radial-gradient(ellipse, rgba(130,71,255,0.13), transparent 68%);
+            filter: blur(28px);
+            opacity: 0.8;
+            transition: opacity 0.6s ease, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .overview-case-stage.overview-case-engaged::before,
+        .overview-case-stage.model-loading::before,
+        .overview-case-stage.model-loaded::before {
+            opacity: 1;
+            transform: scale(1.08);
+        }
+
+        .overview-case-hint {
+            position: absolute;
+            left: 50%;
+            bottom: 3%;
+            z-index: 15;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5d5d63;
+            font-size: 0.61rem;
+            font-weight: 750;
+            letter-spacing: 1.05px;
+            text-transform: uppercase;
+            white-space: nowrap;
+            opacity: 0.82;
+            transition: opacity 0.3s ease, transform 0.4s ease;
+        }
+
+        .overview-case-hint-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent-purple);
+            box-shadow: 0 0 0 6px rgba(130,71,255,0.09);
+            animation: overviewHintPulse 1.9s ease-in-out infinite;
+        }
+
+        @keyframes overviewHintPulse {
+            50% { box-shadow: 0 0 0 10px rgba(130,71,255,0); }
+        }
+
+        .overview-case-stage.overview-case-engaged .overview-case-hint,
+        .overview-case-stage.model-loading .overview-case-hint,
+        .overview-case-stage.model-loaded .overview-case-hint {
+            opacity: 0;
+            transform: translateX(-50%) translateY(8px);
+            pointer-events: none;
+        }
+
+        .overview-case-poster.model-poster {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            place-items: center;
+            overflow: visible;
+            transform-origin: center;
+            transition: opacity 0.52s ease, transform 0.72s cubic-bezier(0.22, 1, 0.36, 1), filter 0.52s ease;
+        }
+
+        .overview-case-scene {
+            position: relative;
+            width: min(92%, 610px);
+            height: min(78%, 440px);
+            perspective: 1500px;
+            transform-style: preserve-3d;
+        }
+
+        .overview-case-shadow {
+            position: absolute;
+            left: 13%;
+            right: 8%;
+            bottom: 7%;
+            height: 18%;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.24);
+            filter: blur(26px);
+            transform: rotate(-7deg) scaleX(0.92);
+            opacity: 0.55;
+            transition: transform 1s cubic-bezier(0.22,1,0.36,1), opacity 0.8s ease;
+        }
+
+        .overview-case-object {
+            position: absolute;
+            left: 50%;
+            top: 52%;
+            width: 82%;
+            aspect-ratio: 2.48 / 1;
+            transform: translate(-50%, -50%) rotateX(54deg) rotateZ(-6deg) scale(0.93);
+            transform-style: preserve-3d;
+            transition: transform 1.05s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .overview-case-base,
+        .overview-case-lid {
+            position: absolute;
+            inset: 0;
+            border-radius: 30% 25% 27% 25% / 42% 38% 39% 42%;
+            transform-style: preserve-3d;
+        }
+
+        .overview-case-base {
+            z-index: 3;
+            background:
+                radial-gradient(circle at 22% 16%, rgba(255,255,255,0.10), transparent 32%),
+                linear-gradient(150deg, #242429 0%, #0c0c0f 58%, #17171b 100%);
+            border: 3px solid transparent;
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            background-image:
+                linear-gradient(150deg, #242429 0%, #0c0c0f 58%, #17171b 100%),
+                linear-gradient(135deg, #8f691e, #fff1b7 25%, #c6962d 58%, #6c4d12);
+            box-shadow:
+                0 31px 52px rgba(0,0,0,0.28),
+                inset 0 0 0 1px rgba(255,255,255,0.07),
+                inset 0 -22px 28px rgba(0,0,0,0.42);
+        }
+
+        .overview-case-interior {
+            position: absolute;
+            inset: 10% 7% 14%;
+            border-radius: inherit;
+            background:
+                radial-gradient(ellipse at 50% 45%, rgba(83,81,95,0.40), transparent 52%),
+                linear-gradient(160deg, #202027, #070709 70%);
+            box-shadow: inset 0 15px 28px rgba(0,0,0,0.68), inset 0 0 0 1px rgba(255,255,255,0.045);
+            opacity: 0;
+            transition: opacity 0.42s ease 0.15s;
+        }
+
+        .overview-case-front-edge {
+            position: absolute;
+            left: 7%;
+            right: 7%;
+            bottom: -10%;
+            height: 22%;
+            border-radius: 0 0 38% 38% / 0 0 85% 85%;
+            background: linear-gradient(180deg, #1d1d22, #070709);
+            border-bottom: 2px solid rgba(220,176,62,0.7);
+            transform: rotateX(-64deg);
+            transform-origin: top center;
+            box-shadow: 0 18px 28px rgba(0,0,0,0.23);
+            display: grid;
+            place-items: center;
+        }
+
+        .overview-case-front-edge span {
+            color: rgba(222,184,78,0.54);
+            font-size: 0.52rem;
+            letter-spacing: 2px;
+            transform: translateY(1px);
+        }
+
+        .overview-case-lid {
+            z-index: 8;
+            transform-origin: 50% 8%;
+            transform: translateZ(18px) translateY(-2%) rotateX(0deg);
+            transition: transform 1.02s cubic-bezier(0.22, 1, 0.36, 1), filter 0.6s ease;
+        }
+
+        .overview-case-lid-face,
+        .overview-case-lid-inner {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            backface-visibility: hidden;
+        }
+
+        .overview-case-lid-face {
+            z-index: 2;
+            display: grid;
+            place-items: center;
+            background:
+                radial-gradient(circle at 22% 16%, rgba(255,255,255,0.12), transparent 28%),
+                linear-gradient(150deg, #27272d, #09090b 62%, #19191e);
+            border: 3px solid transparent;
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            background-image:
+                linear-gradient(150deg, #27272d, #09090b 62%, #19191e),
+                linear-gradient(135deg, #755316, #fff0af 24%, #c8992c 58%, #745316);
+            box-shadow: 0 16px 35px rgba(0,0,0,0.34), inset 0 0 0 1px rgba(255,255,255,0.055);
+        }
+
+        .overview-case-lid-face span {
+            color: rgba(238,206,117,0.56);
+            font-size: clamp(0.66rem, 1vw, 0.9rem);
+            letter-spacing: 4px;
+            text-transform: lowercase;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.10);
+        }
+
+        .overview-case-lid-inner {
+            transform: rotateX(180deg) translateZ(1px);
+            background:
+                radial-gradient(ellipse at center, rgba(59,59,69,0.42), transparent 55%),
+                linear-gradient(160deg, #222229, #070709 74%);
+            border: 3px solid var(--case-gold);
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.66);
+        }
+
+        .overview-folding-glasses {
+            position: absolute;
+            left: 50%;
+            top: 48%;
+            z-index: 6;
+            width: 76%;
+            height: 64%;
+            transform: translate(-50%, -42%) translateZ(30px) scale(0.58) rotateX(-12deg) rotateZ(4deg);
+            transform-style: preserve-3d;
+            opacity: 0;
+            filter: blur(2px);
+            transition:
+                transform 0.88s cubic-bezier(0.22, 1, 0.36, 1) 0.22s,
+                opacity 0.34s ease 0.19s,
+                filter 0.5s ease 0.22s;
+        }
+
+        .overview-glasses-front {
+            position: absolute;
+            inset: 12% 0 5%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5%;
+            transform-style: preserve-3d;
+        }
+
+        .overview-glasses-lens {
+            position: relative;
+            width: 43%;
+            height: 78%;
+            border: 4px solid transparent;
+            border-radius: 42% 38% 46% 40% / 44% 42% 49% 47%;
+            background:
+                linear-gradient(145deg, rgba(13,13,16,0.90), rgba(42,42,49,0.84)) padding-box,
+                linear-gradient(135deg, #815b13, #fff2b9 22%, #d1a438 58%, #795716) border-box;
+            box-shadow: 0 18px 31px rgba(0,0,0,0.30), inset 0 0 20px rgba(255,255,255,0.045);
+        }
+
+        .overview-glasses-lens::after {
+            content: '';
+            position: absolute;
+            top: 8%;
+            left: 19%;
+            width: 22%;
+            height: 72%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.13), transparent);
+            transform: skewX(-15deg);
+            opacity: 0.65;
+        }
+
+        .overview-glasses-bridge {
+            width: 10%;
+            height: 19%;
+            margin: 0 -6%;
+            align-self: flex-start;
+            margin-top: 18%;
+            border: 3px solid #d6ac45;
+            border-bottom: 0;
+            border-radius: 50% 50% 0 0;
+            filter: drop-shadow(0 3px 3px rgba(0,0,0,0.20));
+            z-index: 4;
+        }
+
+        .overview-glasses-arm {
+            position: absolute;
+            top: 42%;
+            z-index: -1;
+            width: 58%;
+            height: 8px;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #c89b31, #fff1b3 24%, #242429 27%, #0b0b0d 88%);
+            box-shadow: 0 8px 14px rgba(0,0,0,0.25);
+            transition: transform 0.86s cubic-bezier(0.22, 1, 0.36, 1) 0.58s, opacity 0.25s ease 0.48s;
+            opacity: 0.22;
+        }
+
+        .overview-glasses-arm-left {
+            right: 52%;
+            transform-origin: right center;
+            transform: rotateZ(5deg) rotateY(82deg) translateX(12%);
+        }
+
+        .overview-glasses-arm-right {
+            left: 52%;
+            transform-origin: left center;
+            transform: rotateZ(-5deg) rotateY(-82deg) translateX(-12%);
+            background: linear-gradient(-90deg, #c89b31, #fff1b3 24%, #242429 27%, #0b0b0d 88%);
+        }
+
+        .overview-case-stage.overview-case-engaged .overview-case-object {
+            transform: translate(-50%, -48%) rotateX(50deg) rotateZ(-4deg) scale(0.98);
+        }
+
+        .overview-case-stage.overview-case-engaged .overview-case-lid {
+            transform: translateZ(14px) translateY(-6%) rotateX(-112deg);
+            filter: drop-shadow(0 20px 22px rgba(0,0,0,0.16));
+        }
+
+        .overview-case-stage.overview-case-engaged .overview-case-interior { opacity: 1; }
+
+        .overview-case-stage.overview-case-engaged .overview-folding-glasses {
+            opacity: 1;
+            filter: blur(0);
+            transform: translate(-50%, -54%) translateZ(54px) scale(0.80) rotateX(-10deg) rotateZ(2deg);
+        }
+
+        .overview-case-stage.overview-case-unfolded .overview-case-object {
+            transform: translate(-50%, -46%) rotateX(44deg) rotateZ(-2deg) scale(1.02);
+        }
+
+        .overview-case-stage.overview-case-unfolded .overview-folding-glasses {
+            transform: translate(-50%, -84%) translateZ(112px) scale(1.02) rotateX(-35deg) rotateZ(0deg);
+        }
+
+        .overview-case-stage.overview-case-unfolded .overview-glasses-arm {
+            opacity: 1;
+        }
+
+        .overview-case-stage.overview-case-unfolded .overview-glasses-arm-left {
+            transform: rotateZ(-8deg) rotateY(0deg) translateX(-7%);
+        }
+
+        .overview-case-stage.overview-case-unfolded .overview-glasses-arm-right {
+            transform: rotateZ(8deg) rotateY(0deg) translateX(7%);
+        }
+
+        .overview-case-stage.model-loading .overview-folding-glasses {
+            animation: overviewGlassesFloat 2.4s ease-in-out infinite;
+        }
+
+        @keyframes overviewGlassesFloat {
+            50% { transform: translate(-50%, -88%) translateZ(120px) scale(1.03) rotateX(-33deg) rotateZ(0deg); }
+        }
+
+        .overview-case-stage.model-loaded .overview-case-poster {
+            opacity: 0;
+            transform: scale(0.90) translateY(4px);
+            filter: blur(7px);
+            pointer-events: none;
+        }
+
+        .overview-final-model.hero-model-viewer {
+            inset: 2% -2% 0;
+            width: 104%;
+            height: 98%;
+            z-index: 12;
+            border-radius: 32px;
+        }
+
+        .overview-hidden-model-trigger {
+            display: none !important;
+        }
+
+        .overview-model-load-panel.model-load-panel {
+            bottom: 3%;
+            width: min(280px, calc(100% - 32px));
+            z-index: 18;
+            background: rgba(246,241,235,0.88);
+            border-color: rgba(0,0,0,0.09);
+        }
+
+        .internship-stat-rail {
+            position: relative;
+            z-index: 12;
+            width: min(100%, 1120px);
+            min-height: 104px;
+            margin: clamp(8px, 1.5vh, 18px) auto 0;
+            padding: 18px 24px;
+            border-radius: 16px;
+            background:
+                radial-gradient(circle at 8% 0, rgba(255,255,255,0.08), transparent 28%),
+                linear-gradient(135deg, #171719, #242427 56%, #111113);
+            box-shadow: 0 22px 45px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.07);
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            color: #fff;
+        }
+
+        .internship-stat-item {
+            min-width: 0;
+            padding: 8px clamp(16px, 2.5vw, 34px);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-right: 1px solid rgba(255,255,255,0.13);
+        }
+
+        .internship-stat-item:last-child { border-right: 0; }
+
+        .internship-stat-icon {
+            flex: 0 0 auto;
+            color: #e2bd56;
+            font-size: 1.05rem;
+            letter-spacing: -1px;
+        }
+
+        .internship-stat-item div {
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .internship-stat-item strong {
+            font-size: clamp(1.35rem, 2vw, 1.75rem);
+            line-height: 1;
+            font-weight: 500;
+        }
+
+        .internship-stat-item span:last-child {
+            color: rgba(255,255,255,0.68);
+            font-size: 0.61rem;
+            line-height: 1.35;
+            letter-spacing: 0.25px;
+        }
+
+        @media (max-width: 1050px) {
+            #overview-section.internship-overview { padding: 28px 34px 30px; }
+            .internship-overview-grid {
+                grid-template-columns: minmax(290px, 0.86fr) minmax(390px, 1.14fr);
+                gap: 24px;
+            }
+            .overview-case-stage.glasses-3d-stage {
+                height: 490px;
+                min-height: 390px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #overview-section.internship-overview {
+                min-height: auto;
+                padding: calc(18px + var(--safe-top)) max(18px, var(--safe-right)) calc(28px + var(--safe-bottom)) max(18px, var(--safe-left));
+            }
+
+            .overview-menu-row { min-height: 54px; }
+
+            .internship-overview-grid {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 6px;
+                min-height: 0;
+                margin-top: 4px;
+            }
+
+            .internship-overview-copy {
+                max-width: none;
+                padding: 0;
+            }
+
+            .overview-index { margin-bottom: 14px; }
+
+            .internship-overview-title {
+                font-size: clamp(2.55rem, 12vw, 4.1rem);
+                line-height: 0.96;
+                margin-bottom: 18px;
+            }
+
+            .internship-overview-description {
+                max-width: 560px;
+                font-size: 0.80rem;
+                line-height: 1.62;
+            }
+
+            .overview-explore-link { margin-top: 21px; }
+
+            .overview-visual-column {
+                height: clamp(330px, 91vw, 470px);
+                margin-top: 2px;
+            }
+
+            .overview-visual-outline { width: 96%; }
+
+            .overview-case-stage.glasses-3d-stage {
+                width: 100%;
+                height: clamp(330px, 91vw, 460px);
+                min-height: 330px;
+            }
+
+            .overview-case-scene {
+                width: 100%;
+                height: 88%;
+            }
+
+            .overview-case-object { width: 88%; }
+            .overview-case-hint { bottom: 0; }
+
+            .internship-stat-rail {
+                margin-top: 5px;
+                padding: 12px;
+                min-height: 0;
+                border-radius: 14px;
+                grid-template-columns: 1fr;
+            }
+
+            .internship-stat-item {
+                padding: 13px 12px;
+                border-right: 0;
+                border-bottom: 1px solid rgba(255,255,255,0.11);
+            }
+
+            .internship-stat-item:last-child { border-bottom: 0; }
+            .internship-stat-item strong { font-size: 1.35rem; }
+            .internship-stat-item span:last-child { font-size: 0.63rem; }
+        }
+
+        @media (max-width: 430px) {
+            .overview-visual-column,
+            .overview-case-stage.glasses-3d-stage {
+                height: 330px;
+                min-height: 330px;
+            }
+            .overview-case-scene { height: 95%; }
+            .overview-case-object { width: 96%; }
+            .overview-case-hint { font-size: 0.55rem; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .overview-case-stage *,
+            .overview-case-stage::before {
+                animation: none !important;
+                transition-duration: 0.01ms !important;
+                transition-delay: 0ms !important;
+            }
+        }
+
+    </style>
 </head>
 <body>
 
@@ -7712,77 +8689,113 @@
         </aside>
 
         <main class="main-content" id="mainContentArea">
-            
             <!-- SECTION 1: OVERVIEW -->
-            <section class="portfolio-section" id="overview-section">
-                <div class="top-meta-bar">
-                    <div class="meta-context">SYSTEMS CORE ARCHITECTURE<br>STUDENT PORTFOLIO / 2026</div>
+            <section class="portfolio-section internship-overview" id="overview-section">
+                <div class="overview-menu-row">
                     <button class="hamburger-btn" type="button" aria-label="Open navigation menu" aria-controls="fullScreenMenu" aria-expanded="false" onclick="toggleMenu(true)">
                         <span></span><span></span>
                     </button>
                 </div>
 
-                <div class="overview-interactive-zone">
-                    <div class="overview-text-block">
-                        <div class="hello-tag">Hello, I'm</div>
-                        <h2>M. <span>Shahrukh</span></h2>
-                        <span class="section-label" style="margin-bottom: 20px;">/ Creative Marketer</span>
-                        <p class="description-text">I craft meaningful brand experiences and impactful campaigns that connect, engage and inspire action.</p>
+                <div class="internship-overview-grid">
+                    <div class="internship-overview-copy">
+                        <div class="overview-index">01&nbsp;&nbsp;/&nbsp;&nbsp;OVERVIEW</div>
+                        <h1 class="internship-overview-title">Selected Work<br>from My Internship</h1>
+                        <p class="internship-overview-description">A focused collection of projects and responsibilities completed during my internship. Each piece highlights practical problem-solving, analytical thinking, communication and attention to detail.</p>
+                        <button class="overview-explore-link" type="button" onclick="scrollToSection('featured-section')">
+                            <span>Explore projects</span><span aria-hidden="true">→</span>
+                        </button>
                     </div>
-                    
-                    <div class="glasses-3d-stage" id="stage3d">
-                        <!-- Lightweight CSS preview remains visible until the large GLB has fully downloaded. -->
-                        <div class="model-poster" id="modelPoster" aria-hidden="true">
-                            <div class="glasses-3d-object" id="object3d">
-                                <div class="glass-3d-frame-wrap">
-                                    <div class="glass-3d-lens-container left">
-                                        <div class="glass-3d-lens"></div>
-                                        <div class="glass-3d-hinge-block"></div>
-                                        <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
-                                    </div>
-                                    <div class="glass-3d-double-bridge"></div>
-                                    <div class="glass-3d-lens-container right">
-                                        <div class="glass-3d-lens"></div>
-                                        <div class="glass-3d-hinge-block"></div>
-                                        <div class="glass-3d-temple"><span class="glass-3d-temple-brand">LENSCIAGA</span></div>
+
+                    <div class="overview-visual-column">
+                        <div class="overview-visual-outline" aria-hidden="true"></div>
+                        <div class="glasses-3d-stage overview-case-stage" id="stage3d" role="button" tabindex="0" aria-label="Open the eyeglasses case and reveal the interactive 3D model">
+                            <div class="overview-case-hint" aria-hidden="true">
+                                <span class="overview-case-hint-dot"></span>
+                                Hover or click to open
+                            </div>
+
+                            <!-- This entire preview is lightweight CSS. No GLB or viewer library is requested until interaction. -->
+                            <div class="model-poster overview-case-poster" id="modelPoster" aria-hidden="true">
+                                <div class="overview-case-scene">
+                                    <div class="overview-case-shadow"></div>
+
+                                    <div class="overview-case-object">
+                                        <div class="overview-case-base">
+                                            <div class="overview-case-interior"></div>
+                                            <div class="overview-case-front-edge">
+                                                <span>lensciaga</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="overview-case-lid">
+                                            <div class="overview-case-lid-face">
+                                                <span>lensciaga</span>
+                                            </div>
+                                            <div class="overview-case-lid-inner"></div>
+                                        </div>
+
+                                        <div class="overview-folding-glasses">
+                                            <div class="overview-glasses-arm overview-glasses-arm-left"></div>
+                                            <div class="overview-glasses-arm overview-glasses-arm-right"></div>
+                                            <div class="overview-glasses-front">
+                                                <div class="overview-glasses-lens overview-glasses-lens-left"></div>
+                                                <div class="overview-glasses-bridge"></div>
+                                                <div class="overview-glasses-lens overview-glasses-lens-right"></div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <model-viewer
-                            id="luxuryGlassesModel"
-                            class="hero-model-viewer"
-                            data-src="./eyeglasses.glb"
-                            alt="Interactive 3D model of luxury eyeglasses"
-                            camera-controls
-                            auto-rotate
-                            auto-rotate-delay="1200"
-                            rotation-per-second="18deg"
-                            shadow-intensity="1.1"
-                            shadow-softness="0.8"
-                            exposure="1.05"
-                            environment-image="neutral"
-                            camera-orbit="20deg 74deg auto"
-                            field-of-view="30deg"
-                            min-field-of-view="18deg"
-                            max-field-of-view="42deg"
-                            interaction-prompt="none"
-                            reveal="auto">
-                        </model-viewer>
+                            <model-viewer
+                                id="luxuryGlassesModel"
+                                class="hero-model-viewer overview-final-model"
+                                data-src="./eyeglasses.glb"
+                                alt="Interactive 3D model of the eyeglasses shown in this internship portfolio"
+                                camera-controls
+                                auto-rotate
+                                auto-rotate-delay="900"
+                                rotation-per-second="14deg"
+                                shadow-intensity="1.15"
+                                shadow-softness="0.85"
+                                exposure="1.05"
+                                environment-image="neutral"
+                                camera-orbit="20deg 74deg auto"
+                                field-of-view="30deg"
+                                min-field-of-view="18deg"
+                                max-field-of-view="42deg"
+                                interaction-prompt="none"
+                                reveal="auto">
+                            </model-viewer>
 
-                        <div class="model-load-panel" id="modelLoadPanel" role="status" aria-live="polite">
-                            <span class="model-load-note" id="modelLoadStatus">Preparing interactive 3D…</span>
-                            <div class="model-progress-track" aria-hidden="true">
-                                <div class="model-progress-bar" id="modelProgressBar"></div>
+                            <!-- Retained for the existing lazy model-loader logic; visually hidden and triggered after the CSS reveal. -->
+                            <button class="model-load-button overview-hidden-model-trigger" id="load3dModelButton" type="button" aria-controls="luxuryGlassesModel" tabindex="-1">Load interactive 3D</button>
+
+                            <div class="model-load-panel overview-model-load-panel" id="modelLoadPanel" role="status" aria-live="polite">
+                                <span class="model-load-note" id="modelLoadStatus">Loading interactive 3D…</span>
+                                <div class="model-progress-track" aria-hidden="true">
+                                    <div class="model-progress-bar" id="modelProgressBar"></div>
+                                </div>
+                                <span class="model-error" id="modelErrorMessage">The lightweight animated glasses remain available.</span>
                             </div>
-                            <span class="model-error" id="modelErrorMessage">The lightweight preview will remain visible.</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="hero-footer-row" style="max-width: 100%;">
-                    <button class="action-pill-btn" onclick="scrollToSection('featured-section')">View Selected Work <span>↗</span></button>
+                <div class="internship-stat-rail" aria-label="Internship portfolio highlights">
+                    <div class="internship-stat-item">
+                        <span class="internship-stat-icon" aria-hidden="true">▣</span>
+                        <div><strong>12</strong><span>Work Samples</span></div>
+                    </div>
+                    <div class="internship-stat-item">
+                        <span class="internship-stat-icon" aria-hidden="true">&lt;/&gt;</span>
+                        <div><strong>8+</strong><span>Tools &amp; Methods</span></div>
+                    </div>
+                    <div class="internship-stat-item">
+                        <span class="internship-stat-icon" aria-hidden="true">◇</span>
+                        <div><strong>1</strong><span>Internship Journey</span></div>
+                    </div>
                 </div>
             </section>
             
@@ -7812,7 +8825,7 @@
                 <div class="instagram-grid" id="portfolioGrid">
                     <!-- Dynamic Interactive Cards Layout Mapping -->
                     <div class="slot-card" onclick="openShowcase(this, 'Intelligent Glasses', 'Premium visual campaign layout asset mapping out tech glasses features side by side.', 'Engineered clean vector micro-grids with adaptive lens transparency scales.', 'Shifts presentation values directly away from simple cosmetic previews to utility understanding.', 'https://www.instagram.com/p/DTN3WlGCLr8/', 'default')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="glasses.png" alt="Glasses Slot Asset">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="glasses.png" alt="Glasses Slot Asset">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 01</div>
                             <div class="slot-title">Intelligent Glasses</div>
@@ -7820,7 +8833,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Tinted Luxury Glasses', 'Premium tinted configuration exploring interactive viewport aesthetics, layered protective filters, and customized structural frame outlines.', 'Rendered progressive color density shaders synchronized with dynamic layout frames.', 'Delivers contextual product validation overlays alongside luxury video playback frames.', 'https://www.instagram.com/reel/DTe4BrTiO12/', 'tinted')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="tinted.png" alt="Tinted Luxury Glasses Frame Asset">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="tinted.png" alt="Tinted Luxury Glasses Frame Asset">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 02</div>
                             <div class="slot-title">Tinted Glasses</div>
@@ -7828,7 +8841,7 @@
                     </div>
 
                     <div class="slot-card wing-slot" onclick="openShowcase(this, 'Doffy Frameless Design', 'An architectural exploration of space, future shapes and dynamic content balance values featuring tailored gradient optics.', 'Applied customized grid geometry alongside asset file arrays.', 'Designed for interactive digital interface clarity updates.', '#', 'doffy')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="doffy1.png" alt="Blue wing-shaped rimless glasses">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="doffy1.png" alt="Blue wing-shaped rimless glasses">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 03</div>
                             <div class="slot-title">Doffy Glasses</div>
@@ -7836,7 +8849,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Butty Glasses', 'Premium visual configuration utilizing high fidelity custom lens overlays combined with dynamic motion playback layers.', 'Synchronized local video processing with frame element arrays.', 'Optimizing presentation density profiles for interactive showcase displays.', 'https://www.instagram.com/reel/DUH-ET0iOxz/', 'butty')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="butty1.png" alt="Butty Glasses Active Slot">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="butty1.png" alt="Butty Glasses Active Slot">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 04</div>
                             <div class="slot-title">Butty Glasses</div>
@@ -7844,7 +8857,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Clip Glasses', 'Minimalist tactical attachment blueprint integrating structural engineering layouts with sharp custom optics.', 'Configured localized frame assets and single layer picture alignments.', 'Refining structural precision metrics within close-up frame presentations.', 'https://www.instagram.com/reel/DUsIzl6CPwA/', 'clip')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="clip1.png" alt="Clip Glasses Front Asset View">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="clip1.png" alt="Clip Glasses Front Asset View">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 05</div>
                             <div class="slot-title">Clip Glasses</div>
@@ -7852,7 +8865,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Pink Glasses', 'Vibrant luxury frames combining striking modern aesthetics with carefully balanced soft-tone glass dynamics.', 'Executed clean spatial gradient curves and local image layering matrices.', 'Elevating product visibility profiles through vibrant contrast frame alignments.', 'https://www.instagram.com/p/DTdHglQCJBB/', 'pink')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="pink1.png" alt="Pink Glasses Preview Asset">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="pink1.png" alt="Pink Glasses Preview Asset">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 06</div>
                             <div class="slot-title">Pink Glasses</div>
@@ -7860,7 +8873,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Gold Glasses', 'High-end structural concept displaying refined architectural styling cues and signature luxurious trim levels.', 'Assembled multi-layered hardware frameworks paired with fine geometric accents.', 'Setting definitive branding precedents for upscale high-precision product rollouts.', '#', 'gold')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="gold1.png" alt="Gold Glasses Active Preview">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="gold1.png" alt="Gold Glasses Active Preview">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 07</div>
                             <div class="slot-title">Gold Glasses</div>
@@ -7868,7 +8881,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Circle Glasses', 'Advanced sleek geometry concept utilizing structured radius alignments and pristine presentation elements.', 'Calculated precise lens concentric metrics paired with multi-layer image staging.', 'Establishing continuous flow aesthetics across high-contrast premium design optics.', '#', 'circle')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="circle1.png" alt="Circle Glasses Active Thumbnail">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="circle1.png" alt="Circle Glasses Active Thumbnail">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 08</div>
                             <div class="slot-title">Circle Glasses</div>
@@ -7876,7 +8889,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Multi Glasses Campaign', 'High precision product array tracking custom layered styles and variable density frame structures.', 'Synchronized multimain video output layouts across unified asset packages.', 'To scale presentation fidelity models within comprehensive dynamic showcases.', '#', 'multi')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="multi7.png" alt="Multi Glasses Thumbnail Preview Layout">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="multi7.png" alt="Multi Glasses Thumbnail Preview Layout">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 09</div>
                             <div class="slot-title">Multi Glasses</div>
@@ -7884,7 +8897,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Hand Campaign Focus', 'Macro close-up interactive presentation exploring form, natural geometry, and continuous product flow dynamics.', 'Isolated handmain motion framework streaming localized configurations.', 'Establishing immediate utility focus profiles within minimal presentation bounds.', '#', 'hand')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="hand1.png" alt="Hand Glasses Creative Focus Mapping">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="hand1.png" alt="Hand Glasses Creative Focus Mapping">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 10</div>
                             <div class="slot-title">Hand Glasses</div>
@@ -7892,7 +8905,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Aura Glasses', 'Luminescent design concept tracking modern dynamic frame outlines alongside pristine environmental reflections.', 'Configured isolated single-layer spatial hardware definitions.', 'Emphasizing elegant standalone brand value matrices within minimal structures.', '#', 'aura')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="auramain.png" alt="Aura Glasses Main Preview">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="auramain.png" alt="Aura Glasses Main Preview">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 11</div>
                             <div class="slot-title">Aura Glasses</div>
@@ -7900,7 +8913,7 @@
                     </div>
 
                     <div class="slot-card" onclick="openShowcase(this, 'Cat Glasses', 'Aggressive sleek architectural contour design emphasizing sharp geometry and multi-tonal lens dynamics.', 'Configured an interactive five-stage image carousel inside the left viewport mapping close-up angles.', 'Delivering granular technical asset insights across variable depth planes.', '#', 'cat')">
-                        <img loading="lazy" decoding="async" class="slot-card-img" src="catmain.png" alt="Cat Glasses Main Preview">
+                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="catmain.png" alt="Cat Glasses Main Preview">
                         <div class="slot-overlay">
                             <div class="slot-label">Case Study 12</div>
                             <div class="slot-title">Cat Glasses</div>
@@ -8000,8 +9013,6 @@
             <div class="gold-hinge-assembly hinge-left"></div>
             
             <div class="rimless-lens lens-display-left" id="leftLensAnchor">
-                <button type="button" class="lens-nav-btn lens-nav-prev" id="modalLensPrevBtn" aria-label="Previous project image" onclick="moveLensSlider(-1)">‹</button>
-                <button type="button" class="lens-nav-btn lens-nav-next" id="modalLensNextBtn" aria-label="Next project image" onclick="moveLensSlider(1)">›</button>
                 <div class="lens-slider-wrapper" id="lensSliderWrapper"></div>
             </div>
             
@@ -8041,6 +9052,16 @@
             <div class="gold-hinge-assembly hinge-right"></div>
             <div class="glasses-temple temple-right"><div class="baroque-gold-inlay"></div></div>
         </div>
+
+        <!-- Kept outside the clipped lens so unusual lens silhouettes cannot
+             block clicks or crop the controls. JavaScript aligns these arrows
+             to the actual left-lens rectangle for every project shape. -->
+        <button type="button" class="lens-nav-btn lens-nav-prev" id="modalLensPrevBtn"
+                aria-label="Previous project image"
+                onclick="event.stopPropagation(); moveLensSlider(-1)">‹</button>
+        <button type="button" class="lens-nav-btn lens-nav-next" id="modalLensNextBtn"
+                aria-label="Next project image"
+                onclick="event.stopPropagation(); moveLensSlider(1)">›</button>
     </div>
 
     <script>
@@ -8054,6 +9075,47 @@
 
         const compactShowcaseMedia = window.matchMedia('(max-width: 768px)');
         const responsiveFeaturedFlow = window.matchMedia('(max-width: 1120px)');
+
+
+        // TRUE LAZY LOADING FOR PROJECT THUMBNAILS
+        // Native loading="lazy" can still fetch an entire nearby section.
+        // data-src prevents any project image request until a card approaches view.
+        const portfolioThumbs = Array.from(document.querySelectorAll('#portfolioGrid .slot-card-img[data-src]'));
+
+        function hydratePortfolioThumbnail(image, priority = 'auto') {
+            if (!image || !image.dataset.src) return;
+            const source = image.dataset.src;
+            image.addEventListener('load', () => {
+                image.classList.add('is-loaded');
+                const wingCard = image.closest('.wing-slot');
+                if (wingCard) wingCard.style.setProperty('--wing-card-image', `url("${source}")`);
+            }, { once: true });
+            image.addEventListener('error', () => image.classList.add('is-loaded'), { once: true });
+            image.loading = priority === 'high' ? 'eager' : 'lazy';
+            image.fetchPriority = priority;
+            image.src = source;
+            delete image.dataset.src;
+        }
+
+        // The first desktop row (or the first mobile row) is requested immediately.
+        // These are the cards a visitor can reach first, so their imagery wins network
+        // priority over decorative or below-the-fold media.
+        const urgentThumbnailCount = compactShowcaseMedia.matches ? 3 : 6;
+        portfolioThumbs.slice(0, urgentThumbnailCount).forEach(image => hydratePortfolioThumbnail(image, 'high'));
+        const deferredPortfolioThumbs = portfolioThumbs.slice(urgentThumbnailCount);
+
+        if ('IntersectionObserver' in window) {
+            const portfolioImageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    hydratePortfolioThumbnail(entry.target, 'auto');
+                    observer.unobserve(entry.target);
+                });
+            }, { rootMargin: '900px 0px', threshold: 0.01 });
+            deferredPortfolioThumbs.forEach(image => portfolioImageObserver.observe(image));
+        } else {
+            deferredPortfolioThumbs.forEach(image => hydratePortfolioThumbnail(image, 'auto'));
+        }
 
         let responsiveViewportFrame = 0;
         function syncResponsiveViewport() {
@@ -8079,7 +9141,7 @@
         const wingSlotCard = document.querySelector('.slot-card.wing-slot');
         if (wingSlotCard) {
             const wingSlotImage = wingSlotCard.querySelector('.slot-card-img');
-            if (wingSlotImage) {
+            if (wingSlotImage && wingSlotImage.classList.contains('is-loaded')) {
                 const wingSource = wingSlotImage.currentSrc || wingSlotImage.src;
                 wingSlotCard.style.setProperty('--wing-card-image', `url("${wingSource}")`);
             }
@@ -8095,7 +9157,7 @@
 
         async function animateAndCommit(element, keyframes, options) {
             const canSkipAnimatedFilter = element.matches?.(
-                '.kinetic-card-ghost, .kinetic-box, .folded-lens, .proxy-bridge, .proxy-hinge, .proxy-temple'
+                '.kinetic-card-ghost, .kinetic-box, .folded-lens, .proxy-bridge, .proxy-hinge, .proxy-temple, .rimless-glasses-assembly, .modal-mesh-bg'
             );
             const animationFrames = canSkipAnimatedFilter
                 ? keyframes.map(frame => {
@@ -8144,34 +9206,61 @@
             proxyParts.forEach(part => part.removeAttribute('style'));
         }
 
+        let adjacentLensHydrationHandle = 0;
         function hydrateLensMediaAroundActiveSlide() {
             const wrapper = document.getElementById('lensSliderWrapper');
             const slides = Array.from(wrapper.children);
             if (!slides.length) return;
 
-            const nearbyIndexes = new Set([
-                activeLensSlide,
-                (activeLensSlide - 1 + slides.length) % slides.length,
-                (activeLensSlide + 1) % slides.length
-            ]);
-
             slides.forEach((slide, index) => {
                 const image = slide.querySelector('img');
                 const video = slide.querySelector('video');
+                const isActive = index === activeLensSlide;
 
-                if (image && nearbyIndexes.has(index) && image.dataset.src && !image.getAttribute('src')) {
+                if (image && isActive && showcaseMediaPlaybackEnabled && image.dataset.src && !image.getAttribute('src')) {
                     image.src = image.dataset.src;
                     delete image.dataset.src;
                 }
 
                 if (video) {
-                    if (index === activeLensSlide && showcaseMediaPlaybackEnabled && document.visibilityState === 'visible') {
+                    if (isActive && showcaseMediaPlaybackEnabled && document.visibilityState === 'visible') {
+                        if (video.dataset.src && !video.getAttribute('src')) {
+                            video.src = video.dataset.src;
+                            delete video.dataset.src;
+                            video.load();
+                        }
                         video.play().catch(() => {});
                     } else {
                         video.pause();
                     }
                 }
             });
+
+            // Warm only the two neighbouring still images after the active slide.
+            // Videos never prefetch; they load exclusively when selected.
+            if (!showcaseMediaPlaybackEnabled) return;
+            const warmAdjacent = () => {
+                adjacentLensHydrationHandle = 0;
+                const neighbours = [
+                    (activeLensSlide - 1 + slides.length) % slides.length,
+                    (activeLensSlide + 1) % slides.length
+                ];
+                neighbours.forEach(index => {
+                    const image = slides[index]?.querySelector('img');
+                    if (image?.dataset.src && !image.getAttribute('src')) {
+                        image.src = image.dataset.src;
+                        delete image.dataset.src;
+                    }
+                });
+            };
+
+            if (adjacentLensHydrationHandle) {
+                if ('cancelIdleCallback' in window) cancelIdleCallback(adjacentLensHydrationHandle);
+                else clearTimeout(adjacentLensHydrationHandle);
+            }
+            adjacentLensHydrationHandle = 'requestIdleCallback' in window
+                ? requestIdleCallback(warmAdjacent, { timeout: 1800 })
+                : setTimeout(warmAdjacent, 900);
         }
 
         function renderLensMarkup(wrapper, markup) {
@@ -8187,18 +9276,21 @@
                     image.decoding = 'async';
                     image.loading = 'lazy';
                     image.fetchPriority = 'low';
-                    if (index > 1) {
-                        const source = image.getAttribute('src');
-                        if (source) {
-                            image.dataset.src = source;
-                            image.removeAttribute('src');
-                        }
+                    const source = image.getAttribute('src');
+                    if (source) {
+                        image.dataset.src = source;
+                        image.removeAttribute('src');
                     }
                 }
 
                 if (video) {
+                    const source = video.getAttribute('src');
+                    if (source) {
+                        video.dataset.src = source;
+                        video.removeAttribute('src');
+                    }
                     video.autoplay = false;
-                    video.preload = 'metadata';
+                    video.preload = 'none';
                     video.muted = true;
                     video.playsInline = true;
                 }
@@ -8217,21 +9309,217 @@
                 image.setAttribute('loading', 'lazy');
                 image.setAttribute('fetchpriority', 'low');
 
-                if (index > 1) {
-                    const source = image.getAttribute('src');
-                    if (source) {
-                        image.dataset.src = source;
-                        image.removeAttribute('src');
-                    }
+                const source = image.getAttribute('src');
+                if (source) {
+                    image.dataset.src = source;
+                    image.removeAttribute('src');
                 }
             });
             hydrateLensMediaAroundActiveSlide();
         }
 
+
+        function primeActiveLensMedia(fallbackPoster = '') {
+            const wrapper = document.getElementById('lensSliderWrapper');
+            const activeSlide = wrapper?.children?.[activeLensSlide];
+            const image = activeSlide?.querySelector('img');
+            const video = activeSlide?.querySelector('video');
+
+            if (image) {
+                image.loading = 'eager';
+                image.fetchPriority = 'high';
+                if (image.dataset.src && !image.getAttribute('src')) {
+                    image.src = image.dataset.src;
+                    delete image.dataset.src;
+                }
+
+                if (image.complete && image.naturalWidth > 0) {
+                    return image.decode?.().catch(() => {}) || Promise.resolve();
+                }
+
+                return new Promise(resolve => {
+                    image.addEventListener('load', () => {
+                        const decoded = image.decode?.();
+                        if (decoded) decoded.catch(() => {}).finally(resolve);
+                        else resolve();
+                    }, { once: true });
+                    image.addEventListener('error', resolve, { once: true });
+                });
+            }
+
+            if (video) {
+                if (fallbackPoster) video.poster = fallbackPoster;
+                video.preload = 'auto';
+                if (video.dataset.src && !video.getAttribute('src')) {
+                    video.src = video.dataset.src;
+                    delete video.dataset.src;
+                }
+                video.load();
+
+                if (video.readyState >= 2) return Promise.resolve();
+                return new Promise(resolve => {
+                    video.addEventListener('loadeddata', resolve, { once: true });
+                    video.addEventListener('error', resolve, { once: true });
+                });
+            }
+
+            return Promise.resolve();
+        }
+
+
+        function getShowcasePoster(contextMode, fallbackPoster = '') {
+            const asset = typeof showcaseFirstAssets !== 'undefined' ? showcaseFirstAssets[contextMode] : null;
+            // The clicked thumbnail is already painted and therefore the safest
+            // zero-delay first frame. The intended project poster/media fades in
+            // above it as soon as decoding finishes.
+            return fallbackPoster || asset?.poster || (asset?.type === 'image' ? asset.src : '');
+        }
+
+        function attachInstantFirstMedia(contextMode, wrapper, fallbackPoster = '') {
+            const firstSlide = wrapper?.children?.[0];
+            if (!firstSlide) return null;
+
+            const poster = getShowcasePoster(contextMode, fallbackPoster);
+            if (poster) {
+                const safePoster = String(poster).replace(/"/g, '\\"');
+                firstSlide.classList.add('has-instant-poster');
+                firstSlide.style.setProperty('--instant-poster', `url("${safePoster}")`);
+            }
+
+            const record = typeof showcasePreloadRegistry !== 'undefined'
+                ? showcasePreloadRegistry.get(contextMode)
+                : null;
+            const pooledMedia = record?.media;
+            const currentMedia = firstSlide.querySelector('img, video');
+
+            const bindSmoothMediaReveal = (media) => {
+                if (!media) return;
+                firstSlide.classList.remove('is-media-ready');
+                firstSlide.classList.add('is-media-pending');
+
+                let revealed = false;
+                const reveal = () => {
+                    if (revealed) return;
+                    revealed = true;
+                    requestAnimationFrame(() => {
+                        firstSlide.classList.remove('is-media-pending');
+                        firstSlide.classList.add('is-media-ready');
+                    });
+                };
+
+                if (media.tagName === 'VIDEO') {
+                    if (media.readyState >= 2) reveal();
+                    else {
+                        media.addEventListener('loadeddata', reveal, { once: true });
+                        media.addEventListener('canplay', reveal, { once: true });
+                        media.addEventListener('error', reveal, { once: true });
+                    }
+                } else if (media.complete && media.naturalWidth > 0) {
+                    const decoded = media.decode?.();
+                    if (decoded) decoded.catch(() => {}).finally(reveal);
+                    else reveal();
+                } else {
+                    media.addEventListener('load', () => {
+                        const decoded = media.decode?.();
+                        if (decoded) decoded.catch(() => {}).finally(reveal);
+                        else reveal();
+                    }, { once: true });
+                    media.addEventListener('error', reveal, { once: true });
+                }
+            };
+
+            if (pooledMedia) {
+                pooledMedia.dataset.instantPreloaded = 'true';
+                if (currentMedia?.getAttribute('alt') && pooledMedia.tagName === 'IMG') {
+                    pooledMedia.alt = currentMedia.getAttribute('alt');
+                }
+                if (pooledMedia.tagName === 'VIDEO') {
+                    pooledMedia.muted = true;
+                    pooledMedia.playsInline = true;
+                    pooledMedia.loop = true;
+                    pooledMedia.preload = 'auto';
+                    if (poster) pooledMedia.poster = poster;
+                } else {
+                    pooledMedia.loading = 'eager';
+                    pooledMedia.fetchPriority = 'high';
+                    pooledMedia.decoding = 'async';
+                }
+
+                if (currentMedia !== pooledMedia) currentMedia?.replaceWith(pooledMedia);
+                bindSmoothMediaReveal(pooledMedia);
+                return pooledMedia;
+            }
+
+            if (currentMedia?.tagName === 'VIDEO' && poster) currentMedia.poster = poster;
+            bindSmoothMediaReveal(currentMedia);
+            return currentMedia;
+        }
+
         let lensSlideSettleTimer = 0;
+        let lensNavigationFrame = 0;
+
+        function getLensNavigationPercent(name, fallback) {
+            const modal = document.getElementById('showcaseModal');
+            const raw = getComputedStyle(modal).getPropertyValue(name).trim();
+            const value = Number.parseFloat(raw);
+            return Number.isFinite(value) ? value / 100 : fallback;
+        }
+
+        function updateLensNavigationState() {
+            const modal = document.getElementById('showcaseModal');
+            const lens = document.getElementById('leftLensAnchor');
+            const wrapper = document.getElementById('lensSliderWrapper');
+            const prevBtn = document.getElementById('modalLensPrevBtn');
+            const nextBtn = document.getElementById('modalLensNextBtn');
+            if (!modal || !lens || !wrapper || !prevBtn || !nextBtn) return;
+
+            const slideCount = wrapper.querySelectorAll('.lens-slider-slide').length;
+            totalLensSlides = Math.max(1, slideCount);
+            const lensStyle = getComputedStyle(lens);
+            const rect = lens.getBoundingClientRect();
+            const usableLens = modal.classList.contains('active') &&
+                lensStyle.display !== 'none' && lensStyle.visibility !== 'hidden' &&
+                rect.width > 40 && rect.height > 40;
+            const showControls = modal.classList.contains('carousel-ready') && usableLens && slideCount > 1;
+
+            [prevBtn, nextBtn].forEach(button => {
+                button.classList.toggle('visible-btn', showControls);
+                button.disabled = !showControls;
+                button.setAttribute('aria-hidden', String(!showControls));
+            });
+
+            if (!showControls) {
+                prevBtn.classList.remove('is-positioned');
+                nextBtn.classList.remove('is-positioned');
+                return;
+            }
+
+            const previousX = getLensNavigationPercent('--lens-nav-prev-x', 0.13);
+            const nextX = getLensNavigationPercent('--lens-nav-next-x', 0.87);
+            const y = getLensNavigationPercent('--lens-nav-y', 0.50);
+            const top = rect.top + rect.height * y;
+
+            prevBtn.style.setProperty('--lens-nav-left', `${rect.left + rect.width * previousX}px`);
+            prevBtn.style.setProperty('--lens-nav-top', `${top}px`);
+            nextBtn.style.setProperty('--lens-nav-left', `${rect.left + rect.width * nextX}px`);
+            nextBtn.style.setProperty('--lens-nav-top', `${top}px`);
+            prevBtn.classList.add('is-positioned');
+            nextBtn.classList.add('is-positioned');
+        }
+
+        function scheduleLensNavigationPosition() {
+            cancelAnimationFrame(lensNavigationFrame);
+            lensNavigationFrame = requestAnimationFrame(updateLensNavigationState);
+        }
+
         function moveLensSlider(direction) {
             const wrapper = document.getElementById('lensSliderWrapper');
-            activeLensSlide = (activeLensSlide + direction + totalLensSlides) % totalLensSlides;
+            if (!wrapper) return;
+            const slideCount = wrapper.querySelectorAll('.lens-slider-slide').length;
+            if (slideCount <= 1) return;
+
+            totalLensSlides = slideCount;
+            activeLensSlide = (activeLensSlide + direction + slideCount) % slideCount;
             wrapper.classList.add('is-sliding');
             wrapper.style.transform = `translate3d(-${activeLensSlide * 100}%, 0, 0)`;
             hydrateLensMediaAroundActiveSlide();
@@ -8239,6 +9527,7 @@
             lensSlideSettleTimer = window.setTimeout(() => {
                 wrapper.classList.remove('is-sliding');
                 scheduleLensFitAndTheme();
+                scheduleLensNavigationPosition();
             }, reduceShowcaseMotion ? 0 : 680);
         }
 
@@ -8281,8 +9570,16 @@
             
             activeLensSlide = 0;
             wrapper.style.transform = 'translate3d(0, 0, 0)';
-            prevBtn.classList.add('visible-btn');
-            nextBtn.classList.add('visible-btn');
+
+            // Keep both carousel arrows unavailable throughout the card/case
+            // animation. They are enabled only after the final glasses frame
+            // is fully visible and able to receive navigation input.
+            modal.classList.remove('carousel-ready');
+            [prevBtn, nextBtn].forEach(button => {
+                button.classList.remove('visible-btn', 'is-positioned');
+                button.disabled = true;
+                button.setAttribute('aria-hidden', 'true');
+            });
             
             // Content setup matrices
             if (contextMode === 'multi') {
@@ -8370,6 +9667,8 @@
             }
 
             prepareLensMediaForOnDemandLoading();
+            updateLensNavigationState();
+            scheduleLensNavigationPosition();
 
             document.getElementById('modalTargetTitle').innerText = title;
             document.getElementById('modalTargetDesc').innerText = desc;
@@ -8377,24 +9676,30 @@
             document.getElementById('modalTargetPurp').innerText = purpose;
             document.getElementById('modalTargetLink').href = instaLink;
 
-            // Keep video decoding away from the kinetic case animation.
-            // Metadata is prepared now; playback starts when the lens content reveals.
-            const initialVideoElement = wrapper.querySelector('video');
-            if (initialVideoElement) initialVideoElement.load();
-
             // Capture the clicked card before locking page scroll.
             const cardRect = cardElement.getBoundingClientRect();
             const cardImage = cardElement.querySelector('.slot-card-img');
-            const imageSource = cardImage ? cardImage.currentSrc || cardImage.src : '';
+            const imageSource = cardImage ? (cardImage.dataset.src || cardImage.currentSrc || cardImage.src) : '';
             currentShowcaseContext = contextMode;
             currentShowcaseCardImage = imageSource;
             applyLensFallbackTheme(contextMode, imageSource);
 
+            // Reuse the media element already preloaded at page startup. For video
+            // slots, its matching still image remains visible as a zero-delay poster.
+            prewarmShowcaseMedia(contextMode, 'high', true);
+            const instantPosterSource = getShowcasePoster(contextMode, imageSource);
+            attachInstantFirstMedia(contextMode, wrapper, instantPosterSource);
+
+            // Continue decoding in parallel with the case morph. The popup never
+            // waits for this promise because the decoded poster is already visible.
+            const activeMediaReady = primeActiveLensMedia(instantPosterSource);
+            activeMediaReady.catch?.(() => {});
+
             if (compactShowcaseMedia.matches) {
                 try {
                     resetKineticTransition();
-                    modal.classList.remove('is-closing', 'is-animating', 'is-handoff', 'is-content-revealing');
-                    modal.classList.add('is-content-prep');
+                    modal.classList.remove('is-closing', 'is-animating', 'is-handoff', 'is-content-revealing', 'is-content-synced');
+                    modal.classList.add('is-content-prep', 'is-content-synced');
                     assembly.style.opacity = '0';
                     assembly.style.filter = 'blur(3px)';
                     assembly.style.transform = 'translate3d(0, 22px, 0) scale(0.958)';
@@ -8403,28 +9708,32 @@
                     document.body.style.setProperty('--scrollbar-compensation', `${scrollbarCompensation}px`);
                     document.body.classList.add('showcase-lock');
                     await nextPaint();
+                    // Reveal the complete populated frame immediately. The selected
+                    // media has already been loading since the click, and video slots use
+                    // the card image as a zero-delay poster until their first frame decodes.
+                    showcaseMediaPlaybackEnabled = false;
+                    modal.classList.add('is-content-synced');
+                    modal.classList.remove('is-content-prep', 'is-content-revealing');
+                    await nextPaint();
+
+                    await animateAndCommit(assembly, [
+                        { opacity: '0', filter: 'blur(2px)', transform: 'translate3d(0, 18px, 0) scale(0.965)' },
+                        { offset: 0.45, opacity: '0.62', filter: 'blur(0.7px)', transform: 'translate3d(0, 7px, 0) scale(0.986)' },
+                        { offset: 0.84, opacity: '1', filter: 'blur(0)', transform: 'translate3d(0, -1px, 0) scale(1.002)' },
+                        { opacity: '1', filter: 'blur(0)', transform: 'translate3d(0, 0, 0) scale(1)' }
+                    ], {
+                        duration: 720,
+                        easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
+                    });
 
                     showcaseMediaPlaybackEnabled = true;
                     hydrateLensMediaAroundActiveSlide();
-                    modal.classList.add('is-content-revealing');
-                    await Promise.all([
-                        animateAndCommit(assembly, [
-                            { opacity: '0', filter: 'blur(3px)', transform: 'translate3d(0, 22px, 0) scale(0.958)' },
-                            { offset: 0.42, opacity: '0.54', filter: 'blur(1.2px)', transform: 'translate3d(0, 9px, 0) scale(0.982)' },
-                            { offset: 0.82, opacity: '1', filter: 'blur(0)', transform: 'translate3d(0, -1px, 0) scale(1.003)' },
-                            { opacity: '1', filter: 'blur(0)', transform: 'translate3d(0, 0, 0) scale(1)' }
-                        ], {
-                            duration: 820,
-                            easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
-                        }),
-                        sleep(1180)
-                    ]);
-
-                    modal.classList.remove('is-content-prep', 'is-content-revealing');
                     assembly.style.removeProperty('opacity');
                     assembly.style.removeProperty('filter');
                     assembly.style.removeProperty('transform');
+                    modal.classList.add('carousel-ready');
                     scheduleLensFitAndTheme();
+                    scheduleLensNavigationPosition();
                 } catch (error) {
                     console.error('Compact showcase fallback:', error);
                     modal.classList.add('active');
@@ -8433,7 +9742,9 @@
                     document.body.classList.add('showcase-lock');
                     assembly.style.removeProperty('opacity');
                     assembly.style.removeProperty('transform');
+                    modal.classList.add('carousel-ready');
                     scheduleLensFitAndTheme();
+                    scheduleLensNavigationPosition();
                 } finally {
                     showcaseAnimating = false;
                 }
@@ -8483,9 +9794,9 @@
                 stage3d.classList.toggle('shape-eighth-slot', useEighthSlotShape);
                 stage3d.classList.toggle('shape-eleventh-slot', useEleventhSlotShape);
                 stage3d.classList.toggle('shape-twelfth-slot', useTwelfthSlotShape);
-                modal.classList.remove('is-closing');
+                modal.classList.remove('is-closing', 'is-content-synced');
                 modal.classList.remove('is-content-revealing');
-                modal.classList.add('active', 'is-animating', 'is-content-prep');
+                modal.classList.add('active', 'is-animating', 'is-content-prep', 'is-content-synced');
                 scheduleLensFitAndTheme();
                 const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
                 document.body.style.setProperty('--scrollbar-compensation', `${scrollbarCompensation}px`);
@@ -8499,7 +9810,7 @@
                 stage3d.classList.add('is-running');
                 stage3d.style.display = 'block';
                 box3d.style.setProperty('--kinetic-card-image', imageSource ? `url("${imageSource}")` : 'none');
-                foldedGlasses.style.setProperty('--kinetic-lens-image', imageSource ? `url("${imageSource}")` : 'none');
+                foldedGlasses.style.setProperty('--kinetic-lens-image', instantPosterSource ? `url("${instantPosterSource}")` : 'none');
 
                 const cardRadius = getComputedStyle(cardElement).borderRadius || '12px';
                 const rectangleClip = 'polygon(0% 0%, 100% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%, 0% 100%, 0% 0%)';
@@ -8531,7 +9842,7 @@
                     left: `${cardRect.left}px`,
                     width: `${cardRect.width}px`,
                     height: `${cardRect.height}px`,
-                    opacity: '0',
+                    opacity: '1',
                     transform: 'rotateX(0deg) rotateY(0deg) rotateZ(0deg) translateZ(0px)',
                     borderRadius: cardRadius
                 });
@@ -8549,6 +9860,7 @@
                 });
 
                 await nextPaint();
+                fitLensContent();
                 cardElement.style.opacity = '0';
 
                 // One overlapped motion timeline: the card settles into its case while
@@ -8581,10 +9893,13 @@
                     lensRise: 1460,
                     unfoldDelay: 1540,
                     unfold: 1280,
-                    boxExitDelay: 2160,
+                    // End the case exit with the lens unfold, removing the old
+                    // static pause before the popup appeared.
+                    boxExitDelay: 1920,
                     boxExit: 900,
-                    handoff: 720,
-                    contentReveal: 1260
+                    // Begin the real-frame dissolve just before the proxy settles.
+                    handoffDelay: 2660,
+                    handoff: 560
                 };
 
                 Object.assign(box3d.style, {
@@ -8604,87 +9919,41 @@
                 const proxyHingeLeft = foldedGlasses.querySelector('.proxy-hinge.left');
                 const proxyHingeRight = foldedGlasses.querySelector('.proxy-hinge.right');
 
-                const cardToBox = animateAndCommit(box3d, [
-                    {
-                        opacity: '0.02',
-                        transform: `translate3d(${startTranslateX}px, ${startTranslateY}px, 0) scale3d(${startScaleX}, ${startScaleY}, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`,
-                        borderRadius: cardRadius
-                    },
-                    {
-                        offset: 0.08,
-                        opacity: '0.06',
-                        transform: `translate3d(${startTranslateX * 0.985}px, ${startTranslateY * 0.985 - 5}px, 8px) scale3d(${mixValue(startScaleX, 1, 0.025)}, ${mixValue(startScaleY, 1, 0.025)}, 1) rotateX(0.7deg) rotateY(-0.1deg) rotateZ(-0.1deg)`,
-                        borderRadius: cardRadius
-                    },
-                    {
-                        offset: 0.27,
-                        opacity: '0.20',
-                        transform: `translate3d(${startTranslateX * 0.76}px, ${startTranslateY * 0.76}px, 9px) scale3d(${mixValue(startScaleX, 1, 0.25)}, ${mixValue(startScaleY, 1, 0.25)}, 1) rotateX(3.5deg) rotateY(-0.45deg) rotateZ(-0.65deg)`,
-                        borderRadius: '15px'
-                    },
-                    {
-                        offset: 0.54,
-                        opacity: '0.62',
-                        transform: `translate3d(${startTranslateX * 0.42}px, ${startTranslateY * 0.42}px, 20px) scale3d(${mixValue(startScaleX, 1, 0.58)}, ${mixValue(startScaleY, 1, 0.58)}, 1) rotateX(11deg) rotateY(-1.35deg) rotateZ(-1.9deg)`,
-                        borderRadius: '19px'
-                    },
-                    {
-                        offset: 0.82,
-                        opacity: '0.96',
-                        transform: `translate3d(${startTranslateX * 0.09}px, ${startTranslateY * 0.09}px, 43px) scale3d(${mixValue(startScaleX, 1, 0.92)}, ${mixValue(startScaleY, 1, 0.92)}, 1) rotateX(27deg) rotateY(-3.3deg) rotateZ(-4.35deg)`,
-                        borderRadius: '23px'
-                    },
-                    {
-                        opacity: '1',
-                        transform: 'translate3d(0, 0, 52px) scale3d(1, 1, 1) rotateX(32deg) rotateY(-4deg) rotateZ(-5deg)',
-                        borderRadius: '24px'
-                    }
-                ], {
+                // Both visual surfaces now follow the exact same geometry. The cloned
+                // card masks the case material only during the early part of the move,
+                // then disappears quickly without lagging behind the case.
+                const morphStops = [
+                    { offset: 0, q: 0, z: 0, rx: 0, ry: 0, rz: 0, radius: cardRadius, clip: rectangleClip },
+                    { offset: 0.08, q: 0.025, z: 8, rx: 0.7, ry: -0.1, rz: -0.1, radius: cardRadius, clip: rectangleClip },
+                    { offset: 0.27, q: 0.25, z: 9, rx: 3.5, ry: -0.45, rz: -0.65, radius: '15px', clip: rectangleClip },
+                    { offset: 0.54, q: 0.58, z: 20, rx: 11, ry: -1.35, rz: -1.9, radius: '19px', clip: softenedCaseClip },
+                    { offset: 0.68, q: 0.74, z: 31, rx: 19, ry: -2.35, rz: -3.05, radius: '21px', clip: finalCaseClip },
+                    { offset: 0.82, q: 0.92, z: 43, rx: 27, ry: -3.3, rz: -4.35, radius: '23px', clip: finalCaseClip },
+                    { offset: 1, q: 1, z: 52, rx: 32, ry: -4, rz: -5, radius: '24px', clip: finalCaseClip }
+                ];
+
+                const cardToBoxFrames = morphStops.map(stop => ({
+                    offset: stop.offset,
+                    opacity: '1',
+                    transform: `translate3d(${startTranslateX * (1 - stop.q)}px, ${startTranslateY * (1 - stop.q)}px, ${stop.z}px) scale3d(${mixValue(startScaleX, 1, stop.q)}, ${mixValue(startScaleY, 1, stop.q)}, 1) rotateX(${stop.rx}deg) rotateY(${stop.ry}deg) rotateZ(${stop.rz}deg)`,
+                    borderRadius: stop.radius
+                }));
+
+                const ghostFrames = morphStops.map(stop => ({
+                    offset: stop.offset,
+                    opacity: stop.offset <= 0.54 ? '1' : stop.offset < 0.82 ? String(Math.max(0, 1 - ((stop.offset - 0.54) / 0.22))) : '0',
+                    transform: `translate3d(${ghostTranslateX * stop.q}px, ${ghostTranslateY * stop.q}px, ${stop.z}px) scale3d(${mixValue(1, ghostScaleX, stop.q)}, ${mixValue(1, ghostScaleY, stop.q)}, 1) rotateX(${stop.rx}deg) rotateY(${stop.ry}deg) rotateZ(${stop.rz}deg)`,
+                    clipPath: stop.clip,
+                    borderRadius: stop.radius
+                }));
+
+                const cardToBox = animateAndCommit(box3d, cardToBoxFrames, {
                     duration: showcaseTiming.cardToBox,
                     easing: transitionEase
                 });
 
-                const ghostMotion = animateAndCommit(cardGhost, [
-                    {
-                        opacity: '1',
-                        transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)',
-                        clipPath: rectangleClip,
-                        borderRadius: cardRadius,
-                        filter: 'saturate(1) brightness(1) blur(0px)'
-                    },
-                    {
-                        offset: 0.10,
-                        opacity: '1',
-                        transform: `translate3d(${ghostTranslateX * 0.045}px, ${ghostTranslateY * 0.16}px, 4px) scale3d(${mixValue(1, ghostScaleX, 0.045)}, ${mixValue(1, ghostScaleY, 0.045)}, 1) rotateX(2deg) rotateY(-0.3deg) rotateZ(-0.4deg)`,
-                        clipPath: rectangleClip,
-                        borderRadius: '14px',
-                        filter: 'saturate(1) brightness(1) blur(0px)'
-                    },
-                    {
-                        offset: 0.52,
-                        opacity: '0.99',
-                        transform: `translate3d(${ghostTranslateX * 0.50}px, ${ghostTranslateY * 0.50}px, 15px) scale3d(${mixValue(1, ghostScaleX, 0.50)}, ${mixValue(1, ghostScaleY, 0.50)}, 1) rotateX(8deg) rotateY(-1deg) rotateZ(-1.4deg)`,
-                        clipPath: softenedCaseClip,
-                        borderRadius: '18px',
-                        filter: 'saturate(0.98) brightness(0.98) blur(0px)'
-                    },
-                    {
-                        offset: 0.82,
-                        opacity: '0.58',
-                        transform: `translate3d(${ghostTranslateX * 0.82}px, ${ghostTranslateY * 0.82}px, 35px) scale3d(${mixValue(1, ghostScaleX, 0.82)}, ${mixValue(1, ghostScaleY, 0.82)}, 1) rotateX(21deg) rotateY(-2.6deg) rotateZ(-3.5deg)`,
-                        clipPath: finalCaseClip,
-                        borderRadius: '23px',
-                        filter: 'saturate(0.84) brightness(0.88) blur(0.35px)'
-                    },
-                    {
-                        opacity: '0',
-                        transform: `translate3d(${ghostTranslateX}px, ${ghostTranslateY}px, 52px) scale3d(${ghostScaleX}, ${ghostScaleY}, 1) rotateX(32deg) rotateY(-4deg) rotateZ(-5deg)`,
-                        clipPath: finalCaseClip,
-                        borderRadius: '24px',
-                        filter: 'saturate(0.62) brightness(0.74) blur(0.7px)'
-                    }
-                ], {
-                    duration: showcaseTiming.cardToBox + 140,
+                const ghostMotion = animateAndCommit(cardGhost, ghostFrames, {
+                    duration: showcaseTiming.cardToBox,
                     easing: transitionEase
                 }).finally(() => cardGhost.remove());
 
@@ -8833,62 +10102,68 @@
                     easing: 'cubic-bezier(0.22, 0.72, 0.24, 1)'
                 });
 
-                await Promise.all([cardToBox, ghostMotion, caseShape, caseSkin, lidOpen, lensRise, lensUnfold, boxExit]);
+                const kineticMotion = Promise.all([cardToBox, ghostMotion, caseShape, caseSkin, lidOpen, lensRise, lensUnfold, boxExit]);
+                await sleep(showcaseTiming.handoffDelay);
 
-                // Phase 4: geometry-matched crossfade. The finished proxy and
-                // the real interactive frame occupy the same visual space for several
-                // frames, so the viewer never sees one object disappear before the next.
+                // Phase 4: geometry-matched crossfade. Prepare the selected media
+                // and remove every content-hiding class BEFORE the real frame becomes
+                // visible. The proxy therefore dissolves directly into populated lenses
+                // rather than into an empty frame that fills a moment later.
+                // Keep video playback paused during the crossfade. The decoded
+                // thumbnail/poster is already visible, preventing media decoding
+                // from stealing frames from the transition.
+                showcaseMediaPlaybackEnabled = false;
+                modal.classList.add('is-content-synced');
+                modal.classList.remove('is-content-prep', 'is-content-revealing');
+
                 assembly.style.opacity = '0';
-                assembly.style.filter = 'blur(1.4px)';
-                assembly.style.transform = 'scale(0.994) translateZ(-4px)';
+                assembly.style.filter = 'none';
+                assembly.style.transform = 'scale(1) translateZ(0)';
                 modal.classList.add('is-handoff');
                 modal.classList.remove('is-animating');
-                await nextPaint();
-
-                const handoffDuration = useTwelfthSlotShape ? showcaseTiming.handoff + 60 : showcaseTiming.handoff;
+                const handoffDuration = showcaseTiming.handoff;
                 await Promise.all([
+                    kineticMotion,
                     animateAndCommit(assembly, [
-                        { opacity: '0', filter: 'blur(1.4px)', transform: 'scale(0.994) translateZ(-4px)' },
-                        { offset: 0.28, opacity: '0.38', filter: 'blur(0.7px)', transform: 'scale(0.997) translateZ(-2px)' },
-                        { offset: 0.72, opacity: '0.94', filter: 'blur(0)', transform: 'scale(1.002) translateZ(0)' },
-                        { opacity: '1', filter: 'blur(0)', transform: 'scale(1) translateZ(0)' }
+                        { opacity: '0', transform: 'scale(1) translateZ(0)' },
+                        { offset: 0.46, opacity: '0.58', transform: 'scale(1) translateZ(0)' },
+                        { opacity: '1', transform: 'scale(1) translateZ(0)' }
                     ], {
                         duration: handoffDuration,
-                        easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
+                        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
                     }),
                     animateAndCommit(foldedGlasses, [
-                        { opacity: '1', filter: 'blur(0)', transform: 'translate3d(0, 0, 0) scale(1)' },
-                        { offset: 0.30, opacity: '0.86', filter: 'blur(0.15px)', transform: 'translate3d(0, 0, 0) scale(1.002)' },
-                        { offset: 0.72, opacity: '0.24', filter: 'blur(0.75px)', transform: 'translate3d(0, 0, 0) scale(1.006)' },
-                        { opacity: '0', filter: 'blur(1.4px)', transform: 'translate3d(0, 0, 0) scale(1.008)' }
+                        { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' },
+                        { offset: 0.46, opacity: '0.42', transform: 'translate3d(0, 0, 0) scale(1)' },
+                        { opacity: '0', transform: 'translate3d(0, 0, 0) scale(1)' }
                     ], {
                         duration: handoffDuration,
-                        easing: 'cubic-bezier(0.22, 0.72, 0.24, 1)'
+                        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
                     })
                 ]);
 
-                // Let media sharpen first, then weave the title, divider, each
-                // information block, action and close control into the lenses.
+                // The final frame is already populated during the crossfade, so no
+                // separate reveal phase or post-animation pause is required.
+                modal.classList.remove('is-handoff');
                 showcaseMediaPlaybackEnabled = true;
                 hydrateLensMediaAroundActiveSlide();
-                modal.classList.add('is-content-revealing');
-                await nextPaint();
-                modal.classList.remove('is-handoff');
                 assembly.style.removeProperty('opacity');
                 assembly.style.removeProperty('filter');
                 assembly.style.removeProperty('transform');
-                await sleep(showcaseTiming.contentReveal);
-                modal.classList.remove('is-content-prep', 'is-content-revealing');
                 resetKineticTransition();
+                modal.classList.add('carousel-ready');
                 scheduleLensFitAndTheme();
+                scheduleLensNavigationPosition();
             } catch (error) {
                 console.error('Showcase transition fallback:', error);
                 resetKineticTransition();
-                modal.classList.remove('is-animating', 'is-handoff', 'is-content-prep', 'is-content-revealing');
+                modal.classList.remove('is-animating', 'is-handoff', 'is-content-prep', 'is-content-revealing', 'is-content-synced');
                 modal.classList.add('active');
                 showcaseMediaPlaybackEnabled = true;
                 hydrateLensMediaAroundActiveSlide();
+                modal.classList.add('carousel-ready');
                 scheduleLensFitAndTheme();
+                scheduleLensNavigationPosition();
             } finally {
                 showcaseAnimating = false;
                 scheduleLensFitAndTheme();
@@ -8910,7 +10185,9 @@
 
             showcaseAnimating = true;
             showcaseMediaPlaybackEnabled = false;
+            modal.classList.remove('carousel-ready');
             modal.classList.add('is-closing');
+            updateLensNavigationState();
 
             const assembly = document.getElementById('mainAssembly');
             const mesh = modal.querySelector('.modal-mesh-bg');
@@ -8942,7 +10219,7 @@
                 })
             ]);
 
-            modal.classList.remove('active', 'is-animating', 'is-closing', 'is-handoff', 'is-content-prep', 'is-content-revealing', 'shape-second-slot', 'shape-third-slot', 'shape-fourth-slot', 'shape-fifth-slot', 'shape-sixth-slot', 'shape-seventh-slot', 'shape-eighth-slot', 'shape-eleventh-slot', 'shape-twelfth-slot');
+            modal.classList.remove('active', 'carousel-ready', 'is-animating', 'is-closing', 'is-handoff', 'is-content-prep', 'is-content-revealing', 'is-content-synced', 'shape-second-slot', 'shape-third-slot', 'shape-fourth-slot', 'shape-fifth-slot', 'shape-sixth-slot', 'shape-seventh-slot', 'shape-eighth-slot', 'shape-eleventh-slot', 'shape-twelfth-slot');
             document.body.classList.remove('showcase-lock');
             document.body.style.removeProperty('--scrollbar-compensation');
             assembly.style.removeProperty('opacity');
@@ -9362,36 +10639,197 @@
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
 
-        // Prewarm only the first popup asset when a user shows intent.
-        // This keeps initial page loading light while avoiding a blank/stuttering
-        // first frame when a project is opened.
+        // Preload the first visible popup asset for every slot. Images are decoded
+        // immediately; video slots keep a decoded matching poster and also retain
+        // one warmed video element so the popup can reuse it without a new request.
         const showcaseFirstAssets = {
-            default: ['glasses.png'], tinted: ['tintedmain.mp4', 'tinted.png'],
-            doffy: ['doffymain.mp4', 'doffy1.png'], butty: ['buttymain.mp4', 'butty1.png'],
-            clip: ['clipmain.mp4', 'clip1.png'], pink: ['pink1.png'], gold: ['gold2.png'],
-            circle: ['circlemain.mp4', 'circle1.png'], multi: ['multimain.mp4', 'multi1.png'],
-            hand: ['handmain.mp4'], aura: ['auramain.png'], cat: ['catmain.png', 'cat1.png']
+            default: { type: 'image', src: 'glasses.png', poster: 'glasses.png' },
+            tinted: { type: 'video', src: 'tintedmain.mp4', poster: 'tinted.png' },
+            doffy: { type: 'video', src: 'doffymain.mp4', poster: 'doffy1.png' },
+            butty: { type: 'video', src: 'buttymain.mp4', poster: 'butty1.png' },
+            clip: { type: 'video', src: 'clipmain.mp4', poster: 'clip1.png' },
+            pink: { type: 'image', src: 'pink1.png', poster: 'pink1.png' },
+            gold: { type: 'image', src: 'gold2.png', poster: 'gold2.png' },
+            circle: { type: 'video', src: 'circlemain.mp4', poster: 'circle1.png' },
+            multi: { type: 'video', src: 'multimain.mp4', poster: 'multi7.png' },
+            hand: { type: 'video', src: 'handmain.mp4', poster: 'hand1.png' },
+            aura: { type: 'image', src: 'auramain.png', poster: 'auramain.png' },
+            cat: { type: 'image', src: 'catmain.png', poster: 'catmain.png' }
         };
-        const warmedShowcaseAssets = new Set();
 
-        function prewarmShowcaseMedia(contextMode) {
-            (showcaseFirstAssets[contextMode] || showcaseFirstAssets.default).forEach(source => {
-                if (warmedShowcaseAssets.has(source)) return;
-                warmedShowcaseAssets.add(source);
-                if (/\.mp4(?:$|\?)/i.test(source)) {
-                    const video = document.createElement('video');
-                    video.preload = 'metadata';
-                    video.muted = true;
-                    video.src = source;
-                    video.load();
-                } else {
-                    const image = new Image();
-                    image.decoding = 'async';
-                    image.src = source;
-                }
+        const warmedShowcaseAssets = new Set();
+        const showcasePreloadRegistry = new Map();
+
+        function preloadDecodedImage(source, priority = 'auto') {
+            if (!source) return { image: null, ready: Promise.resolve() };
+            const image = new Image();
+            image.loading = 'eager';
+            image.decoding = 'async';
+            image.fetchPriority = priority;
+            const ready = new Promise(resolve => {
+                const finish = () => {
+                    const decode = image.decode?.();
+                    if (decode) decode.catch(() => {}).finally(resolve);
+                    else resolve();
+                };
+                image.addEventListener('load', finish, { once: true });
+                image.addEventListener('error', resolve, { once: true });
             });
+            image.src = source;
+            if (image.complete && image.naturalWidth > 0) {
+                return { image, ready: image.decode?.().catch(() => {}) || Promise.resolve() };
+            }
+            return { image, ready };
         }
 
+        function prewarmShowcaseMedia(contextMode, priority = 'auto', loadVideo = true) {
+            const asset = showcaseFirstAssets[contextMode] || showcaseFirstAssets.default;
+            let record = showcasePreloadRegistry.get(contextMode);
+
+            if (!record) {
+                const posterLoad = preloadDecodedImage(asset.poster, priority);
+                record = {
+                    asset,
+                    poster: asset.poster,
+                    posterImage: posterLoad.image,
+                    posterReady: posterLoad.ready,
+                    media: asset.type === 'image' ? posterLoad.image : null,
+                    mediaReady: asset.type === 'image' ? posterLoad.ready : Promise.resolve(),
+                    videoStarted: false
+                };
+                showcasePreloadRegistry.set(contextMode, record);
+            }
+
+            if (asset.type === 'video' && loadVideo && !record.videoStarted) {
+                record.videoStarted = true;
+                const video = document.createElement('video');
+                video.preload = 'auto';
+                video.muted = true;
+                video.playsInline = true;
+                video.loop = true;
+                video.autoplay = false;
+                video.poster = asset.poster || '';
+                video.dataset.instantPreloaded = 'true';
+                record.media = video;
+                record.mediaReady = new Promise(resolve => {
+                    video.addEventListener('loadeddata', resolve, { once: true });
+                    video.addEventListener('canplay', resolve, { once: true });
+                    video.addEventListener('error', resolve, { once: true });
+                });
+                video.src = asset.src;
+                video.load();
+            }
+
+            warmedShowcaseAssets.add(contextMode);
+            return Promise.allSettled([record.posterReady, record.mediaReady]);
+        }
+
+        // Warm lightweight posters progressively only when the featured work is
+        // approaching the viewport. Loading every project video at page startup was
+        // the largest source of network, decode and main-thread contention.
+        const showcasePreloadOrder = [
+            'default', 'tinted', 'doffy', 'butty', 'clip', 'pink',
+            'gold', 'circle', 'multi', 'hand', 'aura', 'cat'
+        ];
+
+        let showcasePosterQueueStarted = false;
+        function startShowcasePosterQueue() {
+            if (showcasePosterQueueStarted) return;
+            showcasePosterQueueStarted = true;
+            let index = 0;
+
+            const warmNextPoster = (deadline) => {
+                let batchCount = 0;
+                while (
+                    index < showcasePreloadOrder.length
+                    && batchCount < 2
+                    && (!deadline || deadline.timeRemaining() > 5 || deadline.didTimeout)
+                ) {
+                    const contextMode = showcasePreloadOrder[index++];
+                    batchCount += 1;
+                    prewarmShowcaseMedia(contextMode, index <= 4 ? 'high' : 'auto', false);
+                }
+
+                if (index < showcasePreloadOrder.length) {
+                    if ('requestIdleCallback' in window) {
+                        requestIdleCallback(warmNextPoster, { timeout: 700 });
+                    } else {
+                        window.setTimeout(() => warmNextPoster(null), 45);
+                    }
+                }
+            };
+
+            if ('requestIdleCallback' in window) {
+                requestIdleCallback(warmNextPoster, { timeout: 500 });
+            } else {
+                warmNextPoster(null);
+            }
+        }
+
+        const featuredPreloadTarget = document.getElementById('featured-section');
+        if ('IntersectionObserver' in window && featuredPreloadTarget) {
+            const showcasePosterObserver = new IntersectionObserver((entries, observer) => {
+                if (!entries.some(entry => entry.isIntersecting)) return;
+                startShowcasePosterQueue();
+                observer.disconnect();
+            }, { rootMargin: '1400px 0px', threshold: 0.01 });
+            showcasePosterObserver.observe(featuredPreloadTarget);
+        } else {
+            window.addEventListener('load', startShowcasePosterQueue, { once: true });
+        }
+
+        function getCardShowcaseContext(card) {
+            const inlineHandler = card?.getAttribute('onclick') || '';
+            const match = inlineHandler.match(/,\s*'([^']+)'\s*\)\s*$/);
+            return match?.[1] || 'default';
+        }
+
+        // User intent gets priority. Hover, keyboard focus or pointer-down warms
+        // only that project's video, instead of competing with every other video.
+        const showcaseModalForNavigation = document.getElementById('showcaseModal');
+        const leftLensForNavigation = document.getElementById('leftLensAnchor');
+
+        if (showcaseModalForNavigation && leftLensForNavigation) {
+            const navigationMutationObserver = new MutationObserver(() => {
+                scheduleLensNavigationPosition();
+                window.setTimeout(scheduleLensNavigationPosition, reduceShowcaseMotion ? 0 : 90);
+            });
+            navigationMutationObserver.observe(showcaseModalForNavigation, {
+                attributes: true,
+                attributeFilter: ['class', 'style']
+            });
+
+            if ('ResizeObserver' in window) {
+                const navigationResizeObserver = new ResizeObserver(scheduleLensNavigationPosition);
+                navigationResizeObserver.observe(leftLensForNavigation);
+            }
+
+            window.addEventListener('resize', scheduleLensNavigationPosition, { passive: true });
+            window.addEventListener('orientationchange', scheduleLensNavigationPosition, { passive: true });
+        }
+
+        document.querySelectorAll('#portfolioGrid .slot-card').forEach(card => {
+            let intentWarmed = false;
+            const warmSelectedProject = () => {
+                if (intentWarmed) return;
+                intentWarmed = true;
+                const contextMode = getCardShowcaseContext(card);
+                hydratePortfolioThumbnail(card.querySelector('.slot-card-img'), 'high');
+                prewarmShowcaseMedia(contextMode, 'high', true);
+            };
+
+            card.addEventListener('pointerenter', warmSelectedProject, { once: true, passive: true });
+            card.addEventListener('focusin', warmSelectedProject, { once: true });
+            card.addEventListener('pointerdown', warmSelectedProject, { once: true, passive: true });
+        });
+
+        // Apply a lighter effects tier only on constrained hardware or data-saving
+        // connections. The visual hierarchy remains intact, but costly full-screen
+        // blur and shadow work is reduced.
+        const constrainedHardware = (navigator.deviceMemory && navigator.deviceMemory <= 4)
+            || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
+            || navigator.connection?.saveData;
+        document.documentElement.classList.toggle('performance-lite', Boolean(constrainedHardware));
 
         const touchLens = document.getElementById('leftLensAnchor');
         let lensTouchStartX = 0;
@@ -9411,14 +10849,8 @@
             moveLensSlider(deltaX < 0 ? 1 : -1);
         }, { passive: true });
 
-        document.querySelectorAll('#featured-section .slot-card').forEach(card => {
-            const inlineHandler = card.getAttribute('onclick') || '';
-            const match = inlineHandler.match(/,\s*'([^']+)'\)\s*$/);
-            const contextMode = match ? match[1] : 'default';
-            card.addEventListener('pointerenter', () => prewarmShowcaseMedia(contextMode), { once: true, passive: true });
-            card.addEventListener('focusin', () => prewarmShowcaseMedia(contextMode), { once: true });
-            card.addEventListener('touchstart', () => prewarmShowcaseMedia(contextMode), { once: true, passive: true });
-        });
+        // Popup posters and first media are preloaded globally; no additional hover
+        // listeners are necessary.
 
         // LIGHTWEIGHT PREVIEW PARALLAX + 3D LOADED LAST AFTER THE COMPLETE PORTFOLIO
         const stage = document.getElementById('stage3d');
@@ -9428,7 +10860,9 @@
         const modelLoadStatus = document.getElementById('modelLoadStatus');
         const modelProgressBar = document.getElementById('modelProgressBar');
         const modelErrorMessage = document.getElementById('modelErrorMessage');
+        const modelLoadButton = document.getElementById('load3dModelButton');
         const isLocalFile = window.location.protocol === 'file:';
+        let luxuryModelRequested = false;
 
         // The lightweight CSS preview remains interactive until the GLB is ready.
         // Rotation follows the pointer through critically damped interpolation,
@@ -9492,6 +10926,12 @@
             modelErrorMessage.textContent = detail;
             modelProgressBar.style.width = '0%';
             modelViewer?.classList.remove('is-active', 'is-ready');
+            stage?.classList.remove('model-loading');
+            luxuryModelRequested = false;
+            if (modelLoadButton) {
+                modelLoadButton.disabled = false;
+                modelLoadButton.textContent = 'Retry 3D model';
+            }
         }
 
         function startLuxuryModelLoad() {
@@ -9510,6 +10950,11 @@
             modelLoadPanel?.classList.remove('has-error');
             modelLoadPanel?.classList.add('is-loading');
             modelLoadStatus.textContent = 'Loading interactive 3D… 0%';
+            stage?.classList.add('model-loading');
+            if (modelLoadButton) {
+                modelLoadButton.disabled = true;
+                modelLoadButton.textContent = 'Loading 3D…';
+            }
             modelViewer.classList.add('is-active');
             modelViewer.setAttribute('src', modelViewer.dataset.src);
         }
@@ -9541,86 +10986,9 @@
             });
         }
 
-        async function begin3DOnlyAfterPortfolioLoads() {
-            // window.load waits for the initial stylesheets, fonts, images and other page resources.
-            // document.fonts.ready adds an explicit safeguard for the portfolio typeface.
-            try {
-                if (document.fonts?.ready) await document.fonts.ready;
 
-                // Give the completed page one final paint before initiating any 3D network work.
-                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-
-                const startWhenIdle = () => {
-                    if (navigator.connection?.saveData) return;
-                    const modalBusy = showcaseAnimating || document.getElementById('showcaseModal')?.classList.contains('active');
-                    const stageRect = stage?.getBoundingClientRect();
-                    const heroVisible = stageRect && stageRect.bottom > 0 && stageRect.top < window.innerHeight;
-
-                    if (modalBusy || !heroVisible || document.visibilityState !== 'visible') {
-                        window.setTimeout(startWhenIdle, 2400);
-                        return;
-                    }
-
-                    loadModelViewerLibraryLast()
-                        .then(startLuxuryModelLoad)
-                        .catch(() => {
-                            showModelError(
-                                'Interactive model unavailable',
-                                'The rest of the portfolio loaded normally, but the 3D viewer could not start. The lightweight preview remains visible.'
-                            );
-                        });
-                };
-
-                // Keep the 54 MB model automatic, but do not compete with the
-                // first render or popup interactions. It starts only while the
-                // hero viewer is visible and the browser has had idle time.
-                const waitForVisibleHero = new Promise(resolve => {
-                    if (!stage || !('IntersectionObserver' in window)) {
-                        resolve();
-                        return;
-                    }
-
-                    const visibilityObserver = new IntersectionObserver(entries => {
-                        if (entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= 0.30)) {
-                            visibilityObserver.disconnect();
-                            resolve();
-                        }
-                    }, { threshold: [0.30] });
-
-                    visibilityObserver.observe(stage);
-                });
-
-                await waitForVisibleHero;
-
-                const connectionType = navigator.connection?.effectiveType || '';
-                const modelDelay = compactShowcaseMedia.matches
-                    ? (/2g|3g/.test(connectionType) ? 18000 : 12000)
-                    : (/(^|-)2g$|3g/.test(connectionType) ? 8500 : 4500);
-                const delayed3DStart = () => setTimeout(() => {
-                    if (document.visibilityState === 'visible') {
-                        startWhenIdle();
-                    } else {
-                        document.addEventListener('visibilitychange', function resumeModelLoad() {
-                            if (document.visibilityState !== 'visible') return;
-                            document.removeEventListener('visibilitychange', resumeModelLoad);
-                            startWhenIdle();
-                        });
-                    }
-                }, modelDelay);
-
-                if ('requestIdleCallback' in window) {
-                    requestIdleCallback(delayed3DStart, { timeout: 9000 });
-                } else {
-                    setTimeout(delayed3DStart, 4200);
-                }
-            } catch (error) {
-                showModelError(
-                    'Interactive model unavailable',
-                    'The rest of the portfolio loaded normally, but the 3D viewer could not start. The lightweight preview remains visible.'
-                );
-            }
-        }
-
+        // The 3D viewer library and the GLB are intentionally never requested
+        // automatically. Only the dedicated button below the preview can start them.
         if (modelViewer) {
             modelViewer.addEventListener('progress', (event) => {
                 const progress = Math.round((event.detail.totalProgress || 0) * 100);
@@ -9634,7 +11002,13 @@
                 modelProgressBar.style.width = '100%';
                 modelLoadStatus.textContent = 'Interactive 3D ready';
                 modelViewer.classList.add('is-ready');
+                stage.classList.remove('model-loading');
                 stage.classList.add('model-loaded');
+                modelLoadPanel?.classList.remove('is-loading', 'has-error');
+                if (modelLoadButton) {
+                    modelLoadButton.disabled = true;
+                    modelLoadButton.textContent = '3D loaded';
+                }
             });
 
             modelViewer.addEventListener('error', () => {
@@ -9645,12 +11019,19 @@
                 );
             });
 
-            // The 3D library and GLB are deliberately scheduled only after the full portfolio load event.
-            if (document.readyState === 'complete') {
-                begin3DOnlyAfterPortfolioLoads();
-            } else {
-                window.addEventListener('load', begin3DOnlyAfterPortfolioLoads, { once: true });
-            }
+            // The large model is loaded only after an explicit button click.
+            const requestLuxuryModelFromButton = () => {
+                if (luxuryModelRequested || modelViewer.getAttribute('src')) return;
+                luxuryModelRequested = true;
+                loadModelViewerLibraryLast()
+                    .then(startLuxuryModelLoad)
+                    .catch(() => showModelError(
+                        'Interactive model unavailable',
+                        'The lightweight preview remains available and the rest of the portfolio is unaffected.'
+                    ));
+            };
+
+            modelLoadButton?.addEventListener('click', requestLuxuryModelFromButton);
         }
     
 
@@ -9969,5 +11350,104 @@
         window.addEventListener('resize', scheduleLensFitAndTheme, { passive: true });
 
     </script>
+
+
+    <script>
+        // Internship overview interaction: CSS first, GLB last.
+        // Hover must be intentional before the 54 MB model is requested;
+        // clicks and keyboard activation work immediately on touch/desktop.
+        (() => {
+            const overviewStage = document.getElementById('stage3d');
+            const hiddenModelTrigger = document.getElementById('load3dModelButton');
+            if (!overviewStage || !hiddenModelTrigger) return;
+
+            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const hoverCapable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+            let engagedTimer = 0;
+            let unfoldTimer = 0;
+            let loadTimer = 0;
+            let pointerInside = false;
+            let pinnedOpen = false;
+            let sequenceStarted = false;
+
+            const clearSequenceTimers = () => {
+                window.clearTimeout(engagedTimer);
+                window.clearTimeout(unfoldTimer);
+                window.clearTimeout(loadTimer);
+            };
+
+            const requestHeavyModel = () => {
+                if (overviewStage.classList.contains('model-loaded') ||
+                    overviewStage.classList.contains('model-loading') ||
+                    hiddenModelTrigger.disabled) return;
+                hiddenModelTrigger.click();
+            };
+
+            const startReveal = ({ immediateLoad = false } = {}) => {
+                clearSequenceTimers();
+                sequenceStarted = true;
+                overviewStage.classList.add('overview-case-engaged');
+
+                if (reducedMotion) {
+                    overviewStage.classList.add('overview-case-unfolded');
+                    loadTimer = window.setTimeout(requestHeavyModel, immediateLoad ? 40 : 140);
+                    return;
+                }
+
+                unfoldTimer = window.setTimeout(() => {
+                    overviewStage.classList.add('overview-case-unfolded');
+                }, 690);
+
+                loadTimer = window.setTimeout(() => {
+                    if (immediateLoad || pinnedOpen || pointerInside) requestHeavyModel();
+                }, immediateLoad ? 980 : 1220);
+            };
+
+            const resetPreview = () => {
+                if (pinnedOpen || overviewStage.classList.contains('model-loading') || overviewStage.classList.contains('model-loaded')) return;
+                clearSequenceTimers();
+                sequenceStarted = false;
+                overviewStage.classList.remove('overview-case-unfolded', 'overview-case-engaged');
+            };
+
+            if (hoverCapable) {
+                overviewStage.addEventListener('pointerenter', () => {
+                    pointerInside = true;
+                    if (overviewStage.classList.contains('model-loaded')) return;
+                    // Begin the lightweight animation immediately. The heavy load waits
+                    // long enough to distinguish deliberate exploration from fly-by hover.
+                    engagedTimer = window.setTimeout(() => startReveal({ immediateLoad: false }), 90);
+                }, { passive: true });
+
+                overviewStage.addEventListener('pointerleave', () => {
+                    pointerInside = false;
+                    if (!sequenceStarted) clearSequenceTimers();
+                    window.setTimeout(resetPreview, 150);
+                }, { passive: true });
+            }
+
+            overviewStage.addEventListener('click', (event) => {
+                if (overviewStage.classList.contains('model-loaded')) return;
+                event.preventDefault();
+                pinnedOpen = true;
+                startReveal({ immediateLoad: true });
+            });
+
+            overviewStage.addEventListener('keydown', (event) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                pinnedOpen = true;
+                startReveal({ immediateLoad: true });
+            });
+
+            const model = document.getElementById('luxuryGlassesModel');
+            model?.addEventListener('load', () => {
+                overviewStage.setAttribute('aria-label', 'Interactive 3D eyeglasses model. Drag to rotate.');
+                overviewStage.removeAttribute('role');
+                overviewStage.removeAttribute('tabindex');
+            }, { once: true });
+        })();
+    </script>
+
 </body>
 </html>
