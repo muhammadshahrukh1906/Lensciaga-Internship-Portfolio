@@ -8810,6 +8810,19 @@
     transition-delay: 0s;
 }
 
+/* Clicking the live GLB pins the presentation open for uninterrupted
+   camera interaction. Clicking outside or pressing Escape releases it. */
+.overview-case-stage.overview-model-pinned .overview-final-model.hero-model-viewer {
+    cursor: grab;
+    touch-action: none;
+}
+.overview-case-stage.overview-model-pinned .overview-final-model.hero-model-viewer:active {
+    cursor: grabbing;
+}
+.overview-case-stage.overview-model-pinned {
+    cursor: default;
+}
+
 @media (max-width: 700px) {
     .overview-case-stage .overview-final-model.hero-model-viewer {
         inset: 0 -2% !important;
@@ -12556,6 +12569,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 
             let pointerInside = false;
             let touchOpen = false;
+            let modelPinned = false;
             let opening = false;
             let closing = false;
             let modelReady = overviewStage.classList.contains('model-loaded');
@@ -12577,7 +12591,17 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 timers.clear();
             };
 
-            const isStillOpen = () => hoverCapable ? pointerInside : touchOpen;
+            const isStillOpen = () => modelPinned || (hoverCapable ? pointerInside : touchOpen);
+
+            const setPinnedState = (pinned) => {
+                modelPinned = pinned;
+                overviewStage.classList.toggle('overview-model-pinned', pinned);
+                if (pinned) {
+                    overviewStage.classList.remove('overview-is-closing');
+                    overviewStage.classList.add('overview-model-visible');
+                    model.setAttribute('camera-controls', '');
+                }
+            };
 
             const setAccessibleState = (open) => {
                 overviewStage.setAttribute('aria-expanded', String(open));
@@ -12674,7 +12698,8 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 }, 1040);
             };
 
-            const closeSequence = () => {
+            const closeSequence = ({ force = false } = {}) => {
+                if (modelPinned && !force) return;
                 clearTimers();
                 opening = false;
                 closing = true;
@@ -12712,9 +12737,17 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             }
 
             overviewStage.addEventListener('click', (event) => {
-                // Dragging the live model must not toggle the case.
+                // Model clicks are reserved for rotation/zoom. The pointerdown
+                // listener below pins the live model before a drag can leave the stage.
                 if (event.target === model && overviewStage.classList.contains('overview-model-visible')) return;
                 event.preventDefault();
+
+                if (modelPinned) {
+                    setPinnedState(false);
+                    touchOpen = false;
+                    closeSequence({ force: true });
+                    return;
+                }
 
                 if (hoverCapable) {
                     pointerInside = true;
@@ -12735,6 +12768,33 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 else closeSequence();
             });
 
+            // A deliberate press on the live model pins it open. This lets the
+            // user rotate, zoom and drag beyond the stage boundary without the
+            // reverse animation interrupting the interaction.
+            model.addEventListener('pointerdown', () => {
+                if (!overviewStage.classList.contains('overview-model-visible')) return;
+                setPinnedState(true);
+                touchOpen = true;
+                setAccessibleState(true);
+            }, { passive: true });
+
+            // Clicking elsewhere releases the pinned model and closes the case.
+            document.addEventListener('pointerdown', (event) => {
+                if (!modelPinned || overviewStage.contains(event.target)) return;
+                setPinnedState(false);
+                touchOpen = false;
+                pointerInside = false;
+                closeSequence({ force: true });
+            }, { passive: true, capture: true });
+
+            document.addEventListener('keydown', (event) => {
+                if (event.key !== 'Escape' || !modelPinned) return;
+                setPinnedState(false);
+                touchOpen = false;
+                pointerInside = false;
+                closeSequence({ force: true });
+            });
+
             localModelFile?.addEventListener('change', () => {
                 const file = localModelFile.files?.[0];
                 if (file) loadSelectedLocalModel(file);
@@ -12751,6 +12811,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             });
 
             model.addEventListener('error', () => {
+                setPinnedState(false);
                 modelRequested = false;
                 modelReady = false;
                 overviewStage.classList.remove('overview-model-visible', 'model-loading');
