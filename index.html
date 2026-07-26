@@ -8980,6 +8980,603 @@
     }
 </style>
 
+
+<style id="brand-strategy-orbit-styles">
+.brand-strategy-section {
+    --brand-purple: var(--accent-purple, #8247ff);
+    --brand-gold: #d2a843;
+    min-height: 100vh;
+    padding-top: 34px;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 78% 30%, rgba(130,71,255,.11), transparent 28%),
+        radial-gradient(circle at 64% 54%, rgba(255,177,196,.10), transparent 35%),
+        var(--bg-canvas);
+}
+.brand-strategy-shell { width: 100%; min-height: calc(100vh - 95px); display: flex; flex-direction: column; justify-content: center; }
+.brand-strategy-layout { display: grid; grid-template-columns: minmax(300px, .82fr) minmax(560px, 1.4fr); align-items: center; gap: clamp(28px, 4vw, 72px); flex: 1; }
+.brand-strategy-copy { position: relative; z-index: 4; max-width: 430px; padding-left: clamp(0px, 1.5vw, 18px); }
+.brand-strategy-index { margin-bottom: 22px; color: var(--brand-purple); font-size: .69rem; font-weight: 800; letter-spacing: 2.1px; text-transform: uppercase; }
+.brand-strategy-title { margin: 0 0 22px; font-size: clamp(2.7rem, 4.7vw, 5.3rem); line-height: .93; letter-spacing: -3.4px; text-transform: none; }
+.brand-strategy-title span { display: block; color: transparent; -webkit-text-stroke: 1.2px #000; font-weight: 500; }
+.brand-strategy-description { max-width: 390px; color: var(--text-muted); font-size: clamp(.83rem, .98vw, .97rem); line-height: 1.7; }
+.brand-strategy-explore { display: inline-flex; align-items: center; gap: 42px; margin-top: 29px; padding: 0 0 9px; border: 0; border-bottom: 2px solid transparent; border-image: linear-gradient(90deg, var(--brand-purple), #c979ff) 1; background: none; color: #000; font-family: var(--font-base); font-size: .68rem; font-weight: 800; letter-spacing: 1.15px; text-transform: uppercase; cursor: pointer; }
+.brand-strategy-explore span:last-child { transition: transform .25s ease; }
+.brand-strategy-explore:hover span:last-child, .brand-strategy-explore:focus-visible span:last-child { transform: translateX(5px); }
+.brand-strategy-instruction { margin-top: 15px; color: var(--text-muted); font-size: .65rem; line-height: 1.45; }
+
+.brand-strategy-visual { position: relative; min-height: 610px; isolation: isolate; }
+.brand-orbit-rings { position: absolute; left: 50%; top: 48%; width: min(78%, 610px); aspect-ratio: 1; transform: translate(-50%,-50%); pointer-events: none; z-index: 0; }
+.brand-orbit-rings span { position: absolute; inset: 0; border: 1px solid rgba(130,71,255,.25); border-radius: 50%; }
+.brand-orbit-rings span:nth-child(2) { inset: 10%; border-color: rgba(130,71,255,.15); }
+.brand-orbit-rings span:nth-child(3) { inset: 20%; border-color: rgba(210,168,67,.14); }
+.brand-orbit-rings::before, .brand-orbit-rings::after { content: ''; position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--brand-purple); box-shadow: 0 0 0 6px rgba(130,71,255,.07); }
+.brand-orbit-rings::before { left: 11%; top: 17%; }
+.brand-orbit-rings::after { right: 5%; bottom: 28%; }
+.brand-case-art { position: absolute; z-index: 2; left: 50%; top: 49%; width: min(68%, 545px); transform: translate(-50%,-50%); filter: drop-shadow(0 28px 42px rgba(0,0,0,.13)); transition: transform .6s cubic-bezier(.22,1,.36,1), filter .5s ease; pointer-events: none; }
+.brand-case-art svg { width: 100%; height: auto; display: block; overflow: visible; }
+.brand-strategy-visual:has(.brand-orbit-trigger:hover) .brand-case-art,
+.brand-strategy-visual:has(.brand-orbit-trigger:focus-visible) .brand-case-art,
+.brand-strategy-visual:has(.brand-orbit-item.is-open) .brand-case-art { transform: translate(-50%,-50%) scale(.965); filter: drop-shadow(0 23px 34px rgba(0,0,0,.10)); }
+
+.brand-orbit-items { position: absolute; inset: 0; z-index: 6; }
+/* Keep every orbit control inside the visual column. The nodes expand toward the centre, never toward the viewport edge. */
+.brand-strategy-visual { overflow: clip; overflow-clip-margin: 24px; }
+.brand-orbit-item { position: absolute; width: 1px; height: 1px; }
+.brand-node-research { left: 20%; top: 18%; }
+.brand-node-positioning { right: 20%; top: 14%; }
+.brand-node-identity { right: 8%; top: 52%; }
+.brand-node-strategy { left: 52%; bottom: 8%; }
+.brand-node-execution { left: 12%; top: 61%; }
+.brand-orbit-trigger { position: absolute; top: 0; display: flex; align-items: center; width: 54px; min-width: 54px; height: 54px; padding: 7px; overflow: hidden; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; background: linear-gradient(145deg, #29292e, #111114); color: #fff; box-shadow: 0 12px 28px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.12); font-family: var(--font-base); cursor: pointer; transition: width .44s cubic-bezier(.22,1,.36,1), min-height .44s cubic-bezier(.22,1,.36,1), border-radius .35s ease, transform .3s ease, box-shadow .35s ease; outline-offset: 4px; }
+.brand-node-research .brand-orbit-trigger, .brand-node-execution .brand-orbit-trigger { left: 0; right: auto; transform: translate(0,-50%); flex-direction: row; }
+.brand-node-positioning .brand-orbit-trigger, .brand-node-identity .brand-orbit-trigger { right: 0; left: auto; transform: translate(0,-50%); flex-direction: row-reverse; }
+.brand-node-strategy .brand-orbit-trigger { left: 0; transform: translate(-50%,-50%); }
+.brand-orbit-icon { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; color: #d5b6ff; border: 1px solid rgba(197,161,255,.25); background: radial-gradient(circle at 35% 30%, rgba(130,71,255,.45), rgba(10,10,13,.3) 68%); font-size: 1.08rem; font-weight: 700; }
+.brand-orbit-window { min-width: 0; width: 0; max-height: 0; overflow: hidden; opacity: 0; text-align: left; transition: width .35s cubic-bezier(.22,1,.36,1), max-height .35s ease, opacity .22s ease .02s, margin .35s ease; }
+.brand-node-positioning .brand-orbit-window, .brand-node-identity .brand-orbit-window { text-align: right; }
+.brand-orbit-window strong { display: block; margin-bottom: 4px; color: #fff; font-size: .84rem; letter-spacing: .2px; }
+.brand-orbit-window > span { display: block; color: #d8d8dc; font-size: .66rem; line-height: 1.35; }
+.brand-orbit-window small { display: block; margin-top: 7px; color: #a9a9b0; font-size: .61rem; line-height: 1.45; }
+.brand-orbit-caption { position: absolute; width: 150px; transform: translateY(-50%); pointer-events: none; transition: opacity .18s ease, transform .25s ease; }
+.brand-orbit-caption strong, .brand-orbit-caption small { display: block; }
+.brand-orbit-caption strong { margin-bottom: 4px; color: #151518; font-size: .67rem; font-weight: 800; }
+.brand-orbit-caption small { color: #6e6e73; font-size: .55rem; line-height: 1.35; }
+.brand-node-research .brand-orbit-caption, .brand-node-execution .brand-orbit-caption { left: 70px; right: auto; text-align: left; }
+.brand-node-positioning .brand-orbit-caption, .brand-node-identity .brand-orbit-caption { right: 70px; left: auto; text-align: right; }
+.brand-node-strategy .brand-orbit-caption { top: 68px; left: -75px; text-align: center; }
+.brand-orbit-trigger:hover, .brand-orbit-trigger:focus-visible, .brand-orbit-item.is-open .brand-orbit-trigger { width: min(245px, 34vw); min-height: 112px; height: auto; border-radius: 24px; box-shadow: 0 18px 38px rgba(0,0,0,.26), 0 0 0 1px rgba(130,71,255,.22), inset 0 1px 0 rgba(255,255,255,.13); }
+.brand-node-strategy .brand-orbit-trigger:hover, .brand-node-strategy .brand-orbit-trigger:focus-visible, .brand-node-strategy.is-open .brand-orbit-trigger { width: 245px; }
+.brand-orbit-trigger:hover .brand-orbit-window, .brand-orbit-trigger:focus-visible .brand-orbit-window, .brand-orbit-item.is-open .brand-orbit-window { width: 174px; max-height: 120px; opacity: 1; margin: 0 8px; }
+.brand-orbit-item:has(.brand-orbit-trigger:hover) .brand-orbit-caption, .brand-orbit-item:has(.brand-orbit-trigger:focus-visible) .brand-orbit-caption, .brand-orbit-item.is-open .brand-orbit-caption { opacity: 0; transform: translateY(-50%) scale(.92); }
+.brand-orbit-trigger:hover + .brand-orbit-caption, .brand-orbit-trigger:focus-visible + .brand-orbit-caption { opacity: 0; transform: translateY(-50%) scale(.92); }
+.brand-node-strategy:has(.brand-orbit-trigger:hover) .brand-orbit-caption, .brand-node-strategy:has(.brand-orbit-trigger:focus-visible) .brand-orbit-caption, .brand-node-strategy.is-open .brand-orbit-caption { transform: scale(.92); }
+.brand-node-strategy .brand-orbit-trigger:hover + .brand-orbit-caption, .brand-node-strategy .brand-orbit-trigger:focus-visible + .brand-orbit-caption { transform: scale(.92); }
+
+.brand-strategy-rail { position: relative; z-index: 8; display: grid; grid-template-columns: 1.35fr repeat(3, 1fr); align-items: stretch; margin-top: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,.08); border-radius: 18px; background: linear-gradient(135deg, #242426, #0e0e10); color: #fff; box-shadow: 0 20px 50px rgba(0,0,0,.13); }
+.brand-strategy-quote, .brand-strategy-pillar { min-height: 112px; padding: 23px 26px; }
+.brand-strategy-quote { display: flex; gap: 16px; align-items: center; }
+.brand-strategy-quote > span { align-self: flex-start; color: #b674ff; font-family: Georgia, serif; font-size: 3rem; line-height: .78; }
+.brand-strategy-quote p { color: #f5f2ee; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(.82rem, 1vw, 1rem); line-height: 1.55; }
+.brand-strategy-pillar { position: relative; display: flex; flex-direction: column; justify-content: center; border-left: 1px solid rgba(255,255,255,.10); }
+.brand-strategy-pillar::after { content: ''; position: absolute; right: 21px; top: 22px; width: 7px; height: 7px; border: 1px solid #caa7ff; transform: rotate(45deg); }
+.brand-strategy-pillar strong { margin-bottom: 8px; color: #fff; font-size: .68rem; text-transform: uppercase; letter-spacing: .9px; }
+.brand-strategy-pillar span { max-width: 160px; color: #aaaab1; font-size: .61rem; line-height: 1.55; }
+
+html.performance-lite .brand-case-art { filter: none; }
+html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.16); }
+
+@media (max-width: 1180px) {
+    .brand-strategy-layout { grid-template-columns: minmax(280px,.8fr) minmax(470px,1.2fr); gap: 18px; }
+    .brand-strategy-visual { min-height: 560px; }
+    .brand-orbit-trigger:hover, .brand-orbit-trigger:focus-visible, .brand-orbit-item.is-open .brand-orbit-trigger { width: 218px; }
+    .brand-orbit-trigger:hover .brand-orbit-window, .brand-orbit-trigger:focus-visible .brand-orbit-window, .brand-orbit-item.is-open .brand-orbit-window { width: 150px; }
+}
+@media (max-width: 960px) {
+    .brand-strategy-section { padding-top: 32px; }
+    .brand-strategy-layout { grid-template-columns: 1fr; }
+    .brand-strategy-copy { max-width: 620px; }
+    .brand-strategy-title { font-size: clamp(3rem, 8vw, 5.1rem); }
+    .brand-strategy-visual { width: min(100%, 760px); min-height: 600px; margin: 4px auto 0; }
+    .brand-strategy-rail { grid-template-columns: 1.2fr repeat(3,1fr); }
+}
+@media (max-width: 700px) {
+    .brand-strategy-section { padding-left: 22px !important; padding-right: 22px !important; overflow: visible; }
+    .brand-strategy-visual { overflow: visible; }
+    .brand-strategy-title { letter-spacing: -2px; }
+    .brand-strategy-visual { min-height: auto; padding-top: 12px; }
+    .brand-orbit-rings { top: 190px; width: min(92%, 430px); }
+    .brand-case-art { position: relative; left: auto; top: auto; width: min(100%, 470px); margin: 10px auto 0; transform: none; }
+    .brand-strategy-visual:has(.brand-orbit-trigger:hover) .brand-case-art,
+    .brand-strategy-visual:has(.brand-orbit-trigger:focus-visible) .brand-case-art,
+    .brand-strategy-visual:has(.brand-orbit-item.is-open) .brand-case-art { transform: scale(.98); }
+    .brand-orbit-items { position: relative; display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: -4px; }
+    .brand-orbit-item { position: relative; inset: auto !important; width: 100%; height: auto; min-height: 58px; }
+    .brand-orbit-trigger, .brand-node-research .brand-orbit-trigger, .brand-node-execution .brand-orbit-trigger, .brand-node-positioning .brand-orbit-trigger, .brand-node-identity .brand-orbit-trigger, .brand-node-strategy .brand-orbit-trigger { position: relative; inset: auto; left: auto; right: auto; top: auto; width: 100%; min-height: 58px; height: 58px; transform: none; flex-direction: row; border-radius: 18px; }
+    .brand-orbit-caption { display: none; }
+    .brand-orbit-window, .brand-node-research .brand-orbit-window, .brand-node-execution .brand-orbit-window { width: auto; max-height: 50px; opacity: 1; margin: 0 8px; text-align: left; }
+    .brand-orbit-window strong { font-size: .78rem; }
+    .brand-orbit-window > span { font-size: .62rem; }
+    .brand-orbit-window small { max-height: 0; margin-top: 0; overflow: hidden; opacity: 0; transition: max-height .3s ease, opacity .2s ease, margin .3s ease; }
+    .brand-orbit-trigger:hover, .brand-orbit-trigger:focus-visible, .brand-orbit-item.is-open .brand-orbit-trigger,
+    .brand-node-strategy .brand-orbit-trigger:hover, .brand-node-strategy .brand-orbit-trigger:focus-visible, .brand-node-strategy.is-open .brand-orbit-trigger { width: 100%; min-height: 114px; }
+    .brand-orbit-trigger:hover .brand-orbit-window, .brand-orbit-trigger:focus-visible .brand-orbit-window, .brand-orbit-item.is-open .brand-orbit-window { width: auto; max-height: 105px; }
+    .brand-orbit-trigger:hover .brand-orbit-window small, .brand-orbit-trigger:focus-visible .brand-orbit-window small, .brand-orbit-item.is-open .brand-orbit-window small { max-height: 55px; margin-top: 7px; opacity: 1; }
+    .brand-strategy-rail { grid-template-columns: 1fr; margin-top: 28px; }
+    .brand-strategy-quote, .brand-strategy-pillar { min-height: auto; padding: 20px 22px; }
+    .brand-strategy-pillar { border-left: 0; border-top: 1px solid rgba(255,255,255,.10); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .brand-case-art, .brand-orbit-trigger, .brand-orbit-window, .brand-orbit-caption { transition-duration: 1ms !important; }
+}
+</style>
+
+<style id="contact-section-styles">
+/* Contact — simple, light and aligned with the portfolio's cream, purple and gold system. */
+#contact-section.contact-section {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 73% 18%, rgba(130, 71, 255, 0.095), transparent 31%),
+        radial-gradient(circle at 31% 80%, rgba(204, 160, 37, 0.075), transparent 25%),
+        var(--bg-canvas);
+}
+
+#contact-section.contact-section::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    right: -10vw;
+    top: 5%;
+    width: min(54vw, 760px);
+    aspect-ratio: 1;
+    border: 1px solid rgba(130, 71, 255, 0.10);
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 78px rgba(130, 71, 255, 0.024),
+        0 0 0 156px rgba(130, 71, 255, 0.014);
+    pointer-events: none;
+}
+
+.contact-simple-layout {
+    display: grid;
+    grid-template-columns: minmax(330px, 0.78fr) minmax(540px, 1.22fr);
+    gap: clamp(54px, 7vw, 112px);
+    align-items: center;
+    flex: 1;
+    min-height: 0;
+    padding: 6px 0 30px;
+}
+
+.contact-simple-copy {
+    position: relative;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    padding-bottom: 170px;
+}
+
+.contact-simple-index {
+    margin-bottom: 24px;
+    color: var(--accent-purple);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 2.1px;
+    text-transform: uppercase;
+}
+
+.contact-simple-title {
+    max-width: 520px;
+    margin: 0 0 30px;
+    color: var(--text-main);
+    font-size: clamp(4rem, 6.7vw, 7rem);
+    font-weight: 730;
+    line-height: 0.86;
+    letter-spacing: -5px;
+    text-transform: none;
+}
+
+.contact-simple-title span {
+    display: block;
+    margin-top: 10px;
+    color: var(--accent-purple);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 1.03em;
+    font-style: italic;
+    font-weight: 400;
+    letter-spacing: -3px;
+}
+
+.contact-simple-description {
+    max-width: 520px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.75;
+}
+
+.contact-title-rule {
+    width: 62px;
+    height: 2px;
+    margin: 0 0 28px;
+    background: linear-gradient(90deg, #b18424, var(--accent-purple));
+}
+
+.contact-desk-art {
+    position: absolute;
+    left: -28px;
+    bottom: -14px;
+    width: min(470px, 104%);
+    height: auto;
+    overflow: visible;
+    opacity: 0.96;
+    filter: drop-shadow(0 18px 22px rgba(52, 35, 18, 0.08));
+    pointer-events: none;
+}
+
+.contact-form-side {
+    min-width: 0;
+    padding-top: 12px;
+}
+
+.contact-simple-form {
+    display: grid;
+    gap: 16px;
+}
+
+.contact-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.contact-field {
+    position: relative;
+    display: block;
+    min-width: 0;
+}
+
+.contact-field-icon {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    width: 19px;
+    height: 19px;
+    color: rgba(0, 0, 0, 0.48);
+    pointer-events: none;
+}
+
+.contact-field-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.55;
+}
+
+.contact-field input,
+.contact-field textarea {
+    width: 100%;
+    border: 1px solid rgba(0, 0, 0, 0.14);
+    border-radius: 12px;
+    outline: none;
+    background: rgba(255, 255, 255, 0.31);
+    color: var(--text-main);
+    font: inherit;
+    font-size: 0.83rem;
+    line-height: 1.5;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
+    transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.contact-field input {
+    height: 62px;
+    padding: 0 18px 0 54px;
+}
+
+.contact-field textarea {
+    min-height: 176px;
+    resize: vertical;
+    padding: 19px 18px 18px 54px;
+}
+
+.contact-field input::placeholder,
+.contact-field textarea::placeholder {
+    color: rgba(0, 0, 0, 0.42);
+}
+
+.contact-field input:focus,
+.contact-field textarea:focus {
+    border-color: rgba(130, 71, 255, 0.52);
+    background: rgba(255, 255, 255, 0.53);
+    box-shadow: 0 0 0 4px rgba(130, 71, 255, 0.08);
+}
+
+.contact-submit-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-top: 4px;
+}
+
+.contact-send-button {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 38px;
+    min-width: 230px;
+    padding: 16px 22px;
+    overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.20);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.33);
+    color: var(--text-main);
+    font: inherit;
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 1.35px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.contact-send-button::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 48%;
+    height: 2px;
+    background: linear-gradient(90deg, #b18424, var(--accent-purple));
+    transition: width 0.28s ease;
+}
+
+.contact-send-button:hover,
+.contact-send-button:focus-visible {
+    border-color: rgba(130, 71, 255, 0.43);
+    background: rgba(255, 255, 255, 0.62);
+    transform: translateY(-2px);
+}
+
+.contact-send-button:hover::after,
+.contact-send-button:focus-visible::after {
+    width: 100%;
+}
+
+.contact-send-arrow {
+    color: #a8781a;
+    font-size: 1.1rem;
+    line-height: 1;
+}
+
+.contact-form-status {
+    min-height: 18px;
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    line-height: 1.45;
+}
+
+.contact-detail-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1fr;
+    gap: 0;
+    margin-top: 31px;
+    padding-top: 28px;
+    border-top: 1px solid rgba(164, 119, 27, 0.34);
+}
+
+.contact-detail-item {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 13px;
+    align-items: start;
+    min-width: 0;
+    padding-right: 22px;
+}
+
+.contact-detail-item + .contact-detail-item {
+    padding-left: 22px;
+    border-left: 1px solid rgba(0, 0, 0, 0.075);
+}
+
+.contact-detail-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid rgba(164, 119, 27, 0.36);
+    border-radius: 50%;
+    color: #a8781a;
+}
+
+.contact-detail-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 1.55;
+}
+
+.contact-detail-copy {
+    min-width: 0;
+}
+
+.contact-detail-copy strong {
+    display: block;
+    margin: 2px 0 6px;
+    color: var(--text-main);
+    font-size: 0.63rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.contact-detail-copy a,
+.contact-detail-copy span {
+    display: block;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    color: var(--text-muted);
+    font-size: 0.65rem;
+    line-height: 1.5;
+    text-decoration: none;
+}
+
+.contact-detail-copy a:hover,
+.contact-detail-copy a:focus-visible {
+    color: var(--accent-purple);
+}
+
+.contact-inline-action {
+    margin-top: 6px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent-purple);
+    font: inherit;
+    font-size: 0.6rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.contact-response-note {
+    margin: 30px 0 0;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 0.74rem;
+    line-height: 1.55;
+}
+
+.contact-section .bottom-nav-bar {
+    margin-top: 0;
+}
+
+@media (max-width: 1180px) {
+    .contact-simple-layout {
+        grid-template-columns: minmax(300px, 0.72fr) minmax(480px, 1.28fr);
+        gap: 42px;
+    }
+    .contact-simple-title {
+        font-size: clamp(3.7rem, 7vw, 5.7rem);
+        letter-spacing: -3.8px;
+    }
+    .contact-simple-copy {
+        padding-bottom: 145px;
+    }
+}
+
+@media (max-width: 960px) {
+    .contact-simple-layout {
+        grid-template-columns: 1fr;
+        align-items: start;
+        gap: 44px;
+    }
+    .contact-simple-copy {
+        min-height: 460px;
+        padding-bottom: 180px;
+    }
+    .contact-simple-title {
+        max-width: 620px;
+        font-size: clamp(4rem, 10vw, 6.2rem);
+    }
+    .contact-desk-art {
+        width: min(480px, 76vw);
+    }
+}
+
+@media (max-width: 720px) {
+    #contact-section.contact-section {
+        padding-left: 22px;
+        padding-right: 22px;
+        overflow: visible;
+    }
+    #contact-section.contact-section::before {
+        display: none;
+    }
+    .contact-simple-layout {
+        gap: 34px;
+        padding-top: 0;
+    }
+    .contact-simple-copy {
+        min-height: 390px;
+        padding-bottom: 145px;
+    }
+    .contact-simple-title {
+        font-size: clamp(3.4rem, 17vw, 5rem);
+        letter-spacing: -2.7px;
+    }
+    .contact-simple-title span {
+        letter-spacing: -2px;
+    }
+    .contact-desk-art {
+        left: -12px;
+        bottom: -4px;
+        width: min(430px, 108%);
+    }
+    .contact-form-row,
+    .contact-detail-grid {
+        grid-template-columns: 1fr;
+    }
+    .contact-submit-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+    .contact-detail-grid {
+        gap: 18px;
+    }
+    .contact-detail-item,
+    .contact-detail-item + .contact-detail-item {
+        padding: 0 0 18px;
+        border-left: 0;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.075);
+    }
+    .contact-detail-item:last-child {
+        border-bottom: 0;
+    }
+    .contact-section .bottom-tabs {
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 430px) {
+    .contact-simple-copy {
+        min-height: 350px;
+        padding-bottom: 125px;
+    }
+    .contact-simple-description {
+        font-size: 0.83rem;
+    }
+    .contact-field input {
+        height: 58px;
+    }
+    .contact-field textarea {
+        min-height: 155px;
+    }
+    .contact-send-button {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .contact-field input,
+    .contact-field textarea,
+    .contact-send-button,
+    .contact-send-button::after {
+        transition: none !important;
+    }
+}
+</style>
+
 </head>
 <body>
 <!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
@@ -9052,8 +9649,7 @@
 <a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Overview')">Overview</a>
 <a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Featured Work')">Featured Work</a>
 <a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Brand Strategy')">Brand Strategy</a>
-<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Creative Copy')">Creative Copy</a>
-<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('About Me')">About Me</a>
+<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Contact')">Contact</a>
 </div>
 </div>
 <div class="toast-notification" id="toastBox">
@@ -9070,8 +9666,6 @@
 <a class="nav-item active" href="#overview-section">Overview</a>
 <a class="nav-item" href="#featured-section">Featured Work</a>
 <a class="nav-item" href="#brand-section">Brand Strategy</a>
-<a class="nav-item" href="#creative-section">Creative Copy</a>
-<a class="nav-item" href="#about-section">About Me</a>
 <a class="nav-item" href="#contact-section">Contact</a>
 </nav>
 <div class="sidebar-footer">
@@ -9351,51 +9945,186 @@
 </div>
 </section>
 <!-- SECTION 3: BRAND STRATEGY -->
-<section class="portfolio-section" id="brand-section">
-<div class="top-meta-bar"><div class="meta-context">MARKET POSITIONING DECK STACKS<br/>STUDENT PORTFOLIO / 2026</div></div>
-<div class="hero-section">
-<span class="section-label">/ Corporate Identity Blueprints</span>
-<h1>Brand <span>Systems</span></h1>
-<p class="description-text" style="margin-top: 20px;">Deep research maps detailing audience alignment matrices, modern typographic guidelines, and tone formulation rules for corporate applications.</p>
+<section class="portfolio-section brand-strategy-section" id="brand-section">
+<div class="brand-strategy-shell">
+<div class="brand-strategy-layout">
+<div class="brand-strategy-copy">
+<div class="brand-strategy-index">03&nbsp;&nbsp;/&nbsp;&nbsp;BRAND STRATEGY</div>
+<h1 class="brand-strategy-title">Brand Strategy<br/><span>&amp; Positioning</span></h1>
+<p class="brand-strategy-description">A practical strategy framework developed during my internship to connect research, positioning, identity and execution into one consistent brand direction.</p>
+<button class="brand-strategy-explore" id="brandStrategyExplore" type="button">
+<span>Explore the framework</span><span aria-hidden="true">→</span>
+</button>
+<p class="brand-strategy-instruction">Hover, focus or tap each strategy point to reveal more detail.</p>
+</div>
+<div class="brand-strategy-visual" id="brandStrategyVisual" aria-label="Interactive brand strategy framework">
+<div class="brand-orbit-rings" aria-hidden="true"><span></span><span></span><span></span></div>
+<div class="brand-case-art" aria-hidden="true">
+<svg viewBox="0 0 760 520" role="img" aria-label="Open black and gold eyeglasses case">
+<defs>
+<linearGradient id="brandCaseBlack" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#35353c"/><stop offset="0.5" stop-color="#111116"/><stop offset="1" stop-color="#050507"/></linearGradient>
+<linearGradient id="brandCaseInner" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#292932"/><stop offset="1" stop-color="#08080b"/></linearGradient>
+<linearGradient id="brandGold" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#765315"/><stop offset="0.2" stop-color="#d5ab44"/><stop offset="0.38" stop-color="#fff0b0"/><stop offset="0.62" stop-color="#c89228"/><stop offset="0.84" stop-color="#f3d47d"/><stop offset="1" stop-color="#6e4c10"/></linearGradient>
+<linearGradient id="brandLens" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#33343c" stop-opacity=".94"/><stop offset=".62" stop-color="#101116" stop-opacity=".97"/><stop offset="1" stop-color="#050609" stop-opacity=".98"/></linearGradient>
+<filter id="brandCaseShadow" x="-40%" y="-60%" width="180%" height="220%"><feDropShadow dx="0" dy="23" stdDeviation="20" flood-color="#000" flood-opacity=".30"/></filter>
+<filter id="brandGlassesShadow" x="-40%" y="-60%" width="180%" height="220%"><feDropShadow dx="0" dy="13" stdDeviation="11" flood-color="#000" flood-opacity=".30"/></filter>
+</defs>
+<ellipse cx="382" cy="425" rx="238" ry="38" fill="#000" opacity=".18"/>
+<g filter="url(#brandCaseShadow)">
+<path d="M124 275 C141 242 170 226 207 222 L555 222 C594 225 624 245 639 278 L620 365 C614 391 590 408 558 413 L207 413 C171 410 146 392 137 364Z" fill="url(#brandCaseBlack)" stroke="url(#brandGold)" stroke-width="6"/>
+<path d="M153 282 C168 258 190 248 218 246 L545 246 C573 247 596 260 608 283 L594 351 C588 373 569 385 543 388 L219 388 C191 386 170 373 164 351Z" fill="url(#brandCaseInner)" stroke="#4f3b15" stroke-width="2"/>
+<path d="M126 260 C140 224 169 197 207 188 L554 188 C594 196 624 222 639 260 L621 318 C614 341 591 354 559 357 L206 357 C173 354 147 340 138 317Z" fill="url(#brandCaseBlack)" stroke="url(#brandGold)" stroke-width="6" transform="translate(0 -92)"/>
+<path d="M151 251 C166 226 190 212 218 207 L544 207 C572 213 595 228 607 252 L594 299 C587 318 570 327 545 329 L218 329 C191 326 171 316 164 298Z" fill="#0b0b0f" opacity=".65" transform="translate(0 -92)"/>
+<text x="382" y="187" fill="#e2bf65" fill-opacity=".75" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" letter-spacing="7" text-anchor="middle">lensciaga</text>
+</g>
+<g filter="url(#brandGlassesShadow)" transform="translate(0 18)">
+<path d="M213 291 C164 270 124 249 88 226" fill="none" stroke="#111116" stroke-width="15" stroke-linecap="round"/><path d="M213 291 C165 270 126 249 90 226" fill="none" stroke="url(#brandGold)" stroke-width="3" stroke-linecap="round"/>
+<path d="M542 291 C591 270 631 249 667 226" fill="none" stroke="#111116" stroke-width="15" stroke-linecap="round"/><path d="M542 291 C590 270 629 249 665 226" fill="none" stroke="url(#brandGold)" stroke-width="3" stroke-linecap="round"/>
+<path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z" fill="url(#brandLens)" stroke="url(#brandGold)" stroke-width="7"/>
+<path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z" fill="url(#brandLens)" stroke="url(#brandGold)" stroke-width="7"/>
+<path d="M321 278 C344 260 410 260 434 278" fill="none" stroke="url(#brandGold)" stroke-width="7" stroke-linecap="round"/>
+<path d="M225 271 C247 258 282 257 307 270" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="3"/><path d="M448 270 C473 257 508 258 530 271" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="3"/>
+</g>
+</svg>
+</div>
+<div class="brand-orbit-items">
+<div class="brand-orbit-item brand-node-research">
+<button class="brand-orbit-trigger" type="button" aria-expanded="false">
+<span class="brand-orbit-icon" aria-hidden="true">⌕</span>
+<span class="brand-orbit-window"><strong>Research</strong><span>Market and competitor analysis</span><small>Reviewed the category, competing offers and audience expectations to identify the strongest strategic opportunities.</small></span>
+</button>
+<span class="brand-orbit-caption"><strong>Research</strong><small>Market &amp; competitor analysis</small></span>
+</div>
+<div class="brand-orbit-item brand-node-positioning">
+<button class="brand-orbit-trigger" type="button" aria-expanded="false">
+<span class="brand-orbit-icon" aria-hidden="true">◎</span>
+<span class="brand-orbit-window"><strong>Positioning</strong><span>Clear and differentiated value</span><small>Defined the target audience, relevant benefit and competitive distinction the brand should consistently communicate.</small></span>
+</button>
+<span class="brand-orbit-caption"><strong>Positioning</strong><small>Defined unique value proposition</small></span>
+</div>
+<div class="brand-orbit-item brand-node-identity">
+<button class="brand-orbit-trigger" type="button" aria-expanded="false">
+<span class="brand-orbit-icon" aria-hidden="true">◇</span>
+<span class="brand-orbit-window"><strong>Identity</strong><span>Visual and verbal brand system</span><small>Connected typography, colour, imagery and tone of voice so the brand feels recognisable across every touchpoint.</small></span>
+</button>
+<span class="brand-orbit-caption"><strong>Identity</strong><small>Visual + verbal brand system</small></span>
+</div>
+<div class="brand-orbit-item brand-node-strategy">
+<button class="brand-orbit-trigger" type="button" aria-expanded="false">
+<span class="brand-orbit-icon" aria-hidden="true">♟</span>
+<span class="brand-orbit-window"><strong>Strategy</strong><span>Long-term direction and priorities</span><small>Converted findings into objectives, priorities and a practical roadmap that could guide future brand activity.</small></span>
+</button>
+<span class="brand-orbit-caption"><strong>Strategy</strong><small>Long-term growth roadmap</small></span>
+</div>
+<div class="brand-orbit-item brand-node-execution">
+<button class="brand-orbit-trigger" type="button" aria-expanded="false">
+<span class="brand-orbit-icon" aria-hidden="true">↗</span>
+<span class="brand-orbit-window"><strong>Execution</strong><span>Bringing the strategy to life</span><small>Translated the strategy into campaign, content and presentation recommendations that could be applied consistently.</small></span>
+</button>
+<span class="brand-orbit-caption"><strong>Execution</strong><small>Bringing strategy to life</small></span>
+</div>
+</div>
+</div>
+</div>
+<div class="brand-strategy-rail">
+<div class="brand-strategy-quote"><span aria-hidden="true">“</span><p>A strong brand is not just seen.<br/>It is remembered.</p></div>
+<div class="brand-strategy-pillar"><strong>Purpose driven</strong><span>Clarity in mission and values.</span></div>
+<div class="brand-strategy-pillar"><strong>Market focused</strong><span>Insights that shape meaningful strategy.</span></div>
+<div class="brand-strategy-pillar"><strong>Future ready</strong><span>Positioned for growth and impact.</span></div>
+</div>
 </div>
 </section>
-<!-- SECTION 4: CREATIVE COPY -->
-<section class="portfolio-section" id="creative-section">
-<div class="top-meta-bar"><div class="meta-context">VERBAL SYNTAX SYSTEMS<br/>STUDENT PORTFOLIO / 2026</div></div>
-<div class="hero-section">
-<span class="section-label">/ Tone of Voice &amp; Copywriting</span>
-<h1>Strategic <span>Copy</span></h1>
-<p class="description-text" style="margin-top: 20px;">A showcase of verbal communication, short-form advertising hooks, editorial taglines, and long-form luxury design breakdowns.</p>
+<!-- SECTION 4: CONTACT -->
+<section class="portfolio-section contact-section" id="contact-section">
+<div class="top-meta-bar"><div class="meta-context">CONTACT &amp; OPPORTUNITIES<br/>INTERNSHIP PORTFOLIO / 2026</div></div>
+<div class="contact-simple-layout">
+<div class="contact-simple-copy">
+<div class="contact-simple-index">04&nbsp;&nbsp;/&nbsp;&nbsp;GET IN TOUCH</div>
+<h1 class="contact-simple-title">Let’s <span>connect.</span></h1>
+<div class="contact-title-rule" aria-hidden="true"></div>
+<p class="contact-simple-description">I’m open to discussing internship opportunities, collaborative projects, or how my experience and ideas could add value to your team.</p>
+<svg class="contact-desk-art" viewBox="0 0 560 250" role="img" aria-label="Gold eyeglasses resting on a cream notebook beside a pen">
+<defs>
+<linearGradient id="contactNotebook" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fffdf8"/><stop offset="1" stop-color="#e9dfd2"/></linearGradient>
+<linearGradient id="contactGold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8f6412"/><stop offset="0.32" stop-color="#f4d67b"/><stop offset="0.62" stop-color="#bc8420"/><stop offset="1" stop-color="#f3df9a"/></linearGradient>
+<filter id="contactShadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#6f5337" flood-opacity=".13"/></filter>
+</defs>
+<g transform="translate(154 20) rotate(-11 150 104)" filter="url(#contactShadow)">
+<rect x="0" y="0" width="310" height="205" rx="10" fill="url(#contactNotebook)" stroke="#d9cbbb"/>
+<rect x="14" y="10" width="282" height="184" rx="7" fill="none" stroke="#ffffff" stroke-opacity=".8"/>
+<text x="205" y="72" fill="#b59a73" font-family="Georgia, serif" font-size="19" letter-spacing="5">IDEAS</text>
+<path d="M38 30 V177" stroke="#d8cbbc" stroke-width="2"/>
+</g>
+<g transform="translate(17 75) rotate(7 120 72)" filter="url(#contactShadow)">
+<path d="M37 58 C40 18 72 2 108 8 C145 14 158 39 151 73 C144 108 117 126 82 118 C50 111 34 91 37 58Z" fill="rgba(27,27,31,.04)" stroke="url(#contactGold)" stroke-width="5"/>
+<path d="M159 62 C164 26 196 11 231 18 C266 25 279 50 269 83 C260 115 231 129 198 120 C168 111 155 91 159 62Z" fill="rgba(27,27,31,.04)" stroke="url(#contactGold)" stroke-width="5"/>
+<path d="M149 55 C153 48 158 46 164 54" fill="none" stroke="url(#contactGold)" stroke-width="5" stroke-linecap="round"/>
+<path d="M38 51 L4 31" stroke="#1c1c20" stroke-width="7" stroke-linecap="round"/>
+<path d="M270 75 L338 61" stroke="#1c1c20" stroke-width="7" stroke-linecap="round"/>
+<path d="M18 40 L4 31" stroke="url(#contactGold)" stroke-width="4" stroke-linecap="round"/>
+<path d="M289 72 L338 61" stroke="url(#contactGold)" stroke-width="4" stroke-linecap="round"/>
+</g>
+<g transform="translate(424 173) rotate(-15)">
+<rect x="0" y="0" width="112" height="11" rx="5.5" fill="url(#contactGold)"/>
+<rect x="90" y="1.5" width="28" height="8" rx="4" fill="#202023"/>
+<path d="M-17 5.5 L0 0 V11Z" fill="#a87920"/>
+</g>
+</svg>
 </div>
-</section>
-<!-- SECTION 5: ABOUT ME -->
-<section class="portfolio-section" id="about-section">
-<div class="top-meta-bar"><div class="meta-context">BIOGRAPHY &amp; COMPETENCY INDICES<br/>STUDENT PORTFOLIO / 2026</div></div>
-<div class="hero-section">
-<span class="section-label">/ Personal Design Philosophy</span>
-<h1>The <span>Designer</span></h1>
-<p class="description-text" style="margin-top: 20px;">Currently investigating minimal design patterns and luxury interfaces. Bridging high precision spatial design layout forms with interactive user loops.</p>
+
+<div class="contact-form-side">
+<form class="contact-simple-form" id="contactForm" novalidate>
+<div class="contact-form-row">
+<label class="contact-field">
+<span class="contact-field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c.7-4.2 3.2-6.3 7.5-6.3s6.8 2.1 7.5 6.3"></path></svg></span>
+<input id="contactName" name="name" type="text" autocomplete="name" placeholder="Your Name" required/>
+</label>
+<label class="contact-field">
+<span class="contact-field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg></span>
+<input id="contactVisitorEmail" name="email" type="email" autocomplete="email" placeholder="Your Email" required/>
+</label>
 </div>
-</section>
-<!-- SECTION 6: CONTACT -->
-<section class="portfolio-section" id="contact-section">
-<div class="top-meta-bar"><div class="meta-context">INBOUND TRANSMISSION HUD<br/>STUDENT PORTFOLIO / 2026</div></div>
-<div class="hero-section">
-<span class="section-label">/ Open for Collaboration</span>
-<h1>Get In <span>Touch</span></h1>
-<p class="description-text" style="margin-top: 20px;">Looking to scale concept pipelines or test system interactions? Let us setup structural loops or direct review frameworks.</p>
+<label class="contact-field">
+<span class="contact-field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 7.5h12a2 2 0 0 1 2 2v9.5H4V9.5a2 2 0 0 1 2-2Z"></path><path d="M9 7.5V5.8A2.8 2.8 0 0 1 11.8 3h.4A2.8 2.8 0 0 1 15 5.8v1.7"></path></svg></span>
+<input id="contactSubject" name="subject" type="text" placeholder="Subject" required/>
+</label>
+<label class="contact-field">
+<span class="contact-field-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m4 20 4.2-1 10.9-10.9a2.2 2.2 0 0 0-3.2-3.2L5 15.8 4 20Z"></path><path d="m14.5 6.5 3 3"></path></svg></span>
+<textarea id="contactMessage" name="message" placeholder="Your Message" required></textarea>
+</label>
+<div class="contact-submit-row">
+<button class="contact-send-button" type="submit"><span>Send Message</span><span class="contact-send-arrow" aria-hidden="true">→</span></button>
+<p class="contact-form-status" id="contactFormStatus" aria-live="polite">Your message will open in your email application.</p>
+</div>
+</form>
+
+<div class="contact-detail-grid" aria-label="Contact details">
+<div class="contact-detail-item">
+<span class="contact-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="m4 7 8 6 8-6"></path></svg></span>
+<div class="contact-detail-copy"><strong>Email</strong><a id="contactEmailLink" href="mailto:YOUR_EMAIL_ADDRESS">YOUR_EMAIL_ADDRESS</a><button class="contact-inline-action" id="copyContactEmail" type="button">Copy email</button></div>
+</div>
+<div class="contact-detail-item">
+<span class="contact-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.5 9.5V19"></path><path d="M6.5 5.5v.1"></path><path d="M11 19v-5.3c0-2.4 1.3-3.9 3.5-3.9 2.1 0 3 1.4 3 3.9V19"></path><path d="M11 10v9"></path></svg></span>
+<div class="contact-detail-copy"><strong>LinkedIn</strong><a id="contactLinkedInLink" href="https://www.linkedin.com/in/YOUR_PROFILE" target="_blank" rel="noopener noreferrer">View profile →</a></div>
+</div>
+<div class="contact-detail-item">
+<span class="contact-detail-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg></span>
+<div class="contact-detail-copy"><strong>Location</strong><span>Lahore, Pakistan</span><span>Open to remote opportunities</span></div>
+</div>
+</div>
+<p class="contact-response-note">I’ll get back to you as soon as possible.</p>
+</div>
 </div>
 <footer class="bottom-nav-bar">
 <div class="bottom-tabs" id="bottomTabs">
 <a class="tab-link active" href="#overview-section"><span>01</span>Overview</a>
 <a class="tab-link" href="#featured-section"><span>02</span>Featured Work</a>
 <a class="tab-link" href="#brand-section"><span>03</span>Brand Strategy</a>
-<a class="tab-link" href="#creative-section"><span>04</span>Creative Copy</a>
-<a class="tab-link" href="#about-section"><span>05</span>About Me</a>
+<a class="tab-link" href="#contact-section"><span>04</span>Contact</a>
 </div>
 <div class="slider-arrows">
-<button class="arrow-btn" id="prevBtn">←</button>
-<button class="arrow-btn next-btn" id="nextBtn">→</button>
+<button aria-label="Previous section" class="arrow-btn" id="prevBtn" type="button">←</button>
+<button aria-label="Next section" class="arrow-btn next-btn" id="nextBtn" type="button">→</button>
 </div>
 </footer>
 </section>
@@ -11083,7 +11812,7 @@
 
         function handleMenuClick(page) {
             toggleMenu(false);
-            const mapping = { 'Overview': 'overview-section', 'Featured Work': 'featured-section', 'Brand Strategy': 'brand-section', 'Creative Copy': 'creative-section', 'About Me': 'about-section' };
+            const mapping = { 'Overview': 'overview-section', 'Featured Work': 'featured-section', 'Brand Strategy': 'brand-section', 'Contact': 'contact-section' };
             if(mapping[page]) scrollToSection(mapping[page]);
         }
 
@@ -12066,6 +12795,127 @@
         });
         observer.observe(contentFit);
     }
+})();
+</script>
+
+
+<script id="brand-strategy-orbit-interactions">
+(() => {
+    const visual = document.getElementById('brandStrategyVisual');
+    if (!visual) return;
+    const items = Array.from(visual.querySelectorAll('.brand-orbit-item'));
+    const triggers = items.map(item => item.querySelector('.brand-orbit-trigger')).filter(Boolean);
+    const explore = document.getElementById('brandStrategyExplore');
+    let demoTimers = [];
+
+    const closeAll = (except = null) => {
+        items.forEach(item => {
+            if (item === except) return;
+            item.classList.remove('is-open');
+            item.querySelector('.brand-orbit-trigger')?.setAttribute('aria-expanded', 'false');
+        });
+    };
+
+    triggers.forEach(trigger => {
+        trigger.addEventListener('click', event => {
+            event.stopPropagation();
+            const item = trigger.closest('.brand-orbit-item');
+            const willOpen = !item.classList.contains('is-open');
+            closeAll(item);
+            item.classList.toggle('is-open', willOpen);
+            trigger.setAttribute('aria-expanded', String(willOpen));
+        });
+        trigger.addEventListener('keydown', event => {
+            if (event.key === 'Escape') {
+                const item = trigger.closest('.brand-orbit-item');
+                item.classList.remove('is-open');
+                trigger.setAttribute('aria-expanded', 'false');
+                trigger.focus();
+            }
+        });
+    });
+
+    document.addEventListener('click', event => {
+        if (!visual.contains(event.target)) closeAll();
+    }, { passive: true });
+
+    explore?.addEventListener('click', () => {
+        demoTimers.forEach(clearTimeout);
+        demoTimers = [];
+        closeAll();
+        items.forEach((item, index) => {
+            demoTimers.push(setTimeout(() => {
+                closeAll(item);
+                item.classList.add('is-open');
+                item.querySelector('.brand-orbit-trigger')?.setAttribute('aria-expanded', 'true');
+            }, index * 720));
+        });
+        demoTimers.push(setTimeout(() => closeAll(), items.length * 720 + 1750));
+    });
+})();
+</script>
+
+
+<script id="contact-section-script">
+(() => {
+    const contactEmail = 'YOUR_EMAIL_ADDRESS';
+    const form = document.getElementById('contactForm');
+    const emailLink = document.getElementById('contactEmailLink');
+    const copyButton = document.getElementById('copyContactEmail');
+    const status = document.getElementById('contactFormStatus');
+    if (!form || !emailLink || !copyButton || !status) return;
+
+    const showStatus = (message) => {
+        status.textContent = message;
+        window.clearTimeout(showStatus.timer);
+        showStatus.timer = window.setTimeout(() => {
+            status.textContent = 'Your message will open in your email application.';
+        }, 3200);
+    };
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!form.reportValidity()) return;
+        if (!contactEmail || contactEmail === 'YOUR_EMAIL_ADDRESS') {
+            showStatus('Add your email address in the HTML before publishing.');
+            return;
+        }
+
+        const name = document.getElementById('contactName')?.value.trim() || '';
+        const visitorEmail = document.getElementById('contactVisitorEmail')?.value.trim() || '';
+        const subject = document.getElementById('contactSubject')?.value.trim() || 'Portfolio enquiry';
+        const message = document.getElementById('contactMessage')?.value.trim() || '';
+        const body = `Name: ${name}
+Email: ${visitorEmail}
+
+${message}`;
+        window.location.href = `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        showStatus('Opening your email application…');
+    });
+
+    copyButton.addEventListener('click', async () => {
+        const email = emailLink.textContent.trim();
+        if (!email || email === 'YOUR_EMAIL_ADDRESS') {
+            showStatus('Add your email address in the HTML before publishing.');
+            return;
+        }
+        try {
+            await navigator.clipboard.writeText(email);
+        } catch (error) {
+            const field = document.createElement('textarea');
+            field.value = email;
+            field.setAttribute('readonly', '');
+            field.style.position = 'fixed';
+            field.style.opacity = '0';
+            document.body.appendChild(field);
+            field.select();
+            document.execCommand('copy');
+            field.remove();
+        }
+        copyButton.textContent = 'Copied';
+        showStatus('Email copied.');
+        window.setTimeout(() => { copyButton.textContent = 'Copy email'; }, 1800);
+    });
 })();
 </script>
 
