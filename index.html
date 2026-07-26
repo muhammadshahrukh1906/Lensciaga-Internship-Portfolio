@@ -1,18 +1,17 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>M. SHAHRUKH // Student Portfolio</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&display=swap" rel="stylesheet"></noscript>
-    
-    <!-- The 54 MB 3D viewer remains dormant until deliberate desktop interaction. -->
-    
-    <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>M. SHAHRUKH // Student Portfolio</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&amp;display=swap" rel="preload"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&amp;display=swap" media="print" onload="this.media='all'" rel="stylesheet"/>
+<noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&amp;display=swap" rel="stylesheet"/></noscript>
+<!-- The 54 MB 3D viewer remains dormant until deliberate desktop interaction. -->
+<style>
         :root {
             --bg-canvas: #f6f1eb; 
             --text-main: #000000;
@@ -8572,499 +8571,725 @@
         }
 
     </style>
+<style>
+/* Stable SVG case preview: intentionally overrides the older CSS mesh. */
+.overview-case-poster .overview-case-svg {
+    width: min(100%, 720px);
+    height: min(100%, 540px);
+    display: block;
+    overflow: visible;
+    pointer-events: none;
+    transform: translateZ(0);
+}
+.overview-case-poster .overview-svg-case,
+.overview-case-poster .overview-svg-base,
+.overview-case-poster .overview-svg-lid,
+.overview-case-poster .overview-svg-glasses,
+.overview-case-poster .overview-svg-temple {
+    transform-box: view-box;
+    will-change: transform, opacity;
+}
+.overview-case-poster .overview-svg-case {
+    transform-origin: 380px 320px;
+    transform: translateY(2px) rotate(-2deg) scale(0.96);
+    transition: transform 900ms cubic-bezier(.22,1,.36,1);
+}
+.overview-case-poster .overview-svg-base {
+    transform-origin: 382px 340px;
+    transition: transform 900ms cubic-bezier(.22,1,.36,1), opacity 450ms ease;
+}
+.overview-case-poster .overview-svg-lid {
+    transform-origin: 382px 374px;
+    transform: translateY(7px) scaleY(0.82);
+    transition: transform 980ms cubic-bezier(.22,1,.36,1), opacity 450ms ease;
+}
+.overview-case-poster .overview-svg-interior {
+    opacity: 0.12;
+    transition: opacity 420ms ease 120ms;
+}
+.overview-case-poster .overview-svg-glasses {
+    transform-origin: 378px 300px;
+    transform: translateY(50px) scale(0.72);
+    opacity: 0;
+    transition: transform 900ms cubic-bezier(.22,1,.36,1) 180ms, opacity 320ms ease 150ms;
+}
+.overview-case-poster .overview-svg-temple {
+    transition: transform 820ms cubic-bezier(.22,1,.36,1) 480ms, opacity 250ms ease 420ms;
+    opacity: 0.38;
+}
+.overview-case-poster .overview-svg-temple-left {
+    transform-origin: 216px 286px;
+    transform: rotate(67deg) scaleX(0.76);
+}
+.overview-case-poster .overview-svg-temple-right {
+    transform-origin: 539px 286px;
+    transform: rotate(-67deg) scaleX(0.76);
+}
+.overview-case-poster .overview-svg-shadow {
+    transform-origin: center;
+    transition: transform 900ms cubic-bezier(.22,1,.36,1), opacity 450ms ease;
+}
+.overview-case-poster .overview-svg-glow {
+    transform-origin: center;
+    transition: transform 900ms cubic-bezier(.22,1,.36,1), opacity 450ms ease;
+}
+
+.overview-case-stage.overview-case-engaged .overview-svg-case {
+    transform: translateY(8px) rotate(-1deg) scale(0.99);
+}
+.overview-case-stage.overview-case-engaged .overview-svg-lid {
+    transform: translateY(-132px) scale(0.95, 0.78);
+}
+.overview-case-stage.overview-case-engaged .overview-svg-interior { opacity: 1; }
+.overview-case-stage.overview-case-engaged .overview-svg-glasses {
+    transform: translateY(-14px) scale(0.86);
+    opacity: 1;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-shadow {
+    transform: scale(1.06, 0.84);
+    opacity: 0.28;
+}
+
+.overview-case-stage.overview-case-unfolded .overview-svg-case {
+    transform: translateY(20px) rotate(0deg) scale(1);
+}
+.overview-case-stage.overview-case-unfolded .overview-svg-base {
+    transform: translateY(38px) scale(0.90);
+    opacity: 0.90;
+}
+.overview-case-stage.overview-case-unfolded .overview-svg-lid {
+    transform: translateY(-164px) scale(0.90, 0.70);
+    opacity: 0.86;
+}
+.overview-case-stage.overview-case-unfolded .overview-svg-glasses {
+    transform: translateY(-110px) scale(1.08);
+    opacity: 1;
+}
+.overview-case-stage.overview-case-unfolded .overview-svg-temple-left,
+.overview-case-stage.overview-case-unfolded .overview-svg-temple-right {
+    transform: rotate(0deg) scaleX(1);
+    opacity: 1;
+}
+.overview-case-stage.overview-case-unfolded .overview-svg-glow {
+    transform: scale(1.12);
+    opacity: 1;
+}
+.overview-case-stage.model-loading .overview-svg-glasses {
+    animation: overviewSvgFloat 2.5s ease-in-out infinite;
+}
+@keyframes overviewSvgFloat {
+    50% { transform: translateY(-120px) scale(1.095); }
+}
+
+/* Hide the obsolete DOM mesh if an older cached fragment remains. */
+.overview-case-poster .overview-case-scene { display: none !important; }
+
+/* Local file previews should remain attractive rather than showing a large error card. */
+.overview-case-stage.local-preview .overview-model-load-panel,
+.overview-case-stage.local-preview .model-load-panel { display: none !important; }
+.overview-case-stage.local-preview .overview-case-hint { opacity: 0 !important; }
+
+/* Keep the real model large and centred after handoff. */
+.overview-final-model.hero-model-viewer {
+    inset: -1% -4% -1%;
+    width: 108%;
+    height: 102%;
+    --poster-color: transparent;
+}
+
+@media (max-width: 900px) {
+    .overview-case-poster .overview-case-svg { width: 100%; height: 100%; }
+}
+@media (max-width: 620px) {
+    .overview-case-stage.overview-case-engaged .overview-svg-lid { transform: translateY(-116px) scale(0.94, 0.80); }
+    .overview-case-stage.overview-case-unfolded .overview-svg-lid { transform: translateY(-142px) scale(0.91, 0.73); }
+    .overview-case-stage.overview-case-unfolded .overview-svg-glasses { transform: translateY(-92px) scale(1.02); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .overview-case-poster .overview-svg-case,
+    .overview-case-poster .overview-svg-base,
+    .overview-case-poster .overview-svg-lid,
+    .overview-case-poster .overview-svg-glasses,
+    .overview-case-poster .overview-svg-temple,
+    .overview-case-poster .overview-svg-shadow,
+    .overview-case-poster .overview-svg-glow {
+        transition-duration: 1ms !important;
+        animation: none !important;
+    }
+}
+</style>
+<style id="overviewReversible3DStyles">
+/* Reversible overview handoff: the GLB can be cached without permanently replacing the case. */
+.overview-case-stage .overview-final-model.hero-model-viewer {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(10px) scale(0.91);
+    transition:
+        opacity 360ms ease,
+        transform 620ms cubic-bezier(.22,1,.36,1),
+        visibility 0s linear 620ms !important;
+}
+
+.overview-case-stage.model-loaded:not(.overview-model-visible) .overview-case-poster,
+.overview-case-stage.model-loading:not(.overview-model-visible) .overview-case-poster {
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: none !important;
+    transform: scale(1) translateY(0) !important;
+    filter: none !important;
+}
+
+.overview-case-stage.overview-model-visible .overview-case-poster {
+    opacity: 0 !important;
+    transform: translateY(5px) scale(0.93) !important;
+    filter: blur(5px) !important;
+    pointer-events: none !important;
+}
+
+.overview-case-stage.model-loaded.overview-model-visible .overview-final-model.hero-model-viewer {
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: translateY(0) scale(1);
+    transition:
+        opacity 420ms ease 70ms,
+        transform 760ms cubic-bezier(.22,1,.36,1) 40ms,
+        visibility 0s linear 0s !important;
+}
+
+/* The poster reappears first, then its existing SVG transitions run backwards to close the case. */
+.overview-case-stage.overview-is-closing .overview-case-poster {
+    transition: opacity 260ms ease, transform 420ms cubic-bezier(.22,1,.36,1), filter 260ms ease !important;
+}
+
+.overview-case-stage.overview-is-closing .overview-final-model.hero-model-viewer {
+    transition: opacity 240ms ease, transform 420ms cubic-bezier(.22,1,.36,1), visibility 0s linear 420ms !important;
+}
+
+.overview-case-stage.model-loaded:not(.overview-model-visible) .overview-case-hint {
+    opacity: 0.82 !important;
+    transform: translateX(-50%) translateY(0) !important;
+}
+
+.overview-case-stage.overview-case-engaged .overview-case-hint,
+.overview-case-stage.overview-model-visible .overview-case-hint {
+    opacity: 0 !important;
+    transform: translateX(-50%) translateY(6px) !important;
+}
+
+/* Local direct-file testing gets a small unobtrusive instruction only after a click. */
+.overview-local-model-note {
+    position: absolute;
+    left: 50%;
+    bottom: 3%;
+    z-index: 24;
+    width: min(300px, calc(100% - 34px));
+    transform: translateX(-50%) translateY(8px);
+    padding: 9px 13px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 999px;
+    background: rgba(246,241,235,.90);
+    color: #5d5d63;
+    font-size: .60rem;
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: .45px;
+    text-align: center;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .25s ease, transform .3s ease, visibility 0s linear .3s;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+.overview-case-stage.show-local-model-note .overview-local-model-note {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+    transition-delay: 0s;
+}
+
+@media (max-width: 700px) {
+    .overview-case-stage .overview-final-model.hero-model-viewer {
+        inset: 0 -2% !important;
+        width: 104% !important;
+        height: 100% !important;
+    }
+}
+</style>
+
 </head>
 <body>
-
-    <!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
-    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;overflow:hidden">
-        <defs>
-            <clipPath id="catEyeLeftClip" clipPathUnits="objectBoundingBox">
-                <path d="M 0.018 0.055 C 0.27 0.052 0.59 0.082 0.79 0.17 C 0.91 0.223 0.983 0.31 0.994 0.425 C 1 0.645 0.91 0.835 0.724 0.932 C 0.515 1 0.275 0.982 0.135 0.865 C 0.045 0.79 0.006 0.59 0.008 0.325 C 0.009 0.19 0.012 0.095 0.018 0.055 Z"/>
-            </clipPath>
-            <clipPath id="catEyeRightClip" clipPathUnits="objectBoundingBox">
-                <path d="M 0.982 0.055 C 0.73 0.052 0.41 0.082 0.21 0.17 C 0.09 0.223 0.017 0.31 0.006 0.425 C 0 0.645 0.09 0.835 0.276 0.932 C 0.485 1 0.725 0.982 0.865 0.865 C 0.955 0.79 0.994 0.59 0.992 0.325 C 0.991 0.19 0.988 0.095 0.982 0.055 Z"/>
-            </clipPath>
-        </defs>
-    </svg>
-
-    <!-- Smooth, scalable lens silhouettes used only by the second featured slot. -->
-    <svg width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;overflow:hidden">
-        <defs>
-            <clipPath id="secondSlotLensLeftClip" clipPathUnits="objectBoundingBox">
-                <path d="M0.075,0.025 C0.035,0.026 0.008,0.072 0.006,0.145 L0.018,0.685 C0.022,0.845 0.107,0.945 0.257,0.963 L0.742,0.982 C0.875,0.986 0.957,0.899 0.975,0.758 L0.997,0.202 C0.999,0.101 0.925,0.045 0.815,0.035 Z"/>
-            </clipPath>
-            <clipPath id="secondSlotLensRightClip" clipPathUnits="objectBoundingBox">
-                <path d="M0.185,0.035 C0.075,0.045 0.001,0.101 0.003,0.202 L0.025,0.758 C0.043,0.899 0.125,0.986 0.258,0.982 L0.743,0.963 C0.893,0.945 0.978,0.845 0.982,0.685 L0.994,0.145 C0.992,0.072 0.965,0.026 0.925,0.025 Z"/>
-            </clipPath>
-            <clipPath id="thirdSlotWingLensLeftClip" clipPathUnits="objectBoundingBox">
-                <path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z"/>
-            </clipPath>
-            <clipPath id="thirdSlotWingLensRightClip" clipPathUnits="objectBoundingBox">
-                <path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z" transform="translate(1 0) scale(-1 1)"/>
-            </clipPath>
-            <clipPath id="fourthSlotButterflyLensLeftClip" clipPathUnits="objectBoundingBox">
-                <path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z"/>
-            </clipPath>
-            <clipPath id="fourthSlotButterflyLensRightClip" clipPathUnits="objectBoundingBox">
-                <path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z" transform="translate(1 0) scale(-1 1)"/>
-            </clipPath>
-        </defs>
-    </svg>
-
-    <div class="ambient-mesh"></div>
-
-    <!-- 3D Kinetic Transport Layer (Stage container) -->
-    <div id="kinetic3dStage" aria-hidden="true">
-        <div class="kinetic-box" id="kineticBox">
-            <div class="box-lid" id="kineticBoxLid">
-                <div class="box-lid-photo"></div>
-                <div class="case-brand-mark">lensciaga.</div>
-            </div>
-            <div class="case-rim"></div>
-            <div class="box-side box-bottom"></div>
-            <div class="box-side box-front"></div>
-            <div class="box-side box-back"></div>
-            <div class="box-side box-left"></div>
-            <div class="box-side box-right"></div>
-        </div>
-
-        <!-- Independent transport proxy so the lenses can leave the box without inheriting its 3D rotation. -->
-        <div class="folded-glasses-proxy" id="foldedGlasses">
-            <div class="proxy-temple left"></div>
-            <div class="proxy-temple right"></div>
-            <div class="proxy-hinge left"></div>
-            <div class="proxy-hinge right"></div>
-            <div class="folded-lens l1"></div>
-            <div class="folded-lens l2"></div>
-            <div class="proxy-bridge">
-                <div class="proxy-bridge-arch"></div>
-                <div class="proxy-nose-pad left"></div>
-                <div class="proxy-nose-pad right"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="fullscreen-menu" id="fullScreenMenu">
-        <button class="close-menu-btn" type="button" aria-label="Close navigation menu" onclick="toggleMenu(false)">✕</button>
-        <div class="menu-links">
-            <a href="#" class="menu-link" onclick="event.preventDefault(); handleMenuClick('Overview')">Overview</a>
-            <a href="#" class="menu-link" onclick="event.preventDefault(); handleMenuClick('Featured Work')">Featured Work</a>
-            <a href="#" class="menu-link" onclick="event.preventDefault(); handleMenuClick('Brand Strategy')">Brand Strategy</a>
-            <a href="#" class="menu-link" onclick="event.preventDefault(); handleMenuClick('Creative Copy')">Creative Copy</a>
-            <a href="#" class="menu-link" onclick="event.preventDefault(); handleMenuClick('About Me')">About Me</a>
-        </div>
-    </div>
-
-    <div class="toast-notification" id="toastBox">
-        <span style="font-size: 1.2rem;">⚡</span>
-        <div>
-            <strong style="display:block; font-size:0.8rem;">External Hook Connected</strong>
-            <span style="font-size:0.75rem; color:var(--text-muted);" id="toastMessage">Routing to source hub...</span>
-        </div>
-    </div>
-
-    <div class="app-container">
-        
-        <aside class="sidebar">
-            <div class="brand-logo" onclick="handleMenuClick('Overview')">M.<br>SHAHRUKH</div>
-            
-            <nav class="sidebar-nav" id="sidebarNav">
-                <a href="#overview-section" class="nav-item active">Overview</a>
-                <a href="#featured-section" class="nav-item">Featured Work</a>
-                <a href="#brand-section" class="nav-item">Brand Strategy</a>
-                <a href="#creative-section" class="nav-item">Creative Copy</a>
-                <a href="#about-section" class="nav-item">About Me</a>
-                <a href="#contact-section" class="nav-item">Contact</a>
-            </nav>
-
-            <div class="sidebar-footer">
-                <div><p class="footer-quote">Good design creates clarity. Great design creates impact.</p></div>
-                <div class="social-links">
-                    <a class="social-icon" onclick="triggerToast('Opening LinkedIn profile ecosystem...')">💼</a>
-                    <a class="social-icon" onclick="triggerToast('Opening Behance project deck catalogs...')">Bē</a>
-                    <a class="social-icon" onclick="triggerToast('Opening global networking link...')">🌐</a>
-                </div>
-                <div class="copyright">© 2026 M. Shahrukh</div>
-            </div>
-        </aside>
-
-        <main class="main-content" id="mainContentArea">
-            <!-- SECTION 1: OVERVIEW -->
-            <section class="portfolio-section internship-overview" id="overview-section">
-                <div class="overview-menu-row">
-                    <button class="hamburger-btn" type="button" aria-label="Open navigation menu" aria-controls="fullScreenMenu" aria-expanded="false" onclick="toggleMenu(true)">
-                        <span></span><span></span>
-                    </button>
-                </div>
-
-                <div class="internship-overview-grid">
-                    <div class="internship-overview-copy">
-                        <div class="overview-index">01&nbsp;&nbsp;/&nbsp;&nbsp;OVERVIEW</div>
-                        <h1 class="internship-overview-title">Selected Work<br>from My Internship</h1>
-                        <p class="internship-overview-description">A focused collection of projects and responsibilities completed during my internship. Each piece highlights practical problem-solving, analytical thinking, communication and attention to detail.</p>
-                        <button class="overview-explore-link" type="button" onclick="scrollToSection('featured-section')">
-                            <span>Explore projects</span><span aria-hidden="true">→</span>
-                        </button>
-                    </div>
-
-                    <div class="overview-visual-column">
-                        <div class="overview-visual-outline" aria-hidden="true"></div>
-                        <div class="glasses-3d-stage overview-case-stage" id="stage3d" role="button" tabindex="0" aria-label="Open the eyeglasses case and reveal the interactive 3D model">
-                            <div class="overview-case-hint" aria-hidden="true">
-                                <span class="overview-case-hint-dot"></span>
+<!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute;overflow:hidden" width="0">
+<defs>
+<clippath clippathunits="objectBoundingBox" id="catEyeLeftClip">
+<path d="M 0.018 0.055 C 0.27 0.052 0.59 0.082 0.79 0.17 C 0.91 0.223 0.983 0.31 0.994 0.425 C 1 0.645 0.91 0.835 0.724 0.932 C 0.515 1 0.275 0.982 0.135 0.865 C 0.045 0.79 0.006 0.59 0.008 0.325 C 0.009 0.19 0.012 0.095 0.018 0.055 Z"></path>
+</clippath>
+<clippath clippathunits="objectBoundingBox" id="catEyeRightClip">
+<path d="M 0.982 0.055 C 0.73 0.052 0.41 0.082 0.21 0.17 C 0.09 0.223 0.017 0.31 0.006 0.425 C 0 0.645 0.09 0.835 0.276 0.932 C 0.485 1 0.725 0.982 0.865 0.865 C 0.955 0.79 0.994 0.59 0.992 0.325 C 0.991 0.19 0.988 0.095 0.982 0.055 Z"></path>
+</clippath>
+</defs>
+</svg>
+<!-- Smooth, scalable lens silhouettes used only by the second featured slot. -->
+<svg aria-hidden="true" focusable="false" height="0" style="position:absolute;overflow:hidden" width="0">
+<defs>
+<clippath clippathunits="objectBoundingBox" id="secondSlotLensLeftClip">
+<path d="M0.075,0.025 C0.035,0.026 0.008,0.072 0.006,0.145 L0.018,0.685 C0.022,0.845 0.107,0.945 0.257,0.963 L0.742,0.982 C0.875,0.986 0.957,0.899 0.975,0.758 L0.997,0.202 C0.999,0.101 0.925,0.045 0.815,0.035 Z"></path>
+</clippath>
+<clippath clippathunits="objectBoundingBox" id="secondSlotLensRightClip">
+<path d="M0.185,0.035 C0.075,0.045 0.001,0.101 0.003,0.202 L0.025,0.758 C0.043,0.899 0.125,0.986 0.258,0.982 L0.743,0.963 C0.893,0.945 0.978,0.845 0.982,0.685 L0.994,0.145 C0.992,0.072 0.965,0.026 0.925,0.025 Z"></path>
+</clippath>
+<clippath clippathunits="objectBoundingBox" id="thirdSlotWingLensLeftClip">
+<path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z"></path>
+</clippath>
+<clippath clippathunits="objectBoundingBox" id="thirdSlotWingLensRightClip">
+<path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z" transform="translate(1 0) scale(-1 1)"></path>
+</clippath>
+<clippath clippathunits="objectBoundingBox" id="fourthSlotButterflyLensLeftClip">
+<path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z"></path>
+</clippath>
+<clippath clippathunits="objectBoundingBox" id="fourthSlotButterflyLensRightClip">
+<path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z" transform="translate(1 0) scale(-1 1)"></path>
+</clippath>
+</defs>
+</svg>
+<div class="ambient-mesh"></div>
+<!-- 3D Kinetic Transport Layer (Stage container) -->
+<div aria-hidden="true" id="kinetic3dStage">
+<div class="kinetic-box" id="kineticBox">
+<div class="box-lid" id="kineticBoxLid">
+<div class="box-lid-photo"></div>
+<div class="case-brand-mark">lensciaga.</div>
+</div>
+<div class="case-rim"></div>
+<div class="box-side box-bottom"></div>
+<div class="box-side box-front"></div>
+<div class="box-side box-back"></div>
+<div class="box-side box-left"></div>
+<div class="box-side box-right"></div>
+</div>
+<!-- Independent transport proxy so the lenses can leave the box without inheriting its 3D rotation. -->
+<div class="folded-glasses-proxy" id="foldedGlasses">
+<div class="proxy-temple left"></div>
+<div class="proxy-temple right"></div>
+<div class="proxy-hinge left"></div>
+<div class="proxy-hinge right"></div>
+<div class="folded-lens l1"></div>
+<div class="folded-lens l2"></div>
+<div class="proxy-bridge">
+<div class="proxy-bridge-arch"></div>
+<div class="proxy-nose-pad left"></div>
+<div class="proxy-nose-pad right"></div>
+</div>
+</div>
+</div>
+<div class="fullscreen-menu" id="fullScreenMenu">
+<button aria-label="Close navigation menu" class="close-menu-btn" onclick="toggleMenu(false)" type="button">✕</button>
+<div class="menu-links">
+<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Overview')">Overview</a>
+<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Featured Work')">Featured Work</a>
+<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Brand Strategy')">Brand Strategy</a>
+<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Creative Copy')">Creative Copy</a>
+<a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('About Me')">About Me</a>
+</div>
+</div>
+<div class="toast-notification" id="toastBox">
+<span style="font-size: 1.2rem;">⚡</span>
+<div>
+<strong style="display:block; font-size:0.8rem;">External Hook Connected</strong>
+<span id="toastMessage" style="font-size:0.75rem; color:var(--text-muted);">Routing to source hub...</span>
+</div>
+</div>
+<div class="app-container">
+<aside class="sidebar">
+<div class="brand-logo" onclick="handleMenuClick('Overview')">M.<br/>SHAHRUKH</div>
+<nav class="sidebar-nav" id="sidebarNav">
+<a class="nav-item active" href="#overview-section">Overview</a>
+<a class="nav-item" href="#featured-section">Featured Work</a>
+<a class="nav-item" href="#brand-section">Brand Strategy</a>
+<a class="nav-item" href="#creative-section">Creative Copy</a>
+<a class="nav-item" href="#about-section">About Me</a>
+<a class="nav-item" href="#contact-section">Contact</a>
+</nav>
+<div class="sidebar-footer">
+<div><p class="footer-quote">Good design creates clarity. Great design creates impact.</p></div>
+<div class="social-links">
+<a class="social-icon" onclick="triggerToast('Opening LinkedIn profile ecosystem...')">💼</a>
+<a class="social-icon" onclick="triggerToast('Opening Behance project deck catalogs...')">Bē</a>
+<a class="social-icon" onclick="triggerToast('Opening global networking link...')">🌐</a>
+</div>
+<div class="copyright">© 2026 M. Shahrukh</div>
+</div>
+</aside>
+<main class="main-content" id="mainContentArea">
+<!-- SECTION 1: OVERVIEW -->
+<section class="portfolio-section internship-overview" id="overview-section">
+<div class="overview-menu-row">
+<button aria-controls="fullScreenMenu" aria-expanded="false" aria-label="Open navigation menu" class="hamburger-btn" onclick="toggleMenu(true)" type="button">
+<span></span><span></span>
+</button>
+</div>
+<div class="internship-overview-grid">
+<div class="internship-overview-copy">
+<div class="overview-index">01  /  OVERVIEW</div>
+<h1 class="internship-overview-title">Selected Work<br/>from My Internship</h1>
+<p class="internship-overview-description">A focused collection of projects and responsibilities completed during my internship. Each piece highlights practical problem-solving, analytical thinking, communication and attention to detail.</p>
+<button class="overview-explore-link" onclick="scrollToSection('featured-section')" type="button">
+<span>Explore projects</span><span aria-hidden="true">→</span>
+</button>
+</div>
+<div class="overview-visual-column">
+<div aria-hidden="true" class="overview-visual-outline"></div>
+<div aria-label="Open the eyeglasses case and reveal the interactive 3D model" class="glasses-3d-stage overview-case-stage" id="stage3d" role="button" tabindex="0">
+<div aria-hidden="true" class="overview-case-hint">
+<span class="overview-case-hint-dot"></span>
                                 Hover or click to open
                             </div>
-
-                            <!-- This entire preview is lightweight CSS. No GLB or viewer library is requested until interaction. -->
-                            <div class="model-poster overview-case-poster" id="modelPoster" aria-hidden="true">
-                                <div class="overview-case-scene">
-                                    <div class="overview-case-shadow"></div>
-
-                                    <div class="overview-case-object">
-                                        <div class="overview-case-base">
-                                            <div class="overview-case-interior"></div>
-                                            <div class="overview-case-front-edge">
-                                                <span>lensciaga</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="overview-case-lid">
-                                            <div class="overview-case-lid-face">
-                                                <span>lensciaga</span>
-                                            </div>
-                                            <div class="overview-case-lid-inner"></div>
-                                        </div>
-
-                                        <div class="overview-folding-glasses">
-                                            <div class="overview-glasses-arm overview-glasses-arm-left"></div>
-                                            <div class="overview-glasses-arm overview-glasses-arm-right"></div>
-                                            <div class="overview-glasses-front">
-                                                <div class="overview-glasses-lens overview-glasses-lens-left"></div>
-                                                <div class="overview-glasses-bridge"></div>
-                                                <div class="overview-glasses-lens overview-glasses-lens-right"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <model-viewer
-                                id="luxuryGlassesModel"
-                                class="hero-model-viewer overview-final-model"
-                                data-src="./eyeglasses.glb"
-                                alt="Interactive 3D model of the eyeglasses shown in this internship portfolio"
-                                camera-controls
-                                auto-rotate
-                                auto-rotate-delay="900"
-                                rotation-per-second="14deg"
-                                shadow-intensity="1.15"
-                                shadow-softness="0.85"
-                                exposure="1.05"
-                                environment-image="neutral"
-                                camera-orbit="20deg 74deg auto"
-                                field-of-view="30deg"
-                                min-field-of-view="18deg"
-                                max-field-of-view="42deg"
-                                interaction-prompt="none"
-                                reveal="auto">
-                            </model-viewer>
-
-                            <!-- Retained for the existing lazy model-loader logic; visually hidden and triggered after the CSS reveal. -->
-                            <button class="model-load-button overview-hidden-model-trigger" id="load3dModelButton" type="button" aria-controls="luxuryGlassesModel" tabindex="-1">Load interactive 3D</button>
-
-                            <div class="model-load-panel overview-model-load-panel" id="modelLoadPanel" role="status" aria-live="polite">
-                                <span class="model-load-note" id="modelLoadStatus">Loading interactive 3D…</span>
-                                <div class="model-progress-track" aria-hidden="true">
-                                    <div class="model-progress-bar" id="modelProgressBar"></div>
-                                </div>
-                                <span class="model-error" id="modelErrorMessage">The lightweight animated glasses remain available.</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="internship-stat-rail" aria-label="Internship portfolio highlights">
-                    <div class="internship-stat-item">
-                        <span class="internship-stat-icon" aria-hidden="true">▣</span>
-                        <div><strong>12</strong><span>Work Samples</span></div>
-                    </div>
-                    <div class="internship-stat-item">
-                        <span class="internship-stat-icon" aria-hidden="true">&lt;/&gt;</span>
-                        <div><strong>8+</strong><span>Tools &amp; Methods</span></div>
-                    </div>
-                    <div class="internship-stat-item">
-                        <span class="internship-stat-icon" aria-hidden="true">◇</span>
-                        <div><strong>1</strong><span>Internship Journey</span></div>
-                    </div>
-                </div>
-            </section>
-            
-            <!-- SECTION 2: FEATURED WORK -->
-            <section class="portfolio-section" id="featured-section">
-                <div class="featured-sticky-shell" id="featuredStickyShell">
-                    <div class="featured-scroll-track" id="featuredScrollTrack">
-                <div class="top-meta-bar">
-                    <div class="meta-context">CREATIVE DIRECTION &amp; BRAND CONCEPTS <span class="meta-separator">•</span> STUDENT PORTFOLIO / 2026</div>
-                </div>
-
-                <div class="hero-section">
-                    <span class="section-label">/ Academic & Freelance Projects</span>
-                    <h1>Selected <span>Work</span></h1>
-                    
-                    <div class="hero-footer-row">
-                        <p class="description-text">A collection of visual stories crafted for style-driven brands and concepts. Click any card preview to unlock project details.</p>
-                        <button class="action-pill-btn" onclick="scrolledToWork()">View Case Decks <span>↗</span></button>
-                        
-                        <div class="scroll-explore" onclick="scrolledToWork()">
-                            <span>Scroll to explore</span>
-                            <div class="scroll-circle">↓</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="instagram-grid" id="portfolioGrid">
-                    <!-- Dynamic Interactive Cards Layout Mapping -->
-                    <div class="slot-card" onclick="openShowcase(this, 'Intelligent Glasses', 'Premium visual campaign layout asset mapping out tech glasses features side by side.', 'Engineered clean vector micro-grids with adaptive lens transparency scales.', 'Shifts presentation values directly away from simple cosmetic previews to utility understanding.', 'https://www.instagram.com/p/DTN3WlGCLr8/', 'default')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="glasses.png" alt="Glasses Slot Asset">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 01</div>
-                            <div class="slot-title">Intelligent Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Tinted Luxury Glasses', 'Premium tinted configuration exploring interactive viewport aesthetics, layered protective filters, and customized structural frame outlines.', 'Rendered progressive color density shaders synchronized with dynamic layout frames.', 'Delivers contextual product validation overlays alongside luxury video playback frames.', 'https://www.instagram.com/reel/DTe4BrTiO12/', 'tinted')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="tinted.png" alt="Tinted Luxury Glasses Frame Asset">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 02</div>
-                            <div class="slot-title">Tinted Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card wing-slot" onclick="openShowcase(this, 'Doffy Frameless Design', 'An architectural exploration of space, future shapes and dynamic content balance values featuring tailored gradient optics.', 'Applied customized grid geometry alongside asset file arrays.', 'Designed for interactive digital interface clarity updates.', '#', 'doffy')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="doffy1.png" alt="Blue wing-shaped rimless glasses">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 03</div>
-                            <div class="slot-title">Doffy Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Butty Glasses', 'Premium visual configuration utilizing high fidelity custom lens overlays combined with dynamic motion playback layers.', 'Synchronized local video processing with frame element arrays.', 'Optimizing presentation density profiles for interactive showcase displays.', 'https://www.instagram.com/reel/DUH-ET0iOxz/', 'butty')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="butty1.png" alt="Butty Glasses Active Slot">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 04</div>
-                            <div class="slot-title">Butty Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Clip Glasses', 'Minimalist tactical attachment blueprint integrating structural engineering layouts with sharp custom optics.', 'Configured localized frame assets and single layer picture alignments.', 'Refining structural precision metrics within close-up frame presentations.', 'https://www.instagram.com/reel/DUsIzl6CPwA/', 'clip')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="clip1.png" alt="Clip Glasses Front Asset View">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 05</div>
-                            <div class="slot-title">Clip Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Pink Glasses', 'Vibrant luxury frames combining striking modern aesthetics with carefully balanced soft-tone glass dynamics.', 'Executed clean spatial gradient curves and local image layering matrices.', 'Elevating product visibility profiles through vibrant contrast frame alignments.', 'https://www.instagram.com/p/DTdHglQCJBB/', 'pink')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="pink1.png" alt="Pink Glasses Preview Asset">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 06</div>
-                            <div class="slot-title">Pink Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Gold Glasses', 'High-end structural concept displaying refined architectural styling cues and signature luxurious trim levels.', 'Assembled multi-layered hardware frameworks paired with fine geometric accents.', 'Setting definitive branding precedents for upscale high-precision product rollouts.', '#', 'gold')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="gold1.png" alt="Gold Glasses Active Preview">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 07</div>
-                            <div class="slot-title">Gold Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Circle Glasses', 'Advanced sleek geometry concept utilizing structured radius alignments and pristine presentation elements.', 'Calculated precise lens concentric metrics paired with multi-layer image staging.', 'Establishing continuous flow aesthetics across high-contrast premium design optics.', '#', 'circle')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="circle1.png" alt="Circle Glasses Active Thumbnail">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 08</div>
-                            <div class="slot-title">Circle Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Multi Glasses Campaign', 'High precision product array tracking custom layered styles and variable density frame structures.', 'Synchronized multimain video output layouts across unified asset packages.', 'To scale presentation fidelity models within comprehensive dynamic showcases.', '#', 'multi')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="multi7.png" alt="Multi Glasses Thumbnail Preview Layout">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 09</div>
-                            <div class="slot-title">Multi Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Hand Campaign Focus', 'Macro close-up interactive presentation exploring form, natural geometry, and continuous product flow dynamics.', 'Isolated handmain motion framework streaming localized configurations.', 'Establishing immediate utility focus profiles within minimal presentation bounds.', '#', 'hand')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="hand1.png" alt="Hand Glasses Creative Focus Mapping">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 10</div>
-                            <div class="slot-title">Hand Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Aura Glasses', 'Luminescent design concept tracking modern dynamic frame outlines alongside pristine environmental reflections.', 'Configured isolated single-layer spatial hardware definitions.', 'Emphasizing elegant standalone brand value matrices within minimal structures.', '#', 'aura')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="auramain.png" alt="Aura Glasses Main Preview">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 11</div>
-                            <div class="slot-title">Aura Glasses</div>
-                        </div>
-                    </div>
-
-                    <div class="slot-card" onclick="openShowcase(this, 'Cat Glasses', 'Aggressive sleek architectural contour design emphasizing sharp geometry and multi-tonal lens dynamics.', 'Configured an interactive five-stage image carousel inside the left viewport mapping close-up angles.', 'Delivering granular technical asset insights across variable depth planes.', '#', 'cat')">
-                        <img loading="lazy" decoding="async" fetchpriority="low" class="slot-card-img" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==" data-src="catmain.png" alt="Cat Glasses Main Preview">
-                        <div class="slot-overlay">
-                            <div class="slot-label">Case Study 12</div>
-                            <div class="slot-title">Cat Glasses</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="featured-bottom-rail" aria-label="Featured work overview">
-                    <div class="featured-rail-summary">
-                        <span class="featured-rail-number">12</span>
-                        <span class="featured-rail-copy">
-                            <strong>Selected case studies</strong>
-                            <span>Choose any card to open its interactive eyewear presentation.</span>
-                        </span>
-                    </div>
-                    <div class="featured-rail-topics" aria-hidden="true">
-                        <span>Creative Direction</span>
-                        <span>Product Storytelling</span>
-                        <span>Eyewear Campaigns</span>
-                        <span>Interactive Concepts</span>
-                    </div>
-                </div>
-                    </div>
-
-                    <div class="featured-view-progress" id="featuredViewProgress" aria-hidden="true">
-                        <span class="featured-progress-label">Section view</span>
-                        <span class="featured-progress-track"><span class="featured-progress-fill" id="featuredProgressFill"></span></span>
-                        <span class="featured-progress-count" id="featuredProgressCount">01 / 02</span>
-                    </div>
-                </div>
-            </section>
-
-            <!-- SECTION 3: BRAND STRATEGY -->
-            <section class="portfolio-section" id="brand-section">
-                <div class="top-meta-bar"><div class="meta-context">MARKET POSITIONING DECK STACKS<br>STUDENT PORTFOLIO / 2026</div></div>
-                <div class="hero-section">
-                    <span class="section-label">/ Corporate Identity Blueprints</span>
-                    <h1>Brand <span>Systems</span></h1>
-                    <p class="description-text" style="margin-top: 20px;">Deep research maps detailing audience alignment matrices, modern typographic guidelines, and tone formulation rules for corporate applications.</p>
-                </div>
-            </section>
-
-            <!-- SECTION 4: CREATIVE COPY -->
-            <section class="portfolio-section" id="creative-section">
-                <div class="top-meta-bar"><div class="meta-context">VERBAL SYNTAX SYSTEMS<br>STUDENT PORTFOLIO / 2026</div></div>
-                <div class="hero-section">
-                    <span class="section-label">/ Tone of Voice & Copywriting</span>
-                    <h1>Strategic <span>Copy</span></h1>
-                    <p class="description-text" style="margin-top: 20px;">A showcase of verbal communication, short-form advertising hooks, editorial taglines, and long-form luxury design breakdowns.</p>
-                </div>
-            </section>
-
-            <!-- SECTION 5: ABOUT ME -->
-            <section class="portfolio-section" id="about-section">
-                <div class="top-meta-bar"><div class="meta-context">BIOGRAPHY & COMPETENCY INDICES<br>STUDENT PORTFOLIO / 2026</div></div>
-                <div class="hero-section">
-                    <span class="section-label">/ Personal Design Philosophy</span>
-                    <h1>The <span>Designer</span></h1>
-                    <p class="description-text" style="margin-top: 20px;">Currently investigating minimal design patterns and luxury interfaces. Bridging high precision spatial design layout forms with interactive user loops.</p>
-                </div>
-            </section>
-
-            <!-- SECTION 6: CONTACT -->
-            <section class="portfolio-section" id="contact-section">
-                <div class="top-meta-bar"><div class="meta-context">INBOUND TRANSMISSION HUD<br>STUDENT PORTFOLIO / 2026</div></div>
-                <div class="hero-section">
-                    <span class="section-label">/ Open for Collaboration</span>
-                    <h1>Get In <span>Touch</span></h1>
-                    <p class="description-text" style="margin-top: 20px;">Looking to scale concept pipelines or test system interactions? Let us setup structural loops or direct review frameworks.</p>
-                </div>
-
-                <footer class="bottom-nav-bar">
-                    <div class="bottom-tabs" id="bottomTabs">
-                        <a href="#overview-section" class="tab-link active"><span>01</span>Overview</a>
-                        <a href="#featured-section" class="tab-link"><span>02</span>Featured Work</a>
-                        <a href="#brand-section" class="tab-link"><span>03</span>Brand Strategy</a>
-                        <a href="#creative-section" class="tab-link"><span>04</span>Creative Copy</a>
-                        <a href="#about-section" class="tab-link"><span>05</span>About Me</a>
-                    </div>
-                    <div class="slider-arrows">
-                        <button class="arrow-btn" id="prevBtn">←</button>
-                        <button class="arrow-btn next-btn" id="nextBtn">→</button>
-                    </div>
-                </footer>
-            </section>
-
-        </main>
-    </div>
-
-    <!-- MODAL ASSEMBLY -->
-    <div class="modal-container" id="showcaseModal" onclick="closeShowcase(event)">
-        <div class="modal-mesh-bg"></div>
-        <button class="modal-close-btn" onclick="event.stopPropagation(); closeShowcase(event)" aria-label="Close project showcase">✕</button>
-        
-        <div class="rimless-glasses-assembly" id="mainAssembly" onclick="event.stopPropagation()">
-            <div class="glasses-temple temple-left"><div class="baroque-gold-inlay"></div></div>
-            <div class="gold-hinge-assembly hinge-left"></div>
-            
-            <div class="rimless-lens lens-display-left" id="leftLensAnchor">
-                <div class="lens-slider-wrapper" id="lensSliderWrapper"></div>
-            </div>
-            
-            <div class="gold-center-bridge-assembly">
-                <div class="bridge-arch"></div>
-                <div class="nose-pads-container">
-                    <div class="nose-pad-arm pad-left"></div>
-                    <div class="nose-pad-arm pad-right"></div>
-                </div>
-            </div>
-            
-            <div class="rimless-lens lens-info-right">
-                <div class="lens-content-fit" id="lensContentFit">
-                    <div class="lens-scroll-area">
-                    <h3 class="modal-body-title" id="modalTargetTitle">INTELLIGENT GLASSES</h3>
-                    <div class="modal-title-divider"></div>
-                    
-                    <div class="modal-side-spec">
-                        <div class="modal-spec-block">
-                            <h4>Description</h4>
-                            <p id="modalTargetDesc">Premium visual campaign layout asset mapping out tech glasses features side by side.</p>
-                        </div>
-                        <div class="modal-spec-block">
-                            <h4>Procedure</h4>
-                            <p id="modalTargetProc">Engineered clean vector micro-grids with adaptive lens transparency scales.</p>
-                        </div>
-                        <div class="modal-spec-block">
-                            <h4>Purpose</h4>
-                            <p id="modalTargetPurp">Shifts presentation values directly away from simple cosmetic previews to utility understanding.</p>
-                        </div>
-                    </div>
-                </div>
-                    <a href="#" class="modal-action-btn" id="modalTargetLink" target="_blank" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;">View Project Source</a>
-                </div>
-            </div>
-            
-            <div class="gold-hinge-assembly hinge-right"></div>
-            <div class="glasses-temple temple-right"><div class="baroque-gold-inlay"></div></div>
-        </div>
-
-        <!-- Kept outside the clipped lens so unusual lens silhouettes cannot
+<!-- This entire preview is lightweight CSS. No GLB or viewer library is requested until interaction. -->
+<div aria-hidden="true" class="model-poster overview-case-poster" id="modelPoster"><svg aria-label="Black and gold eyeglasses case opening to reveal a pair of eyeglasses" class="overview-case-svg" role="img" viewbox="0 0 760 520" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<lineargradient id="overviewCaseBlack" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#303036"></stop>
+<stop offset="0.48" stop-color="#111114"></stop>
+<stop offset="1" stop-color="#050507"></stop>
+</lineargradient>
+<lineargradient id="overviewCaseInner" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0" stop-color="#292932"></stop>
+<stop offset="1" stop-color="#08080b"></stop>
+</lineargradient>
+<lineargradient id="overviewGold" x1="0" x2="1" y1="0" y2="0">
+<stop offset="0" stop-color="#765315"></stop>
+<stop offset="0.18" stop-color="#d5ab44"></stop>
+<stop offset="0.36" stop-color="#fff0b0"></stop>
+<stop offset="0.58" stop-color="#c89228"></stop>
+<stop offset="0.82" stop-color="#f3d47d"></stop>
+<stop offset="1" stop-color="#6e4c10"></stop>
+</lineargradient>
+<lineargradient id="overviewLens" x1="0" x2="1" y1="0" y2="1">
+<stop offset="0" stop-color="#33343c" stop-opacity="0.94"></stop>
+<stop offset="0.62" stop-color="#101116" stop-opacity="0.97"></stop>
+<stop offset="1" stop-color="#050609" stop-opacity="0.98"></stop>
+</lineargradient>
+<radialgradient cx="50%" cy="50%" id="overviewCaseGlow" r="50%">
+<stop offset="0" stop-color="#8247ff" stop-opacity="0.18"></stop>
+<stop offset="1" stop-color="#8247ff" stop-opacity="0"></stop>
+</radialgradient>
+<filter height="220%" id="overviewCaseShadow" width="180%" x="-40%" y="-60%">
+<fedropshadow dx="0" dy="24" flood-color="#000000" flood-opacity="0.34" stddeviation="21"></fedropshadow>
+</filter>
+<filter height="220%" id="overviewGlassesShadow" width="180%" x="-40%" y="-60%">
+<fedropshadow dx="0" dy="15" flood-color="#000000" flood-opacity="0.34" stddeviation="12"></fedropshadow>
+</filter>
+<clippath id="overviewLeftLensClip">
+<path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z"></path>
+</clippath>
+<clippath id="overviewRightLensClip">
+<path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z"></path>
+</clippath>
+</defs>
+<ellipse class="overview-svg-glow" cx="386" cy="304" fill="url(#overviewCaseGlow)" rx="282" ry="188"></ellipse>
+<ellipse class="overview-svg-shadow" cx="386" cy="406" fill="#000" opacity="0.22" rx="242" ry="42"></ellipse>
+<g class="overview-svg-case">
+<g class="overview-svg-base" filter="url(#overviewCaseShadow)">
+<path d="M122 271 C137 241 169 224 205 221 L557 221 C596 223 626 244 641 276 L622 363 C616 391 593 409 560 414 L205 414 C170 410 143 392 135 363Z" fill="url(#overviewCaseBlack)" stroke="url(#overviewGold)" stroke-width="6"></path>
+<path class="overview-svg-interior" d="M151 278 C165 257 188 246 216 244 L548 244 C575 245 598 258 611 281 L596 351 C590 374 571 386 545 389 L218 389 C190 386 169 374 163 351Z" fill="url(#overviewCaseInner)" stroke="#4f3b15" stroke-width="2"></path>
+<path d="M141 350 C225 372 532 373 622 350 L614 377 C607 398 589 411 559 416 L207 416 C177 412 153 399 145 377Z" fill="#07070a" opacity="0.78"></path>
+<text fill="#d5ad4e" fill-opacity="0.52" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" letter-spacing="4" text-anchor="middle" x="382" y="391">lensciaga</text>
+</g>
+<g class="overview-svg-lid" filter="url(#overviewCaseShadow)">
+<path d="M121 263 C134 230 166 210 205 207 L558 207 C598 210 627 230 642 264 L625 337 C617 366 594 384 560 390 L204 390 C169 386 144 367 136 337Z" fill="url(#overviewCaseBlack)" stroke="url(#overviewGold)" stroke-width="6"></path>
+<path d="M143 268 C155 243 181 230 211 228 L552 228 C581 231 605 243 617 269 L604 327 C598 348 580 361 553 365 L211 365 C184 362 164 348 158 327Z" fill="#0b0b0f" opacity="0.58"></path>
+<path d="M151 246 C231 220 531 219 615 247" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="3"></path>
+<text fill="#e2bf65" fill-opacity="0.67" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" letter-spacing="7" text-anchor="middle" x="382" y="307">lensciaga</text>
+</g>
+<g class="overview-svg-glasses" filter="url(#overviewGlassesShadow)">
+<g class="overview-svg-temple overview-svg-temple-left">
+<path d="M214 286 C167 266 125 246 86 222" fill="none" stroke="#121217" stroke-linecap="round" stroke-width="15"></path>
+<path d="M214 286 C168 266 127 246 88 222" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="3"></path>
+</g>
+<g class="overview-svg-temple overview-svg-temple-right">
+<path d="M541 286 C588 266 630 246 669 222" fill="none" stroke="#121217" stroke-linecap="round" stroke-width="15"></path>
+<path d="M541 286 C587 266 628 246 667 222" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="3"></path>
+</g>
+<g class="overview-svg-front">
+<path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z" fill="url(#overviewLens)" stroke="url(#overviewGold)" stroke-width="7"></path>
+<path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z" fill="url(#overviewLens)" stroke="url(#overviewGold)" stroke-width="7"></path>
+<path d="M321 278 C344 260 410 260 434 278" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path>
+<path d="M216 282 L193 273" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path>
+<path d="M539 282 L562 273" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path>
+<g clip-path="url(#overviewLeftLensClip)" opacity="0.30">
+<path d="M226 244 L284 356" stroke="#ffffff" stroke-width="13"></path>
+</g>
+<g clip-path="url(#overviewRightLensClip)" opacity="0.24">
+<path d="M463 244 L516 356" stroke="#ffffff" stroke-width="12"></path>
+</g>
+</g>
+</g>
+</g>
+</svg></div>
+<div aria-live="polite" class="overview-local-model-note" id="overviewLocalModelNote">Select the supplied GLB once. Afterwards, hover will open and close it normally.</div>
+<model-viewer alt="Interactive 3D model of the eyeglasses shown in this internship portfolio" auto-rotate="" auto-rotate-delay="900" camera-controls="" camera-orbit="22deg 74deg 105%" camera-target="auto auto auto" class="hero-model-viewer overview-final-model" data-model-candidates="./luxury%20eyeglasses%203d%20model.glb|./eyeglasses.glb" data-src="./luxury%20eyeglasses%203d%20model.glb" environment-image="neutral" exposure="1.15" field-of-view="26deg" id="luxuryGlassesModel" interaction-prompt="none" max-field-of-view="38deg" min-field-of-view="20deg" reveal="auto" rotation-per-second="14deg" shadow-intensity="1.35" shadow-softness="0.9">
+</model-viewer>
+<!-- Retained for the existing lazy model-loader logic; visually hidden and triggered after the CSS reveal. -->
+<button aria-controls="luxuryGlassesModel" class="model-load-button overview-hidden-model-trigger" id="load3dModelButton" tabindex="-1" type="button">Load interactive 3D</button>
+<input accept=".glb,model/gltf-binary" aria-hidden="true" hidden id="overviewLocalModelFile" tabindex="-1" type="file">
+<div aria-live="polite" class="model-load-panel overview-model-load-panel" id="modelLoadPanel" role="status">
+<span class="model-load-note" id="modelLoadStatus">Loading interactive 3D…</span>
+<div aria-hidden="true" class="model-progress-track">
+<div class="model-progress-bar" id="modelProgressBar"></div>
+</div>
+<span class="model-error" id="modelErrorMessage">The lightweight animated glasses remain available.</span>
+</div>
+</div>
+</div>
+</div>
+<div aria-label="Internship portfolio highlights" class="internship-stat-rail">
+<div class="internship-stat-item">
+<span aria-hidden="true" class="internship-stat-icon">▣</span>
+<div><strong>12</strong><span>Work Samples</span></div>
+</div>
+<div class="internship-stat-item">
+<span aria-hidden="true" class="internship-stat-icon">&lt;/&gt;</span>
+<div><strong>8+</strong><span>Tools &amp; Methods</span></div>
+</div>
+<div class="internship-stat-item">
+<span aria-hidden="true" class="internship-stat-icon">◇</span>
+<div><strong>1</strong><span>Internship Journey</span></div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: FEATURED WORK -->
+<section class="portfolio-section" id="featured-section">
+<div class="featured-sticky-shell" id="featuredStickyShell">
+<div class="featured-scroll-track" id="featuredScrollTrack">
+<div class="top-meta-bar">
+<div class="meta-context">CREATIVE DIRECTION &amp; BRAND CONCEPTS <span class="meta-separator">•</span> STUDENT PORTFOLIO / 2026</div>
+</div>
+<div class="hero-section">
+<span class="section-label">/ Academic &amp; Freelance Projects</span>
+<h1>Selected <span>Work</span></h1>
+<div class="hero-footer-row">
+<p class="description-text">A collection of visual stories crafted for style-driven brands and concepts. Click any card preview to unlock project details.</p>
+<button class="action-pill-btn" onclick="scrolledToWork()">View Case Decks <span>↗</span></button>
+<div class="scroll-explore" onclick="scrolledToWork()">
+<span>Scroll to explore</span>
+<div class="scroll-circle">↓</div>
+</div>
+</div>
+</div>
+<div class="instagram-grid" id="portfolioGrid">
+<!-- Dynamic Interactive Cards Layout Mapping -->
+<div class="slot-card" onclick="openShowcase(this, 'Intelligent Glasses', 'Premium visual campaign layout asset mapping out tech glasses features side by side.', 'Engineered clean vector micro-grids with adaptive lens transparency scales.', 'Shifts presentation values directly away from simple cosmetic previews to utility understanding.', 'https://www.instagram.com/p/DTN3WlGCLr8/', 'default')">
+<img alt="Glasses Slot Asset" class="slot-card-img" data-src="glasses.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 01</div>
+<div class="slot-title">Intelligent Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Tinted Luxury Glasses', 'Premium tinted configuration exploring interactive viewport aesthetics, layered protective filters, and customized structural frame outlines.', 'Rendered progressive color density shaders synchronized with dynamic layout frames.', 'Delivers contextual product validation overlays alongside luxury video playback frames.', 'https://www.instagram.com/reel/DTe4BrTiO12/', 'tinted')">
+<img alt="Tinted Luxury Glasses Frame Asset" class="slot-card-img" data-src="tinted.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 02</div>
+<div class="slot-title">Tinted Glasses</div>
+</div>
+</div>
+<div class="slot-card wing-slot" onclick="openShowcase(this, 'Doffy Frameless Design', 'An architectural exploration of space, future shapes and dynamic content balance values featuring tailored gradient optics.', 'Applied customized grid geometry alongside asset file arrays.', 'Designed for interactive digital interface clarity updates.', '#', 'doffy')">
+<img alt="Blue wing-shaped rimless glasses" class="slot-card-img" data-src="doffy1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 03</div>
+<div class="slot-title">Doffy Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Butty Glasses', 'Premium visual configuration utilizing high fidelity custom lens overlays combined with dynamic motion playback layers.', 'Synchronized local video processing with frame element arrays.', 'Optimizing presentation density profiles for interactive showcase displays.', 'https://www.instagram.com/reel/DUH-ET0iOxz/', 'butty')">
+<img alt="Butty Glasses Active Slot" class="slot-card-img" data-src="butty1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 04</div>
+<div class="slot-title">Butty Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Clip Glasses', 'Minimalist tactical attachment blueprint integrating structural engineering layouts with sharp custom optics.', 'Configured localized frame assets and single layer picture alignments.', 'Refining structural precision metrics within close-up frame presentations.', 'https://www.instagram.com/reel/DUsIzl6CPwA/', 'clip')">
+<img alt="Clip Glasses Front Asset View" class="slot-card-img" data-src="clip1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 05</div>
+<div class="slot-title">Clip Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Pink Glasses', 'Vibrant luxury frames combining striking modern aesthetics with carefully balanced soft-tone glass dynamics.', 'Executed clean spatial gradient curves and local image layering matrices.', 'Elevating product visibility profiles through vibrant contrast frame alignments.', 'https://www.instagram.com/p/DTdHglQCJBB/', 'pink')">
+<img alt="Pink Glasses Preview Asset" class="slot-card-img" data-src="pink1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 06</div>
+<div class="slot-title">Pink Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Gold Glasses', 'High-end structural concept displaying refined architectural styling cues and signature luxurious trim levels.', 'Assembled multi-layered hardware frameworks paired with fine geometric accents.', 'Setting definitive branding precedents for upscale high-precision product rollouts.', '#', 'gold')">
+<img alt="Gold Glasses Active Preview" class="slot-card-img" data-src="gold1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 07</div>
+<div class="slot-title">Gold Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Circle Glasses', 'Advanced sleek geometry concept utilizing structured radius alignments and pristine presentation elements.', 'Calculated precise lens concentric metrics paired with multi-layer image staging.', 'Establishing continuous flow aesthetics across high-contrast premium design optics.', '#', 'circle')">
+<img alt="Circle Glasses Active Thumbnail" class="slot-card-img" data-src="circle1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 08</div>
+<div class="slot-title">Circle Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Multi Glasses Campaign', 'High precision product array tracking custom layered styles and variable density frame structures.', 'Synchronized multimain video output layouts across unified asset packages.', 'To scale presentation fidelity models within comprehensive dynamic showcases.', '#', 'multi')">
+<img alt="Multi Glasses Thumbnail Preview Layout" class="slot-card-img" data-src="multi7.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 09</div>
+<div class="slot-title">Multi Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Hand Campaign Focus', 'Macro close-up interactive presentation exploring form, natural geometry, and continuous product flow dynamics.', 'Isolated handmain motion framework streaming localized configurations.', 'Establishing immediate utility focus profiles within minimal presentation bounds.', '#', 'hand')">
+<img alt="Hand Glasses Creative Focus Mapping" class="slot-card-img" data-src="hand1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 10</div>
+<div class="slot-title">Hand Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Aura Glasses', 'Luminescent design concept tracking modern dynamic frame outlines alongside pristine environmental reflections.', 'Configured isolated single-layer spatial hardware definitions.', 'Emphasizing elegant standalone brand value matrices within minimal structures.', '#', 'aura')">
+<img alt="Aura Glasses Main Preview" class="slot-card-img" data-src="auramain.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 11</div>
+<div class="slot-title">Aura Glasses</div>
+</div>
+</div>
+<div class="slot-card" onclick="openShowcase(this, 'Cat Glasses', 'Aggressive sleek architectural contour design emphasizing sharp geometry and multi-tonal lens dynamics.', 'Configured an interactive five-stage image carousel inside the left viewport mapping close-up angles.', 'Delivering granular technical asset insights across variable depth planes.', '#', 'cat')">
+<img alt="Cat Glasses Main Preview" class="slot-card-img" data-src="catmain.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/>
+<div class="slot-overlay">
+<div class="slot-label">Case Study 12</div>
+<div class="slot-title">Cat Glasses</div>
+</div>
+</div>
+</div>
+<div aria-label="Featured work overview" class="featured-bottom-rail">
+<div class="featured-rail-summary">
+<span class="featured-rail-number">12</span>
+<span class="featured-rail-copy">
+<strong>Selected case studies</strong>
+<span>Choose any card to open its interactive eyewear presentation.</span>
+</span>
+</div>
+<div aria-hidden="true" class="featured-rail-topics">
+<span>Creative Direction</span>
+<span>Product Storytelling</span>
+<span>Eyewear Campaigns</span>
+<span>Interactive Concepts</span>
+</div>
+</div>
+</div>
+<div aria-hidden="true" class="featured-view-progress" id="featuredViewProgress">
+<span class="featured-progress-label">Section view</span>
+<span class="featured-progress-track"><span class="featured-progress-fill" id="featuredProgressFill"></span></span>
+<span class="featured-progress-count" id="featuredProgressCount">01 / 02</span>
+</div>
+</div>
+</section>
+<!-- SECTION 3: BRAND STRATEGY -->
+<section class="portfolio-section" id="brand-section">
+<div class="top-meta-bar"><div class="meta-context">MARKET POSITIONING DECK STACKS<br/>STUDENT PORTFOLIO / 2026</div></div>
+<div class="hero-section">
+<span class="section-label">/ Corporate Identity Blueprints</span>
+<h1>Brand <span>Systems</span></h1>
+<p class="description-text" style="margin-top: 20px;">Deep research maps detailing audience alignment matrices, modern typographic guidelines, and tone formulation rules for corporate applications.</p>
+</div>
+</section>
+<!-- SECTION 4: CREATIVE COPY -->
+<section class="portfolio-section" id="creative-section">
+<div class="top-meta-bar"><div class="meta-context">VERBAL SYNTAX SYSTEMS<br/>STUDENT PORTFOLIO / 2026</div></div>
+<div class="hero-section">
+<span class="section-label">/ Tone of Voice &amp; Copywriting</span>
+<h1>Strategic <span>Copy</span></h1>
+<p class="description-text" style="margin-top: 20px;">A showcase of verbal communication, short-form advertising hooks, editorial taglines, and long-form luxury design breakdowns.</p>
+</div>
+</section>
+<!-- SECTION 5: ABOUT ME -->
+<section class="portfolio-section" id="about-section">
+<div class="top-meta-bar"><div class="meta-context">BIOGRAPHY &amp; COMPETENCY INDICES<br/>STUDENT PORTFOLIO / 2026</div></div>
+<div class="hero-section">
+<span class="section-label">/ Personal Design Philosophy</span>
+<h1>The <span>Designer</span></h1>
+<p class="description-text" style="margin-top: 20px;">Currently investigating minimal design patterns and luxury interfaces. Bridging high precision spatial design layout forms with interactive user loops.</p>
+</div>
+</section>
+<!-- SECTION 6: CONTACT -->
+<section class="portfolio-section" id="contact-section">
+<div class="top-meta-bar"><div class="meta-context">INBOUND TRANSMISSION HUD<br/>STUDENT PORTFOLIO / 2026</div></div>
+<div class="hero-section">
+<span class="section-label">/ Open for Collaboration</span>
+<h1>Get In <span>Touch</span></h1>
+<p class="description-text" style="margin-top: 20px;">Looking to scale concept pipelines or test system interactions? Let us setup structural loops or direct review frameworks.</p>
+</div>
+<footer class="bottom-nav-bar">
+<div class="bottom-tabs" id="bottomTabs">
+<a class="tab-link active" href="#overview-section"><span>01</span>Overview</a>
+<a class="tab-link" href="#featured-section"><span>02</span>Featured Work</a>
+<a class="tab-link" href="#brand-section"><span>03</span>Brand Strategy</a>
+<a class="tab-link" href="#creative-section"><span>04</span>Creative Copy</a>
+<a class="tab-link" href="#about-section"><span>05</span>About Me</a>
+</div>
+<div class="slider-arrows">
+<button class="arrow-btn" id="prevBtn">←</button>
+<button class="arrow-btn next-btn" id="nextBtn">→</button>
+</div>
+</footer>
+</section>
+</main>
+</div>
+<!-- MODAL ASSEMBLY -->
+<div class="modal-container" id="showcaseModal" onclick="closeShowcase(event)">
+<div class="modal-mesh-bg"></div>
+<button aria-label="Close project showcase" class="modal-close-btn" onclick="event.stopPropagation(); closeShowcase(event)">✕</button>
+<div class="rimless-glasses-assembly" id="mainAssembly" onclick="event.stopPropagation()">
+<div class="glasses-temple temple-left"><div class="baroque-gold-inlay"></div></div>
+<div class="gold-hinge-assembly hinge-left"></div>
+<div class="rimless-lens lens-display-left" id="leftLensAnchor">
+<div class="lens-slider-wrapper" id="lensSliderWrapper"></div>
+</div>
+<div class="gold-center-bridge-assembly">
+<div class="bridge-arch"></div>
+<div class="nose-pads-container">
+<div class="nose-pad-arm pad-left"></div>
+<div class="nose-pad-arm pad-right"></div>
+</div>
+</div>
+<div class="rimless-lens lens-info-right">
+<div class="lens-content-fit" id="lensContentFit">
+<div class="lens-scroll-area">
+<h3 class="modal-body-title" id="modalTargetTitle">INTELLIGENT GLASSES</h3>
+<div class="modal-title-divider"></div>
+<div class="modal-side-spec">
+<div class="modal-spec-block">
+<h4>Description</h4>
+<p id="modalTargetDesc">Premium visual campaign layout asset mapping out tech glasses features side by side.</p>
+</div>
+<div class="modal-spec-block">
+<h4>Procedure</h4>
+<p id="modalTargetProc">Engineered clean vector micro-grids with adaptive lens transparency scales.</p>
+</div>
+<div class="modal-spec-block">
+<h4>Purpose</h4>
+<p id="modalTargetPurp">Shifts presentation values directly away from simple cosmetic previews to utility understanding.</p>
+</div>
+</div>
+</div>
+<a class="modal-action-btn" href="#" id="modalTargetLink" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;" target="_blank">View Project Source</a>
+</div>
+</div>
+<div class="gold-hinge-assembly hinge-right"></div>
+<div class="glasses-temple temple-right"><div class="baroque-gold-inlay"></div></div>
+</div>
+<!-- Kept outside the clipped lens so unusual lens silhouettes cannot
              block clicks or crop the controls. JavaScript aligns these arrows
              to the actual left-lens rectangle for every project shape. -->
-        <button type="button" class="lens-nav-btn lens-nav-prev" id="modalLensPrevBtn"
-                aria-label="Previous project image"
-                onclick="event.stopPropagation(); moveLensSlider(-1)">‹</button>
-        <button type="button" class="lens-nav-btn lens-nav-next" id="modalLensNextBtn"
-                aria-label="Next project image"
-                onclick="event.stopPropagation(); moveLensSlider(1)">›</button>
-    </div>
-
-    <script>
+<button aria-label="Previous project image" class="lens-nav-btn lens-nav-prev" id="modalLensPrevBtn" onclick="event.stopPropagation(); moveLensSlider(-1)" type="button">‹</button>
+<button aria-label="Next project image" class="lens-nav-btn lens-nav-next" id="modalLensNextBtn" onclick="event.stopPropagation(); moveLensSlider(1)" type="button">›</button>
+</div>
+<script>
         let activeLensSlide = 0;
         let totalLensSlides = 5; 
         let lastClickedCard = null;
@@ -10940,10 +11165,10 @@
             // Browsers normally block a neighbouring GLB when an HTML file is opened through file://.
             // Hosted pages and local web servers load the model automatically.
             if (isLocalFile) {
-                showModelError(
-                    '3D preview requires a web server',
-                    'Open this folder with VS Code Live Server or publish it online. The CSS preview remains visible meanwhile.'
-                );
+                stage?.classList.remove('model-loading');
+                stage?.classList.add('local-preview');
+                modelLoadPanel?.classList.remove('is-loading', 'has-error');
+                luxuryModelRequested = false;
                 return;
             }
 
@@ -10956,7 +11181,11 @@
                 modelLoadButton.textContent = 'Loading 3D…';
             }
             modelViewer.classList.add('is-active');
-            modelViewer.setAttribute('src', modelViewer.dataset.src);
+            const modelCandidates = (modelViewer.dataset.modelCandidates || modelViewer.dataset.src || '')
+                .split('|').map(value => value.trim()).filter(Boolean);
+            modelViewer._overviewModelCandidates = modelCandidates.length ? modelCandidates : [modelViewer.dataset.src];
+            modelViewer._overviewModelCandidateIndex = 0;
+            modelViewer.setAttribute('src', modelViewer._overviewModelCandidates[0]);
         }
 
         function loadModelViewerLibraryLast() {
@@ -11001,8 +11230,27 @@
             modelViewer.addEventListener('load', () => {
                 modelProgressBar.style.width = '100%';
                 modelLoadStatus.textContent = 'Interactive 3D ready';
+
+                // Frame the supplied GLB from its real bounds so it does not appear tiny or off-centre.
+                try {
+                    const dimensions = modelViewer.getDimensions?.();
+                    const center = modelViewer.getBoundingBoxCenter?.();
+                    if (dimensions && center) {
+                        const maxDimension = Math.max(dimensions.x || 0, dimensions.y || 0, dimensions.z || 0);
+                        if (Number.isFinite(maxDimension) && maxDimension > 0) {
+                            const radius = Math.max(maxDimension * 2.05, 0.15);
+                            modelViewer.setAttribute('camera-target', `${center.x}m ${center.y}m ${center.z}m`);
+                            modelViewer.setAttribute('camera-orbit', `22deg 74deg ${radius}m`);
+                            modelViewer.setAttribute('field-of-view', '26deg');
+                            modelViewer.jumpCameraToGoal?.();
+                        }
+                    }
+                } catch (_) {
+                    // The declarative camera settings remain as a safe fallback.
+                }
+
                 modelViewer.classList.add('is-ready');
-                stage.classList.remove('model-loading');
+                stage.classList.remove('model-loading', 'local-preview');
                 stage.classList.add('model-loaded');
                 modelLoadPanel?.classList.remove('is-loading', 'has-error');
                 if (modelLoadButton) {
@@ -11013,9 +11261,17 @@
 
             modelViewer.addEventListener('error', () => {
                 modelViewer.removeAttribute('src');
+                const candidates = modelViewer._overviewModelCandidates || [];
+                const nextIndex = (modelViewer._overviewModelCandidateIndex || 0) + 1;
+                if (nextIndex < candidates.length) {
+                    modelViewer._overviewModelCandidateIndex = nextIndex;
+                    modelLoadStatus.textContent = 'Trying the portfolio model file…';
+                    window.setTimeout(() => modelViewer.setAttribute('src', candidates[nextIndex]), 100);
+                    return;
+                }
                 showModelError(
                     'Interactive model unavailable',
-                    'Keep eyeglasses.glb in the same published folder as index.html. The lightweight glasses preview is still shown.'
+                    'Keep eyeglasses.glb or luxury eyeglasses 3d model.glb beside this HTML file. The animated preview remains visible.'
                 );
             });
 
@@ -11350,104 +11606,231 @@
         window.addEventListener('resize', scheduleLensFitAndTheme, { passive: true });
 
     </script>
-
-
-    <script>
-        // Internship overview interaction: CSS first, GLB last.
-        // Hover must be intentional before the 54 MB model is requested;
-        // clicks and keyboard activation work immediately on touch/desktop.
+<script>
+        // Reversible overview sequence:
+        // closed case -> open case -> unfolded SVG glasses -> loaded GLB.
+        // Pointer exit runs the same sequence backwards; the large GLB stays cached.
         (() => {
             const overviewStage = document.getElementById('stage3d');
             const hiddenModelTrigger = document.getElementById('load3dModelButton');
-            if (!overviewStage || !hiddenModelTrigger) return;
+            const model = document.getElementById('luxuryGlassesModel');
+            const localModelFile = document.getElementById('overviewLocalModelFile');
+            const localModelNote = document.getElementById('overviewLocalModelNote');
+            if (!overviewStage || !hiddenModelTrigger || !model) return;
 
             const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const hoverCapable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-            let engagedTimer = 0;
-            let unfoldTimer = 0;
-            let loadTimer = 0;
-            let pointerInside = false;
-            let pinnedOpen = false;
-            let sequenceStarted = false;
+            const isLocalFile = window.location.protocol === 'file:';
 
-            const clearSequenceTimers = () => {
-                window.clearTimeout(engagedTimer);
-                window.clearTimeout(unfoldTimer);
-                window.clearTimeout(loadTimer);
+            let pointerInside = false;
+            let touchOpen = false;
+            let opening = false;
+            let closing = false;
+            let modelReady = overviewStage.classList.contains('model-loaded');
+            let modelRequested = Boolean(model.getAttribute('src'));
+            let localObjectUrl = '';
+            const timers = new Set();
+
+            const later = (fn, delay) => {
+                const timer = window.setTimeout(() => {
+                    timers.delete(timer);
+                    fn();
+                }, delay);
+                timers.add(timer);
+                return timer;
             };
 
-            const requestHeavyModel = () => {
-                if (overviewStage.classList.contains('model-loaded') ||
-                    overviewStage.classList.contains('model-loading') ||
-                    hiddenModelTrigger.disabled) return;
+            const clearTimers = () => {
+                timers.forEach(timer => window.clearTimeout(timer));
+                timers.clear();
+            };
+
+            const isStillOpen = () => hoverCapable ? pointerInside : touchOpen;
+
+            const setAccessibleState = (open) => {
+                overviewStage.setAttribute('aria-expanded', String(open));
+                overviewStage.setAttribute(
+                    'aria-label',
+                    open
+                        ? 'Close the interactive eyeglasses presentation'
+                        : 'Open the eyeglasses case and reveal the interactive 3D model'
+                );
+            };
+
+            const showModel = () => {
+                if (!modelReady || !isStillOpen()) return;
+                overviewStage.classList.remove('overview-is-closing');
+                overviewStage.classList.add('overview-model-visible');
+                model.setAttribute('camera-controls', '');
+            };
+
+            const beginHostedModelLoad = () => {
+                if (modelReady || modelRequested || overviewStage.classList.contains('model-loading')) return;
+                modelRequested = true;
                 hiddenModelTrigger.click();
             };
 
-            const startReveal = ({ immediateLoad = false } = {}) => {
-                clearSequenceTimers();
-                sequenceStarted = true;
-                overviewStage.classList.add('overview-case-engaged');
+            const loadSelectedLocalModel = async (file) => {
+                if (!file || !file.name.toLowerCase().endsWith('.glb')) return;
+                modelRequested = true;
+                overviewStage.classList.remove('show-local-model-note', 'local-preview');
+                overviewStage.classList.add('model-loading');
+                model.classList.add('is-active');
 
-                if (reducedMotion) {
-                    overviewStage.classList.add('overview-case-unfolded');
-                    loadTimer = window.setTimeout(requestHeavyModel, immediateLoad ? 40 : 140);
+                try {
+                    await loadModelViewerLibraryLast();
+                    if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
+                    localObjectUrl = URL.createObjectURL(file);
+                    model._overviewModelCandidates = [localObjectUrl];
+                    model._overviewModelCandidateIndex = 0;
+                    model.setAttribute('src', localObjectUrl);
+                } catch (_) {
+                    modelRequested = false;
+                    overviewStage.classList.remove('model-loading');
+                    overviewStage.classList.add('show-local-model-note');
+                    if (localModelNote) localModelNote.textContent = 'The 3D viewer could not start. Open the folder through Live Server and try again.';
+                }
+            };
+
+            const requestModel = ({ directUserGesture = false } = {}) => {
+                if (modelReady) {
+                    showModel();
                     return;
                 }
 
-                unfoldTimer = window.setTimeout(() => {
-                    overviewStage.classList.add('overview-case-unfolded');
-                }, 690);
+                if (!isLocalFile) {
+                    beginHostedModelLoad();
+                    return;
+                }
 
-                loadTimer = window.setTimeout(() => {
-                    if (immediateLoad || pinnedOpen || pointerInside) requestHeavyModel();
-                }, immediateLoad ? 980 : 1220);
+                // A browser cannot automatically read a neighbouring GLB through file://.
+                // A direct click may safely grant access once; later hovers reuse the cached Blob URL.
+                overviewStage.classList.add('show-local-model-note');
+                if (directUserGesture && !modelRequested) localModelFile?.click();
             };
 
-            const resetPreview = () => {
-                if (pinnedOpen || overviewStage.classList.contains('model-loading') || overviewStage.classList.contains('model-loaded')) return;
-                clearSequenceTimers();
-                sequenceStarted = false;
-                overviewStage.classList.remove('overview-case-unfolded', 'overview-case-engaged');
+            const openSequence = ({ directUserGesture = false } = {}) => {
+                clearTimers();
+                opening = true;
+                closing = false;
+                overviewStage.classList.remove('overview-is-closing');
+                overviewStage.classList.add('overview-case-engaged');
+                setAccessibleState(true);
+
+                if (directUserGesture && isLocalFile && !modelReady && !modelRequested) {
+                    requestModel({ directUserGesture: true });
+                }
+
+                if (reducedMotion) {
+                    overviewStage.classList.add('overview-case-unfolded');
+                    requestModel({ directUserGesture });
+                    later(showModel, 40);
+                    opening = false;
+                    return;
+                }
+
+                later(() => {
+                    if (!isStillOpen()) return;
+                    overviewStage.classList.add('overview-case-unfolded');
+                }, 540);
+
+                later(() => {
+                    if (!isStillOpen()) return;
+                    requestModel({ directUserGesture: false });
+                    showModel();
+                    opening = false;
+                }, 1040);
+            };
+
+            const closeSequence = () => {
+                clearTimers();
+                opening = false;
+                closing = true;
+                overviewStage.classList.add('overview-is-closing');
+                overviewStage.classList.remove('overview-model-visible', 'show-local-model-note');
+                setAccessibleState(false);
+
+                if (reducedMotion) {
+                    overviewStage.classList.remove('overview-case-unfolded', 'overview-case-engaged', 'overview-is-closing');
+                    closing = false;
+                    return;
+                }
+
+                // Let the model fade into the still-unfolded SVG glasses first.
+                later(() => overviewStage.classList.remove('overview-case-unfolded'), 230);
+                // Then the glasses settle into the case and the lid closes.
+                later(() => overviewStage.classList.remove('overview-case-engaged'), 840);
+                later(() => {
+                    overviewStage.classList.remove('overview-is-closing');
+                    closing = false;
+                }, 1260);
             };
 
             if (hoverCapable) {
                 overviewStage.addEventListener('pointerenter', () => {
                     pointerInside = true;
-                    if (overviewStage.classList.contains('model-loaded')) return;
-                    // Begin the lightweight animation immediately. The heavy load waits
-                    // long enough to distinguish deliberate exploration from fly-by hover.
-                    engagedTimer = window.setTimeout(() => startReveal({ immediateLoad: false }), 90);
+                    touchOpen = false;
+                    openSequence();
                 }, { passive: true });
 
                 overviewStage.addEventListener('pointerleave', () => {
                     pointerInside = false;
-                    if (!sequenceStarted) clearSequenceTimers();
-                    window.setTimeout(resetPreview, 150);
+                    closeSequence();
                 }, { passive: true });
             }
 
             overviewStage.addEventListener('click', (event) => {
-                if (overviewStage.classList.contains('model-loaded')) return;
+                // Dragging the live model must not toggle the case.
+                if (event.target === model && overviewStage.classList.contains('overview-model-visible')) return;
                 event.preventDefault();
-                pinnedOpen = true;
-                startReveal({ immediateLoad: true });
+
+                if (hoverCapable) {
+                    pointerInside = true;
+                    openSequence({ directUserGesture: true });
+                    return;
+                }
+
+                touchOpen = !touchOpen;
+                if (touchOpen) openSequence({ directUserGesture: true });
+                else closeSequence();
             });
 
             overviewStage.addEventListener('keydown', (event) => {
                 if (event.key !== 'Enter' && event.key !== ' ') return;
                 event.preventDefault();
-                pinnedOpen = true;
-                startReveal({ immediateLoad: true });
+                touchOpen = !overviewStage.classList.contains('overview-case-engaged');
+                if (touchOpen) openSequence({ directUserGesture: true });
+                else closeSequence();
             });
 
-            const model = document.getElementById('luxuryGlassesModel');
-            model?.addEventListener('load', () => {
-                overviewStage.setAttribute('aria-label', 'Interactive 3D eyeglasses model. Drag to rotate.');
-                overviewStage.removeAttribute('role');
-                overviewStage.removeAttribute('tabindex');
-            }, { once: true });
+            localModelFile?.addEventListener('change', () => {
+                const file = localModelFile.files?.[0];
+                if (file) loadSelectedLocalModel(file);
+                localModelFile.value = '';
+            });
+
+            model.addEventListener('load', () => {
+                modelReady = true;
+                modelRequested = true;
+                overviewStage.classList.add('model-loaded');
+                overviewStage.classList.remove('model-loading', 'local-preview', 'show-local-model-note');
+                model.classList.add('is-active', 'is-ready');
+                if (isStillOpen()) later(showModel, 90);
+            });
+
+            model.addEventListener('error', () => {
+                modelRequested = false;
+                modelReady = false;
+                overviewStage.classList.remove('overview-model-visible', 'model-loading');
+                if (isLocalFile) overviewStage.classList.add('show-local-model-note');
+            });
+
+            window.addEventListener('beforeunload', () => {
+                if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
+            });
+
+            setAccessibleState(false);
         })();
     </script>
-
 </body>
 </html>
