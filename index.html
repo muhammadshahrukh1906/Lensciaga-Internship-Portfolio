@@ -11118,6 +11118,21 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 <div class="gold-hinge-assembly hinge-right"></div>
 <div class="glasses-temple temple-right"><div class="baroque-gold-inlay"></div></div>
 </div>
+<section class="mobile-showcase-details" id="mobileShowcaseDetails" onclick="event.stopPropagation()" aria-label="Project details">
+  <div class="mobile-showcase-kicker">Project dossier</div>
+  <h3 id="mobileTargetTitle">INTELLIGENT GLASSES</h3>
+  <div class="mobile-showcase-facts" aria-label="Project snapshot">
+    <div><span>Format</span><strong id="mobileProjectFormat">Image series</strong></div>
+    <div><span>View</span><strong id="mobileProjectProgress">01 / 05</strong></div>
+    <div><span>Focus</span><strong id="mobileProjectFocus">Feature clarity</strong></div>
+  </div>
+  <div class="mobile-showcase-copy">
+    <div><span>Description</span><p id="mobileTargetDesc">Premium visual campaign layout asset mapping out tech glasses features side by side.</p></div>
+    <div><span>Procedure</span><p id="mobileTargetProc">Engineered clean vector micro-grids with adaptive lens transparency scales.</p></div>
+    <div><span>Purpose</span><p id="mobileTargetPurp">Shifts presentation values directly away from simple cosmetic previews to utility understanding.</p></div>
+  </div>
+  <a class="mobile-showcase-link" href="#" id="mobileTargetLink" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;" target="_blank">View Project Source</a>
+</section>
 <!-- Kept outside the clipped lens so unusual lens silhouettes cannot
              block clicks or crop the controls. JavaScript aligns these arrows
              to the actual left-lens rectangle for every project shape. -->
@@ -11135,6 +11150,30 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 
         const compactShowcaseMedia = window.matchMedia('(max-width: 768px)');
         const responsiveFeaturedFlow = window.matchMedia('(max-width: 1120px)');
+
+        // Preserve the exact page position while the fixed mobile showcase is open.
+        // Merely setting overflow:hidden caused mobile browsers to jump upward, so
+        // phones freeze the document in place and restore it after closing.
+        let mobileShowcaseScrollY = 0;
+
+        function lockShowcaseScroll() {
+            if (!document.body.classList.contains('showcase-lock') && compactShowcaseMedia.matches) {
+                mobileShowcaseScrollY = Math.max(0, window.scrollY || window.pageYOffset || 0);
+                document.body.style.setProperty('--showcase-scroll-offset', `${-mobileShowcaseScrollY}px`);
+                document.body.classList.add('mobile-showcase-freeze');
+            }
+            document.body.classList.add('showcase-lock');
+        }
+
+        function unlockShowcaseScroll() {
+            const shouldRestore = compactShowcaseMedia.matches && document.body.classList.contains('mobile-showcase-freeze');
+            const restoreY = mobileShowcaseScrollY;
+            document.body.classList.remove('showcase-lock', 'mobile-showcase-freeze');
+            document.body.style.removeProperty('--showcase-scroll-offset');
+            if (shouldRestore) {
+                requestAnimationFrame(() => window.scrollTo(0, restoreY));
+            }
+        }
 
 
         // TRUE LAZY LOADING FOR PROJECT THUMBNAILS
@@ -11256,7 +11295,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 
             stage3d.querySelectorAll('.kinetic-card-ghost').forEach(ghost => ghost.remove());
             stage3d.style.display = 'none';
-            stage3d.classList.remove('is-running');
+            stage3d.classList.remove('is-running', 'mobile-kinetic-running');
             stage3d.classList.remove('shape-second-slot', 'shape-third-slot', 'shape-fourth-slot', 'shape-fifth-slot', 'shape-sixth-slot', 'shape-seventh-slot', 'shape-eighth-slot', 'shape-eleventh-slot', 'shape-twelfth-slot');
             box3d.classList.remove('is-box');
             box3d.removeAttribute('style');
@@ -11612,9 +11651,10 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             const wrapper = document.getElementById('lensSliderWrapper');
             const count = wrapper ? wrapper.querySelectorAll('.lens-slider-slide').length : totalLensSlides;
             const safeCount = Math.max(1, count || totalLensSlides || 1);
-            if (progressTarget) {
-                progressTarget.textContent = `${String(activeLensSlide + 1).padStart(2, '0')} / ${String(safeCount).padStart(2, '0')}`;
-            }
+            const progressText = `${String(activeLensSlide + 1).padStart(2, '0')} / ${String(safeCount).padStart(2, '0')}`;
+            if (progressTarget) progressTarget.textContent = progressText;
+            const mobileProgressTarget = document.getElementById('mobileProjectProgress');
+            if (mobileProgressTarget) mobileProgressTarget.textContent = progressText;
         }
 
         function populateShowcaseContent(title, desc, procedure, purpose, instaLink, contextMode = 'default') {
@@ -11634,10 +11674,25 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             if (formatTarget) formatTarget.textContent = facts.format;
             if (focusTarget) focusTarget.textContent = facts.focus;
 
+            const mobileTitleTarget = document.getElementById('mobileTargetTitle');
+            const mobileDescTarget = document.getElementById('mobileTargetDesc');
+            const mobileProcTarget = document.getElementById('mobileTargetProc');
+            const mobilePurposeTarget = document.getElementById('mobileTargetPurp');
+            const mobileFormatTarget = document.getElementById('mobileProjectFormat');
+            const mobileFocusTarget = document.getElementById('mobileProjectFocus');
+            if (mobileTitleTarget) mobileTitleTarget.textContent = title || 'Internship Project';
+            if (mobileDescTarget) mobileDescTarget.textContent = desc || 'Project details are being prepared.';
+            if (mobileProcTarget) mobileProcTarget.textContent = procedure || 'The work process is documented in this portfolio.';
+            if (mobilePurposeTarget) mobilePurposeTarget.textContent = purpose || 'This project demonstrates practical internship experience.';
+            if (mobileFormatTarget) mobileFormatTarget.textContent = facts.format;
+            if (mobileFocusTarget) mobileFocusTarget.textContent = facts.focus;
+
             const validLink = typeof instaLink === 'string'
                 && instaLink.trim()
                 && instaLink.trim() !== '#'
                 && !instaLink.trim().toLowerCase().startsWith('javascript:');
+
+            const mobileSourceLink = document.getElementById('mobileTargetLink');
 
             if (sourceLink) {
                 sourceLink.hidden = !validLink;
@@ -11649,6 +11704,18 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     sourceLink.textContent = 'View Project Source';
                 } else {
                     sourceLink.removeAttribute('href');
+                }
+            }
+
+            if (mobileSourceLink) {
+                mobileSourceLink.hidden = !validLink;
+                mobileSourceLink.setAttribute('aria-hidden', String(!validLink));
+                mobileSourceLink.tabIndex = validLink ? 0 : -1;
+                if (validLink) {
+                    mobileSourceLink.href = instaLink;
+                    mobileSourceLink.textContent = 'View Project Source';
+                } else {
+                    mobileSourceLink.removeAttribute('href');
                 }
             }
 
@@ -11865,7 +11932,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             /* Mobile keeps the same card → case → glasses idea, but uses a
                shorter touch-friendly sequence that matches the stacked lens
                composition used on phones. Desktop choreography is unchanged. */
-            if (compactShowcaseMedia.matches && !performanceLiteShowcase) {
+            if (compactShowcaseMedia.matches) {
                 try {
                     resetKineticTransition();
                     applyKineticCaseTheme(contextMode);
@@ -11942,7 +12009,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 
                     const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
                     document.body.style.setProperty('--scrollbar-compensation', `${scrollbarCompensation}px`);
-                    document.body.classList.add('showcase-lock');
+                    lockShowcaseScroll();
                     cardElement.style.opacity = '0';
                     await nextPaint();
 
@@ -12044,7 +12111,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     modal.classList.remove('is-content-prep');
                     showcaseMediaPlaybackEnabled = true;
                     hydrateLensMediaAroundActiveSlide();
-                    document.body.classList.add('showcase-lock');
+                    lockShowcaseScroll();
                     assembly.style.removeProperty('opacity');
                     assembly.style.removeProperty('transform');
                     scheduleLensFitAndTheme();
@@ -12066,7 +12133,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     modal.classList.add('active');
                     const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
                     document.body.style.setProperty('--scrollbar-compensation', `${scrollbarCompensation}px`);
-                    document.body.classList.add('showcase-lock');
+                    lockShowcaseScroll();
                     await nextPaint();
                     modal.classList.remove('is-content-prep');
                     await animateAndCommit(assembly, [
@@ -12085,7 +12152,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     modal.classList.add('active', 'carousel-ready');
                     showcaseMediaPlaybackEnabled = true;
                     hydrateLensMediaAroundActiveSlide();
-                    document.body.classList.add('showcase-lock');
+                    lockShowcaseScroll();
                 } finally {
                     showcaseAnimating = false;
                 }
@@ -12141,7 +12208,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 scheduleLensFitAndTheme();
                 const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
                 document.body.style.setProperty('--scrollbar-compensation', `${scrollbarCompensation}px`);
-                document.body.classList.add('showcase-lock');
+                lockShowcaseScroll();
 
                 // Keep the real assembly frozen until the proxy has completed its unfold.
                 assembly.style.removeProperty('transition');
@@ -12561,7 +12628,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             ]);
 
             modal.classList.remove('active', 'carousel-ready', 'is-animating', 'is-closing', 'is-handoff', 'is-content-prep', 'is-content-revealing', 'is-content-synced', 'shape-second-slot', 'shape-third-slot', 'shape-fourth-slot', 'shape-fifth-slot', 'shape-sixth-slot', 'shape-seventh-slot', 'shape-eighth-slot', 'shape-eleventh-slot', 'shape-twelfth-slot');
-            document.body.classList.remove('showcase-lock');
+            unlockShowcaseScroll();
             document.body.style.removeProperty('--scrollbar-compensation');
             assembly.style.removeProperty('opacity');
             assembly.style.removeProperty('transform');
@@ -15613,6 +15680,419 @@ ${message}`;
         height: 430px !important;
         min-height: 430px !important;
     }
+}
+</style>
+
+
+<style id="mobile-functional-eyeglasses-final">
+.mobile-showcase-details { display: none; }
+
+@media (max-width: 768px) {
+    html.phone-layout body.showcase-lock.mobile-showcase-freeze {
+        position: fixed !important;
+        top: var(--showcase-scroll-offset, 0px) !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+
+    .portfolio-section:not(#overview-section) {
+        content-visibility: visible !important;
+        contain-intrinsic-size: auto !important;
+    }
+
+    .portfolio-section {
+        min-height: auto !important;
+        padding-top: calc(30px + var(--safe-top)) !important;
+        padding-bottom: calc(42px + var(--safe-bottom)) !important;
+    }
+
+    #overview-section.internship-overview {
+        min-height: var(--app-height, 100dvh) !important;
+    }
+
+    #featured-section > .featured-sticky-shell {
+        padding-bottom: calc(42px + var(--safe-bottom)) !important;
+    }
+
+    #portfolioGrid.instagram-grid {
+        grid-auto-flow: row !important;
+        grid-auto-rows: auto !important;
+    }
+
+    #portfolioGrid .slot-card {
+        touch-action: manipulation !important;
+        transform: translateZ(0);
+    }
+
+    #brand-section .brand-strategy-layout,
+    #contact-section .contact-simple-layout {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    .overview-case-stage.model-loaded.overview-model-visible
+    .overview-final-model.hero-model-viewer {
+        touch-action: pan-y !important;
+    }
+
+    /* The phone popup is a real pair of glasses: two shaped lenses, compact
+       hinges, bridge and short temples. Long copy moves into a readable card. */
+    #showcaseModal {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        gap: 18px !important;
+        padding: calc(72px + var(--safe-top)) max(10px, var(--safe-right)) calc(24px + var(--safe-bottom)) max(10px, var(--safe-left)) !important;
+        overflow-x: hidden !important;
+        overflow-y: auto !important;
+        overscroll-behavior: contain !important;
+        background-color: #ece7e0;
+    }
+
+    #showcaseModal.active {
+        background-color: #ece7e0 !important;
+    }
+
+    #showcaseModal .modal-mesh-bg {
+        position: fixed !important;
+        opacity: .86;
+    }
+
+    #showcaseModal .rimless-glasses-assembly,
+    #showcaseModal.shape-second-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-third-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-fourth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-fifth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-sixth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-seventh-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-eighth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-eleventh-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-twelfth-slot .rimless-glasses-assembly {
+        --mobile-lens-width: clamp(118px, calc((100vw - 94px) / 2), 154px);
+        --mobile-lens-height: clamp(132px, 40vw, 166px);
+        width: auto !important;
+        max-width: calc(100vw - 20px) !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        margin: 4px auto 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0 !important;
+        overflow: visible !important;
+        transform-style: preserve-3d !important;
+    }
+
+    #showcaseModal .rimless-lens,
+    #showcaseModal.shape-second-slot .rimless-lens,
+    #showcaseModal.shape-third-slot .rimless-lens,
+    #showcaseModal.shape-fourth-slot .rimless-lens,
+    #showcaseModal.shape-fifth-slot .rimless-lens,
+    #showcaseModal.shape-sixth-slot .rimless-lens,
+    #showcaseModal.shape-seventh-slot .rimless-lens,
+    #showcaseModal.shape-eighth-slot .rimless-lens,
+    #showcaseModal.shape-eleventh-slot .rimless-lens,
+    #showcaseModal.shape-twelfth-slot .rimless-lens {
+        display: block !important;
+        flex: 0 0 var(--mobile-lens-width) !important;
+        width: var(--mobile-lens-width) !important;
+        height: var(--mobile-lens-height) !important;
+        min-width: 0 !important;
+        min-height: 0 !important;
+        max-width: none !important;
+        margin: 0 !important;
+        overflow: hidden !important;
+        transform: none !important;
+        box-shadow: 0 18px 42px rgba(20,18,28,.20), inset 0 0 0 1px rgba(255,255,255,.48) !important;
+    }
+
+    #showcaseModal .glasses-temple {
+        display: flex !important;
+        flex: 0 0 clamp(12px, 4vw, 18px) !important;
+        width: clamp(12px, 4vw, 18px) !important;
+        height: 7px !important;
+        padding: 0 !important;
+        border-radius: 4px !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+    #showcaseModal .glasses-temple .baroque-gold-inlay { display: none !important; }
+
+    #showcaseModal .gold-hinge-assembly {
+        display: block !important;
+        flex: 0 0 8px !important;
+        width: 8px !important;
+        height: 24px !important;
+        margin: 0 -1px !important;
+        border-radius: 4px !important;
+    }
+
+    #showcaseModal .gold-center-bridge-assembly {
+        display: flex !important;
+        flex: 0 0 clamp(22px, 7vw, 30px) !important;
+        width: clamp(22px, 7vw, 30px) !important;
+        height: 28px !important;
+        margin: 0 -2px !important;
+        transform: none !important;
+    }
+
+    #showcaseModal .gold-center-bridge-assembly .bridge-arch {
+        width: 100% !important;
+        height: 19px !important;
+        border-width: 3px !important;
+    }
+
+    #showcaseModal .gold-center-bridge-assembly .nose-pads-container {
+        top: 19px !important;
+        transform: scale(.72);
+        transform-origin: top center;
+    }
+
+    #showcaseModal .lens-display-left {
+        background: rgba(11,10,16,.78) !important;
+    }
+
+    #showcaseModal .lens-slider-slide img,
+    #showcaseModal .lens-slider-slide video {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+    }
+
+    #showcaseModal .lens-info-right {
+        padding: 0 !important;
+        background: linear-gradient(145deg, rgba(35,33,50,.96), rgba(19,27,39,.96)) !important;
+        color: #fff !important;
+    }
+
+    #showcaseModal .lens-info-right::before,
+    #showcaseModal .lens-info-right::after {
+        display: none !important;
+    }
+
+    #showcaseModal .lens-info-right .lens-content-fit,
+    #showcaseModal.shape-third-slot .lens-info-right .lens-content-fit,
+    #showcaseModal.shape-fourth-slot .lens-info-right .lens-content-fit,
+    #showcaseModal.shape-eleventh-slot .lens-info-right .lens-content-fit,
+    #showcaseModal.shape-twelfth-slot .lens-info-right .lens-content-fit {
+        position: absolute !important;
+        inset: 18% 12% !important;
+        width: auto !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        overflow: hidden !important;
+        text-align: center !important;
+    }
+
+    #showcaseModal .lens-info-right .lens-scroll-area {
+        width: 100% !important;
+        min-height: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    #showcaseModal .lens-info-right .modal-body-title {
+        margin: 0 !important;
+        color: #fff !important;
+        font-size: clamp(.72rem, 3.4vw, .94rem) !important;
+        line-height: 1.08 !important;
+        letter-spacing: -.2px !important;
+        text-align: center !important;
+        overflow-wrap: anywhere;
+    }
+
+    #showcaseModal .lens-info-right .lens-scroll-area::after {
+        content: 'DETAILS BELOW';
+        margin-top: 8px;
+        color: rgba(228,209,255,.82);
+        font-size: .42rem;
+        font-weight: 800;
+        letter-spacing: 1.2px;
+    }
+
+    #showcaseModal .lens-info-right .modal-title-divider,
+    #showcaseModal .lens-info-right .project-overview-layout,
+    #showcaseModal .lens-info-right .modal-detail-grid,
+    #showcaseModal .lens-info-right .modal-action-btn {
+        display: none !important;
+    }
+
+    /* Restore every authored lens silhouette on the compact glasses row. */
+    #showcaseModal.shape-second-slot .lens-display-left { clip-path: url(#secondSlotLensLeftClip) !important; -webkit-clip-path: url(#secondSlotLensLeftClip) !important; }
+    #showcaseModal.shape-second-slot .lens-info-right { clip-path: url(#secondSlotLensRightClip) !important; -webkit-clip-path: url(#secondSlotLensRightClip) !important; }
+    #showcaseModal.shape-third-slot .lens-display-left { clip-path: url(#thirdSlotWingLensLeftClip) !important; -webkit-clip-path: url(#thirdSlotWingLensLeftClip) !important; border-radius: 0 !important; }
+    #showcaseModal.shape-third-slot .lens-info-right { clip-path: url(#thirdSlotWingLensRightClip) !important; -webkit-clip-path: url(#thirdSlotWingLensRightClip) !important; border-radius: 0 !important; }
+    #showcaseModal.shape-fourth-slot .lens-display-left { clip-path: url(#fourthSlotButterflyLensLeftClip) !important; -webkit-clip-path: url(#fourthSlotButterflyLensLeftClip) !important; border-radius: 0 !important; }
+    #showcaseModal.shape-fourth-slot .lens-info-right { clip-path: url(#fourthSlotButterflyLensRightClip) !important; -webkit-clip-path: url(#fourthSlotButterflyLensRightClip) !important; border-radius: 0 !important; }
+    #showcaseModal.shape-twelfth-slot .lens-display-left { clip-path: url(#catEyeLeftClip) !important; -webkit-clip-path: url(#catEyeLeftClip) !important; border-radius: 0 !important; }
+    #showcaseModal.shape-twelfth-slot .lens-info-right { clip-path: url(#catEyeRightClip) !important; -webkit-clip-path: url(#catEyeRightClip) !important; border-radius: 0 !important; }
+
+    #showcaseModal.shape-third-slot .lens-info-right .lens-content-fit,
+    #showcaseModal.shape-fourth-slot .lens-info-right .lens-content-fit,
+    #showcaseModal.shape-twelfth-slot .lens-info-right .lens-content-fit {
+        inset: 24% 18% 18% !important;
+    }
+
+    #showcaseModal > .lens-nav-btn {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: .82rem !important;
+        opacity: .96 !important;
+    }
+
+    .mobile-showcase-details {
+        position: relative;
+        z-index: 4;
+        display: block;
+        width: min(100%, 500px);
+        margin: 0 auto;
+        padding: 24px 20px 20px;
+        border: 1px solid rgba(255,255,255,.55);
+        border-radius: 26px;
+        background: rgba(255,255,255,.76);
+        box-shadow: 0 22px 54px rgba(38,29,48,.14), inset 0 1px 0 rgba(255,255,255,.8);
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
+        color: #111114;
+        opacity: 0;
+        transform: translateY(18px);
+        pointer-events: none;
+        transition: opacity .45s ease .38s, transform .55s cubic-bezier(.16,1,.3,1) .38s;
+    }
+
+    #showcaseModal.active.is-content-synced .mobile-showcase-details {
+        opacity: 1;
+        transform: translateY(0);
+        pointer-events: auto;
+    }
+
+    .mobile-showcase-kicker {
+        margin-bottom: 7px;
+        color: var(--accent-purple);
+        font-size: .58rem;
+        font-weight: 800;
+        letter-spacing: 1.7px;
+        text-transform: uppercase;
+    }
+
+    .mobile-showcase-details h3 {
+        margin: 0 0 16px;
+        color: #111114;
+        font-size: clamp(1.45rem, 7.4vw, 2rem);
+        line-height: 1;
+        letter-spacing: -1px;
+        text-transform: uppercase;
+    }
+
+    .mobile-showcase-facts {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        gap: 7px;
+        margin-bottom: 18px;
+    }
+
+    .mobile-showcase-facts > div {
+        min-width: 0;
+        padding: 9px 8px;
+        border: 1px solid rgba(0,0,0,.08);
+        border-radius: 12px;
+        background: rgba(255,255,255,.48);
+    }
+
+    .mobile-showcase-facts span,
+    .mobile-showcase-copy span {
+        display: block;
+        margin-bottom: 4px;
+        color: var(--accent-purple);
+        font-size: .48rem;
+        font-weight: 800;
+        letter-spacing: 1.05px;
+        text-transform: uppercase;
+    }
+
+    .mobile-showcase-facts strong {
+        display: block;
+        color: #111114;
+        font-size: .62rem;
+        line-height: 1.25;
+        overflow-wrap: anywhere;
+    }
+
+    .mobile-showcase-copy {
+        display: grid;
+        gap: 14px;
+    }
+
+    .mobile-showcase-copy > div {
+        padding-top: 13px;
+        border-top: 1px solid rgba(0,0,0,.075);
+    }
+
+    .mobile-showcase-copy p {
+        margin: 0;
+        color: #29292d;
+        font-size: .78rem;
+        line-height: 1.55;
+    }
+
+    .mobile-showcase-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 48px;
+        margin-top: 20px;
+        border-radius: 999px;
+        background: #000;
+        color: #fff;
+        text-decoration: none;
+        font-size: .66rem;
+        font-weight: 800;
+        letter-spacing: 1.25px;
+        text-transform: uppercase;
+    }
+
+    .mobile-showcase-link[hidden] { display: none !important; }
+
+    #kinetic3dStage.mobile-kinetic-running {
+        display: block !important;
+    }
+}
+
+@media (max-width: 350px) {
+    #showcaseModal .rimless-glasses-assembly,
+    #showcaseModal.shape-second-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-third-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-fourth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-fifth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-sixth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-seventh-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-eighth-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-eleventh-slot .rimless-glasses-assembly,
+    #showcaseModal.shape-twelfth-slot .rimless-glasses-assembly {
+        --mobile-lens-width: clamp(108px, calc((100vw - 82px) / 2), 132px);
+        --mobile-lens-height: clamp(122px, 41vw, 145px);
+    }
+
+    .mobile-showcase-details { padding: 22px 17px 18px; }
+    .mobile-showcase-facts { gap: 5px; }
 }
 </style>
 
