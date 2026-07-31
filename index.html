@@ -6,6 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
 <title>M. SHAHRUKH // Student Portfolio</title>
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://ajax.googleapis.com" rel="preconnect"/>
 <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
 <link as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&amp;display=swap" rel="preload"/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300..800&amp;display=swap" media="print" onload="this.media='all'" rel="stylesheet"/>
@@ -9925,6 +9926,136 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
     }
 </style>
 
+
+<style id="portfolio-fluidity-and-hit-target-fixes">
+/* The fallback and GLB occupy one clipped, stable interaction surface. */
+.overview-case-stage.glasses-3d-stage {
+    overflow: hidden !important;
+    contain: layout paint style;
+    background: linear-gradient(145deg, rgba(255,255,255,.44), rgba(238,232,225,.34));
+    border: 1px solid rgba(0,0,0,.055);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.62), 0 24px 60px rgba(38,25,54,.08);
+}
+.overview-case-stage .overview-case-poster,
+.overview-case-stage .overview-final-model.hero-model-viewer {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: inherit !important;
+}
+.overview-case-stage .overview-case-poster {
+    transform: translate3d(0,0,0) scale(1) !important;
+    filter: none !important;
+    backface-visibility: hidden;
+}
+.overview-case-stage.overview-model-visible .overview-case-poster {
+    transform: translate3d(0,0,0) scale(.985) !important;
+    filter: none !important;
+}
+.overview-case-stage .overview-final-model.hero-model-viewer {
+    touch-action: none !important;
+    overscroll-behavior: contain;
+    cursor: grab;
+}
+.overview-case-stage .overview-final-model.hero-model-viewer:active { cursor: grabbing; }
+
+/* One continuous mechanical movement replaces the staggered stop/start stages. */
+.overview-case-poster .overview-svg-case,
+.overview-case-poster .overview-svg-base,
+.overview-case-poster .overview-svg-lid,
+.overview-case-poster .overview-svg-glasses,
+.overview-case-poster .overview-svg-front,
+.overview-case-poster .overview-svg-temple,
+.overview-case-poster .overview-svg-shadow,
+.overview-case-poster .overview-svg-glow {
+    animation: none !important;
+    transition-delay: 0ms !important;
+    transition-duration: 920ms !important;
+    transition-timing-function: cubic-bezier(.16,1,.3,1) !important;
+    backface-visibility: hidden;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-case {
+    transform: translateY(18px) rotate(0deg) scale(1) !important;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-base {
+    transform: translateY(37px) scale(.91) !important;
+    opacity: .89 !important;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-lid {
+    transform: translateY(-160px) scale(.91,.71) !important;
+    opacity: .85 !important;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-interior { opacity: 1 !important; }
+.overview-case-stage.overview-case-engaged .overview-svg-glasses {
+    transform: translateY(-108px) rotate(0deg) scale(1.07,1.02) !important;
+    opacity: 1 !important;
+    filter: none !important;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-front {
+    transform: rotate(0deg) scale(1) !important;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-temple-left,
+.overview-case-stage.overview-case-engaged .overview-svg-temple-right {
+    transform: rotate(0deg) scaleX(1) !important;
+    opacity: 1 !important;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-shadow {
+    transform: translateY(8px) scale(1.10,.74) !important;
+    opacity: .20 !important;
+}
+.overview-case-stage.overview-case-engaged .overview-svg-glow {
+    transform: scale(1.12) !important;
+    opacity: 1 !important;
+}
+.overview-case-stage.model-loading .overview-svg-glasses { animation: none !important; }
+
+/* Every visible pixel in a featured card belongs to the card hit target. */
+#portfolioGrid .slot-card {
+    position: relative;
+    z-index: 1;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+}
+#portfolioGrid .slot-card > *,
+#portfolioGrid .slot-overlay *,
+#portfolioGrid .slot-card::before,
+#portfolioGrid .slot-card::after {
+    pointer-events: none !important;
+}
+#portfolioGrid .slot-card:focus-visible {
+    outline: 3px solid rgba(130,71,255,.62);
+    outline-offset: 4px;
+}
+
+/* Blank assembly space no longer blocks the popup backdrop. */
+#showcaseModal #mainAssembly { pointer-events: none !important; }
+#showcaseModal #mainAssembly .rimless-lens,
+#showcaseModal #mainAssembly .glasses-temple,
+#showcaseModal #mainAssembly .gold-hinge-assembly,
+#showcaseModal #mainAssembly .gold-center-bridge-assembly,
+#showcaseModal .lens-nav-btn,
+#showcaseModal .modal-close-btn {
+    pointer-events: auto !important;
+}
+
+/* Avoid expensive full-frame blur during the two largest transitions. */
+.overview-case-stage.overview-model-visible .overview-case-poster,
+.modal-container.is-closing .rimless-glasses-assembly {
+    filter: none !important;
+}
+
+@media (max-width: 620px) {
+    .overview-case-stage.overview-case-engaged .overview-svg-lid {
+        transform: translateY(-140px) scale(.92,.74) !important;
+    }
+    .overview-case-stage.overview-case-engaged .overview-svg-glasses {
+        transform: translateY(-92px) rotate(0deg) scale(1.02,.99) !important;
+    }
+}
+</style>
+
 </head>
 <body>
 <!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
@@ -10351,6 +10482,132 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 }
 </style>
 
+
+<style id="overview-ultra-fluid-motion-patch">
+/* Final hero-motion pass: tightly overlapped mechanical phases, no blur-driven
+   re-rasterisation, and distinct timings for the case, glasses and hinges. */
+.overview-case-stage {
+    --hero-case-ease: cubic-bezier(.22,.68,.20,1);
+    --hero-glasses-ease: cubic-bezier(.16,1,.30,1);
+    --hero-hinge-ease: cubic-bezier(.20,.78,.18,1);
+    --hero-opacity-ease: cubic-bezier(.25,.46,.45,.94);
+}
+
+.overview-case-photo {
+    transition-property: opacity, transform, filter !important;
+    transition-duration: 460ms, 980ms, 460ms !important;
+    transition-timing-function: var(--hero-opacity-ease), var(--hero-glasses-ease), var(--hero-opacity-ease) !important;
+    transition-delay: 0ms !important;
+    backface-visibility: hidden;
+    transform: translate3d(0,5px,0) scale(.97);
+}
+
+.overview-case-poster .overview-case-svg {
+    transition-property: opacity, transform !important;
+    transition-duration: 420ms, 980ms !important;
+    transition-timing-function: var(--hero-opacity-ease), var(--hero-glasses-ease) !important;
+    transition-delay: 35ms, 0ms !important;
+    backface-visibility: hidden;
+}
+
+.overview-case-poster .overview-svg-case,
+.overview-case-poster .overview-svg-base,
+.overview-case-poster .overview-svg-lid,
+.overview-case-poster .overview-svg-glasses,
+.overview-case-poster .overview-svg-front,
+.overview-case-poster .overview-svg-temple,
+.overview-case-poster .overview-svg-shadow,
+.overview-case-poster .overview-svg-glow {
+    animation: none !important;
+    transition-delay: 0ms !important;
+    backface-visibility: hidden;
+    will-change: transform, opacity;
+}
+
+.overview-case-poster .overview-svg-case {
+    transition-property: transform, opacity !important;
+    transition-duration: 940ms, 420ms !important;
+    transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important;
+}
+
+.overview-case-poster .overview-svg-base {
+    transition-property: transform, opacity !important;
+    transition-duration: 900ms, 520ms !important;
+    transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important;
+}
+
+.overview-case-poster .overview-svg-lid {
+    transition-property: transform, opacity !important;
+    transition-duration: 820ms, 500ms !important;
+    transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important;
+}
+
+.overview-case-poster .overview-svg-glasses {
+    transition-property: transform, opacity !important;
+    transition-duration: 760ms, 330ms !important;
+    transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important;
+    filter: none !important;
+}
+
+.overview-case-poster .overview-svg-front {
+    transition-property: transform, opacity !important;
+    transition-duration: 720ms, 360ms !important;
+    transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important;
+}
+
+.overview-case-poster .overview-svg-temple {
+    transition-property: transform, opacity !important;
+    transition-duration: 680ms, 300ms !important;
+    transition-timing-function: var(--hero-hinge-ease), var(--hero-opacity-ease) !important;
+}
+
+.overview-case-poster .overview-svg-shadow,
+.overview-case-poster .overview-svg-glow {
+    transition-property: transform, opacity !important;
+    transition-duration: 900ms, 520ms !important;
+    transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important;
+}
+
+.overview-case-poster .overview-svg-interior {
+    transition: opacity 430ms var(--hero-opacity-ease) !important;
+}
+
+/* Keep the loaded-model crossfade soft and prevent a single-frame visibility pop. */
+.overview-case-stage .overview-final-model.hero-model-viewer {
+    transition: opacity 620ms var(--hero-opacity-ease), visibility 0s linear 0s !important;
+    backface-visibility: hidden;
+}
+.overview-case-stage.overview-model-visible .overview-case-poster {
+    transition: opacity 620ms var(--hero-opacity-ease), transform 920ms var(--hero-glasses-ease) !important;
+}
+
+/* The final loading float begins only after the opening choreography settles. */
+.overview-case-stage.model-loading.overview-case-unfolded.overview-motion-complete .overview-svg-glasses {
+    animation: overviewVideoMatchedFloat 3.2s ease-in-out 260ms infinite !important;
+}
+.overview-case-stage.model-loading:not(.overview-motion-complete) .overview-svg-glasses {
+    animation: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .overview-case-photo,
+    .overview-case-poster .overview-case-svg,
+    .overview-case-poster .overview-svg-case,
+    .overview-case-poster .overview-svg-base,
+    .overview-case-poster .overview-svg-lid,
+    .overview-case-poster .overview-svg-glasses,
+    .overview-case-poster .overview-svg-front,
+    .overview-case-poster .overview-svg-temple,
+    .overview-case-poster .overview-svg-shadow,
+    .overview-case-poster .overview-svg-glow,
+    .overview-case-poster .overview-svg-interior {
+        transition-duration: 1ms !important;
+        transition-delay: 0ms !important;
+        animation: none !important;
+    }
+}
+</style>
+
 <!-- SECTION 1: OVERVIEW -->
 <section class="portfolio-section internship-overview" id="overview-section">
 <div class="overview-menu-row">
@@ -10457,7 +10714,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 </g>
 </svg></div>
 <div aria-live="polite" class="overview-local-model-note" id="overviewLocalModelNote">Select the supplied GLB once. Afterwards, hover will open and close it normally.</div>
-<model-viewer alt="Interactive 3D model of the eyeglasses shown in this internship portfolio" auto-rotate="" auto-rotate-delay="900" camera-controls="" camera-orbit="22deg 74deg 105%" camera-target="auto auto auto" class="hero-model-viewer overview-final-model" data-model-candidates="./luxury%20eyeglasses%203d%20model.glb|./eyeglasses.glb" data-src="./luxury%20eyeglasses%203d%20model.glb" environment-image="neutral" exposure="1.15" field-of-view="26deg" id="luxuryGlassesModel" interaction-prompt="none" max-field-of-view="38deg" min-field-of-view="20deg" reveal="auto" rotation-per-second="14deg" shadow-intensity="1.35" shadow-softness="0.9" disable-zoom="">
+<model-viewer alt="Interactive 3D model of the eyeglasses shown in this internship portfolio" auto-rotate="" auto-rotate-delay="900" camera-controls="" camera-orbit="22deg 74deg 105%" camera-target="auto auto auto" class="hero-model-viewer overview-final-model" data-model-candidates="./luxury%20eyeglasses%203d%20model.glb|./eyeglasses.glb" data-src="./luxury%20eyeglasses%203d%20model.glb" environment-image="neutral" exposure="1.15" field-of-view="26deg" id="luxuryGlassesModel" interaction-prompt="none" max-field-of-view="38deg" min-field-of-view="20deg" reveal="auto" rotation-per-second="14deg" shadow-intensity="1.35" shadow-softness="0.9">
 </model-viewer>
 <!-- Retained for the existing lazy model-loader logic; visually hidden and triggered after the CSS reveal. -->
 <button aria-controls="luxuryGlassesModel" class="model-load-button overview-hidden-model-trigger" id="load3dModelButton" tabindex="-1" type="button">Load interactive 3D</button>
@@ -12079,16 +12336,16 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
         }
 
         async function closeShowcase(e) {
-            const clickedBackdrop = e && (
-                e.target.id === 'showcaseModal' ||
-                e.target.classList.contains('modal-mesh-bg') ||
-                e.target.classList.contains('modal-close-btn')
-            );
+            const modal = document.getElementById('showcaseModal');
+            const clickedCloseButton = Boolean(e?.target.closest?.('.modal-close-btn'));
+            const clickedInteractivePopup = Boolean(e?.target.closest?.(
+                '.rimless-lens, .glasses-temple, .gold-hinge-assembly, .gold-center-bridge-assembly, .lens-nav-btn'
+            ));
+            const clickedBackdrop = Boolean(e) && (clickedCloseButton || !clickedInteractivePopup);
 
             if (e && !clickedBackdrop) return;
             if (showcaseAnimating) return;
 
-            const modal = document.getElementById('showcaseModal');
             if (!modal.classList.contains('active')) return;
 
             showcaseAnimating = true;
@@ -13262,328 +13519,248 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
         window.addEventListener('resize', scheduleLensFitAndTheme, { passive: true });
 
     </script>
-<script>
-        // Reversible overview sequence:
-        // closed case -> open case -> unfolded SVG glasses -> loaded GLB.
-        // Pointer exit runs the same sequence backwards; the large GLB stays cached.
-        (() => {
-            const overviewStage = document.getElementById('stage3d');
-            const hiddenModelTrigger = document.getElementById('load3dModelButton');
-            const model = document.getElementById('luxuryGlassesModel');
-            const localModelFile = document.getElementById('overviewLocalModelFile');
-            const localModelNote = document.getElementById('overviewLocalModelNote');
-            if (!overviewStage || !hiddenModelTrigger || !model) return;
+<script id="fluid-overview-controller">
+(() => {
+    const stage = document.getElementById('stage3d');
+    const model = document.getElementById('luxuryGlassesModel');
+    const loadTrigger = document.getElementById('load3dModelButton');
+    const localFileInput = document.getElementById('overviewLocalModelFile');
+    const localNote = document.getElementById('overviewLocalModelNote');
+    if (!stage || !model || !loadTrigger) return;
 
-            const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-            const hoverCapable = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-            const isLocalFile = window.location.protocol === 'file:';
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hoverCapable = matchMedia('(hover: hover) and (pointer: fine)').matches;
+    const localProtocol = location.protocol === 'file:';
+    const OPEN_DURATION = reducedMotion ? 1 : 1380;
+    const CLOSE_DURATION = reducedMotion ? 1 : 1040;
 
-            let pointerInside = false;
-            let touchOpen = false;
-            let modelPinned = false;
-            let opening = false;
-            let closing = false;
-            let modelReady = overviewStage.classList.contains('model-loaded');
-            let modelRequested = Boolean(model.getAttribute('src'));
-            let localObjectUrl = '';
-            const timers = new Set();
+    let isOpen = false;
+    let modelReady = stage.classList.contains('model-loaded');
+    let modelRequested = Boolean(model.getAttribute('src'));
+    let localObjectUrl = '';
+    let revealTimer = 0;
+    let hoverCloseTimer = 0;
+    let openStartedAt = 0;
+    let motionTimers = [];
 
-            const later = (fn, delay) => {
-                const timer = window.setTimeout(() => {
-                    timers.delete(timer);
-                    fn();
-                }, delay);
-                timers.add(timer);
-                return timer;
-            };
+    const clearStageTimers = () => {
+        clearTimeout(revealTimer);
+        clearTimeout(hoverCloseTimer);
+        motionTimers.forEach(clearTimeout);
+        motionTimers = [];
+        revealTimer = 0;
+        hoverCloseTimer = 0;
+    };
 
-            const clearTimers = () => {
-                timers.forEach(timer => window.clearTimeout(timer));
-                timers.clear();
-            };
+    const scheduleMotionClass = (delay, callback) => {
+        if (reducedMotion) {
+            callback();
+            return;
+        }
+        motionTimers.push(setTimeout(callback, delay));
+    };
 
-            const isStillOpen = () => modelPinned || (hoverCapable ? pointerInside : touchOpen);
+    const setAccessibleState = open => {
+        stage.setAttribute('aria-expanded', String(open));
+        stage.setAttribute(
+            'aria-label',
+            open
+                ? 'Interactive eyeglasses model. Drag to rotate, scroll to zoom, and click outside to close.'
+                : 'Open the eyeglasses case and reveal the interactive 3D model.'
+        );
+    };
 
-            const setPinnedState = (pinned) => {
-                modelPinned = pinned;
-                overviewStage.classList.toggle('overview-model-pinned', pinned);
-                if (pinned) {
-                    overviewStage.classList.remove('overview-is-closing');
-                    overviewStage.classList.add('overview-model-visible');
-                    model.setAttribute('camera-controls', '');
-                }
-            };
+    const showModel = () => {
+        if (!isOpen || !modelReady) return;
+        stage.classList.add('overview-model-visible', 'overview-model-pinned');
+        model.classList.add('is-active', 'is-ready');
+        model.setAttribute('camera-controls', '');
+        model.removeAttribute('disable-zoom');
+    };
 
-            const setAccessibleState = (open) => {
-                overviewStage.setAttribute('aria-expanded', String(open));
-                overviewStage.setAttribute(
-                    'aria-label',
-                    open
-                        ? 'Close the interactive eyeglasses presentation'
-                        : 'Open the eyeglasses case and reveal the interactive 3D model'
-                );
-            };
+    const beginHostedModelLoad = () => {
+        if (modelReady || modelRequested || stage.classList.contains('model-loading')) return;
+        modelRequested = true;
+        loadTrigger.click();
+    };
 
-            const showModel = () => {
-                if (!modelReady || !isStillOpen()) return;
-                if (!reducedMotion && (!overviewStage.classList.contains('overview-case-unfolded') || !overviewStage.classList.contains('overview-motion-complete'))) return;
-                overviewStage.classList.remove('overview-is-closing');
-                overviewStage.classList.add('overview-model-visible');
-                model.setAttribute('camera-controls', '');
-            };
+    const loadLocalModel = async file => {
+        if (!file || !file.name.toLowerCase().endsWith('.glb')) return;
+        modelRequested = true;
+        stage.classList.remove('show-local-model-note', 'local-preview');
+        stage.classList.add('model-loading');
+        model.classList.add('is-active');
+        try {
+            await loadModelViewerLibraryLast();
+            if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
+            localObjectUrl = URL.createObjectURL(file);
+            model._overviewModelCandidates = [localObjectUrl];
+            model._overviewModelCandidateIndex = 0;
+            model.setAttribute('src', localObjectUrl);
+        } catch (_) {
+            modelRequested = false;
+            stage.classList.remove('model-loading');
+            stage.classList.add('show-local-model-note');
+            if (localNote) localNote.textContent = 'Open this folder through Live Server, then try the 3D model again.';
+        }
+    };
 
-            const beginHostedModelLoad = () => {
-                if (modelReady || modelRequested || overviewStage.classList.contains('model-loading')) return;
-                modelRequested = true;
-                hiddenModelTrigger.click();
-            };
+    const requestModel = directUserGesture => {
+        if (modelReady) return;
+        if (!localProtocol) {
+            beginHostedModelLoad();
+            return;
+        }
+        stage.classList.add('show-local-model-note');
+        if (directUserGesture && !modelRequested) localFileInput?.click();
+    };
 
-            const loadSelectedLocalModel = async (file) => {
-                if (!file || !file.name.toLowerCase().endsWith('.glb')) return;
-                modelRequested = true;
-                overviewStage.classList.remove('show-local-model-note', 'local-preview');
-                overviewStage.classList.add('model-loading');
-                model.classList.add('is-active');
+    const openStage = ({ directUserGesture = false } = {}) => {
+        clearStageTimers();
+        isOpen = true;
+        openStartedAt = performance.now();
+        stage.classList.remove(
+            'overview-is-closing',
+            'overview-case-engaged',
+            'overview-glasses-lifted',
+            'overview-temples-opening',
+            'overview-case-unfolded',
+            'overview-motion-complete'
+        );
+        setAccessibleState(true);
+        requestModel(directUserGesture);
 
-                try {
-                    await loadModelViewerLibraryLast();
-                    if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
-                    localObjectUrl = URL.createObjectURL(file);
-                    model._overviewModelCandidates = [localObjectUrl];
-                    model._overviewModelCandidateIndex = 0;
-                    model.setAttribute('src', localObjectUrl);
-                } catch (_) {
-                    modelRequested = false;
-                    overviewStage.classList.remove('model-loading');
-                    overviewStage.classList.add('show-local-model-note');
-                    if (localModelNote) localModelNote.textContent = 'The 3D viewer could not start. Open the folder through Live Server and try again.';
-                }
-            };
-
-            const requestModel = ({ directUserGesture = false } = {}) => {
-                if (modelReady) {
-                    showModel();
-                    return;
-                }
-
-                if (!isLocalFile) {
-                    beginHostedModelLoad();
-                    return;
-                }
-
-                // A browser cannot automatically read a neighbouring GLB through file://.
-                // A direct click may safely grant access once; later hovers reuse the cached Blob URL.
-                overviewStage.classList.add('show-local-model-note');
-                if (directUserGesture && !modelRequested) localModelFile?.click();
-            };
-
-            const openSequence = ({ directUserGesture = false } = {}) => {
-                clearTimers();
-                opening = true;
-                closing = false;
-                const resumeFromUnfolded = overviewStage.classList.contains('overview-case-unfolded');
-                const resumeFromOpening = overviewStage.classList.contains('overview-temples-opening');
-                const resumeFromLift = overviewStage.classList.contains('overview-glasses-lifted');
-                overviewStage.classList.remove('overview-is-closing', 'overview-motion-complete');
-                overviewStage.classList.add('overview-case-engaged');
-                setAccessibleState(true);
-
-                if (directUserGesture && isLocalFile && !modelReady && !modelRequested) {
-                    requestModel({ directUserGesture: true });
-                }
-
-                if (reducedMotion) {
-                    overviewStage.classList.add(
-                        'overview-glasses-lifted',
-                        'overview-temples-opening',
-                        'overview-case-unfolded',
-                        'overview-motion-complete'
-                    );
-                    requestModel({ directUserGesture });
-                    later(showModel, 40);
-                    opening = false;
-                    return;
-                }
-
-                // Resume gracefully if the pointer returns while the reverse
-                // sequence is still running; otherwise play the full choreography.
-                const liftDelay = resumeFromLift ? 0 : 390;
-                const hingeDelay = resumeFromOpening ? 0 : (resumeFromLift ? 300 : 790);
-                const unfoldDelay = resumeFromUnfolded ? 0 : (resumeFromOpening ? 390 : (resumeFromLift ? 690 : 1160));
-                const completeDelay = resumeFromUnfolded ? 260 : (resumeFromOpening ? 820 : (resumeFromLift ? 1190 : 1560));
-                const handoffDelay = completeDelay + 100;
-
-                // 1) Let the lid establish its opening angle, then lift the frame.
-                later(() => {
-                    if (!isStillOpen()) return;
-                    overviewStage.classList.add('overview-glasses-lifted');
-                }, liftDelay);
-
-                // 2) Begin the symmetrical hinge motion seen in the reference.
-                later(() => {
-                    if (!isStillOpen()) return;
-                    overviewStage.classList.add('overview-temples-opening');
-                    // Start downloading in the background while the visible CSS
-                    // movement continues. The GLB is not shown until full settle.
-                    requestModel({ directUserGesture: false });
-                }, hingeDelay);
-
-                // 3) Finish the arm extension with a restrained physical settle.
-                later(() => {
-                    if (!isStillOpen()) return;
-                    overviewStage.classList.add('overview-case-unfolded');
-                }, unfoldDelay);
-
-                later(() => {
-                    if (!isStillOpen()) return;
-                    overviewStage.classList.add('overview-motion-complete');
-                }, completeDelay);
-
-                // 4) Handoff only after the mechanical sequence has settled.
-                later(() => {
-                    if (!isStillOpen()) return;
-                    showModel();
-                    opening = false;
-                }, handoffDelay);
-            };
-
-            const closeSequence = ({ force = false } = {}) => {
-                if (modelPinned && !force) return;
-                clearTimers();
-                opening = false;
-                closing = true;
-                overviewStage.classList.add('overview-is-closing');
-                overviewStage.classList.remove('overview-model-visible', 'show-local-model-note', 'overview-motion-complete');
-                setAccessibleState(false);
-
-                if (reducedMotion) {
-                    overviewStage.classList.remove(
-                        'overview-case-unfolded',
-                        'overview-temples-opening',
-                        'overview-glasses-lifted',
-                        'overview-case-engaged',
-                        'overview-motion-complete',
-                        'overview-is-closing'
-                    );
-                    closing = false;
-                    return;
-                }
-
-                // Reverse the same choreography: settle back to the near-open
-                // hinge angle, fold both arms behind the lenses, lower the frame,
-                // then close the lid and restore the photographic case.
-                later(() => overviewStage.classList.remove('overview-case-unfolded'), 240);
-                later(() => overviewStage.classList.remove('overview-temples-opening'), 590);
-                later(() => overviewStage.classList.remove('overview-glasses-lifted'), 930);
-                later(() => overviewStage.classList.remove('overview-case-engaged'), 1260);
-                later(() => {
-                    overviewStage.classList.remove('overview-is-closing');
-                    closing = false;
-                }, 1620);
-            };
-
-            if (hoverCapable) {
-                overviewStage.addEventListener('pointerenter', () => {
-                    pointerInside = true;
-                    touchOpen = false;
-                    openSequence();
-                }, { passive: true });
-
-                overviewStage.addEventListener('pointerleave', () => {
-                    pointerInside = false;
-                    closeSequence();
-                }, { passive: true });
-            }
-
-            overviewStage.addEventListener('click', (event) => {
-                // Model clicks are reserved for rotation/zoom. The pointerdown
-                // listener below pins the live model before a drag can leave the stage.
-                if (event.target === model && overviewStage.classList.contains('overview-model-visible')) return;
-                event.preventDefault();
-
-                if (modelPinned) {
-                    setPinnedState(false);
-                    touchOpen = false;
-                    closeSequence({ force: true });
-                    return;
-                }
-
-                if (hoverCapable) {
-                    pointerInside = true;
-                    openSequence({ directUserGesture: true });
-                    return;
-                }
-
-                touchOpen = !touchOpen;
-                if (touchOpen) openSequence({ directUserGesture: true });
-                else closeSequence();
+        // Each mechanical phase begins before the previous one settles. Retargeting
+        // the same transforms creates a continuous hinge/lift trajectory instead of
+        // four visibly separate starts and stops.
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                if (!isOpen) return;
+                stage.classList.add('overview-case-engaged');
+                scheduleMotionClass(150, () => isOpen && stage.classList.add('overview-glasses-lifted'));
+                scheduleMotionClass(390, () => isOpen && stage.classList.add('overview-temples-opening'));
+                scheduleMotionClass(660, () => isOpen && stage.classList.add('overview-case-unfolded'));
+                scheduleMotionClass(1110, () => isOpen && stage.classList.add('overview-motion-complete'));
             });
+        });
 
-            overviewStage.addEventListener('keydown', (event) => {
-                if (event.key !== 'Enter' && event.key !== ' ') return;
-                event.preventDefault();
-                touchOpen = !overviewStage.classList.contains('overview-case-engaged');
-                if (touchOpen) openSequence({ directUserGesture: true });
-                else closeSequence();
-            });
+        revealTimer = setTimeout(showModel, OPEN_DURATION);
+    };
 
-            // A deliberate press on the live model pins it open. This lets the
-            // user rotate, zoom and drag beyond the stage boundary without the
-            // reverse animation interrupting the interaction.
-            model.addEventListener('pointerdown', () => {
-                if (!overviewStage.classList.contains('overview-model-visible')) return;
-                setPinnedState(true);
-                touchOpen = true;
-                setAccessibleState(true);
-            }, { passive: true });
+    const closeStage = () => {
+        clearStageTimers();
+        isOpen = false;
+        stage.classList.add('overview-is-closing');
+        stage.classList.remove('overview-model-visible', 'overview-model-pinned', 'show-local-model-note', 'overview-motion-complete');
+        setAccessibleState(false);
 
-            // Clicking elsewhere releases the pinned model and closes the case.
-            document.addEventListener('pointerdown', (event) => {
-                if (!modelPinned || overviewStage.contains(event.target)) return;
-                setPinnedState(false);
-                touchOpen = false;
-                pointerInside = false;
-                closeSequence({ force: true });
-            }, { passive: true, capture: true });
+        // Reverse the same path with overlapping folds: settle the frame, fold the
+        // temples, lower the glasses, then close the lid. No phase waits completely
+        // for the previous phase, which keeps the return movement fluid.
+        requestAnimationFrame(() => {
+            stage.classList.remove('overview-case-unfolded');
+            scheduleMotionClass(150, () => stage.classList.remove('overview-temples-opening'));
+            scheduleMotionClass(360, () => stage.classList.remove('overview-glasses-lifted'));
+            scheduleMotionClass(610, () => stage.classList.remove('overview-case-engaged'));
+            scheduleMotionClass(CLOSE_DURATION, () => stage.classList.remove('overview-is-closing'));
+        });
+    };
 
-            document.addEventListener('keydown', (event) => {
-                if (event.key !== 'Escape' || !modelPinned) return;
-                setPinnedState(false);
-                touchOpen = false;
-                pointerInside = false;
-                closeSequence({ force: true });
-            });
+    if (hoverCapable) {
+        stage.addEventListener('pointerenter', () => openStage(), { passive: true });
+        stage.addEventListener('pointerleave', () => {
+            if (stage.classList.contains('overview-model-visible')) return;
+            hoverCloseTimer = setTimeout(closeStage, 120);
+        }, { passive: true });
+    }
 
-            localModelFile?.addEventListener('change', () => {
-                const file = localModelFile.files?.[0];
-                if (file) loadSelectedLocalModel(file);
-                localModelFile.value = '';
-            });
+    stage.addEventListener('click', event => {
+        // Once the live model is visible, the whole stage is an interaction
+        // surface. Do not interpret clicks on transparent or overlay areas as
+        // a request to close the model; closing is handled outside the stage
+        // or with Escape. This removes the apparent dead/collapse zones.
+        if (stage.classList.contains('overview-model-visible')) {
+            event.preventDefault();
+            isOpen = true;
+            stage.classList.add('overview-model-pinned');
+            return;
+        }
 
-            model.addEventListener('load', () => {
-                modelReady = true;
-                modelRequested = true;
-                overviewStage.classList.add('model-loaded');
-                overviewStage.classList.remove('model-loading', 'local-preview', 'show-local-model-note');
-                model.classList.add('is-active', 'is-ready');
-                if (isStillOpen()) later(showModel, 90);
-            });
+        event.preventDefault();
 
-            model.addEventListener('error', () => {
-                setPinnedState(false);
-                modelRequested = false;
-                modelReady = false;
-                overviewStage.classList.remove('overview-model-visible', 'model-loading');
-                if (isLocalFile) overviewStage.classList.add('show-local-model-note');
-            });
+        // A hover may already have started the opening sequence. A click during
+        // that sequence should strengthen the user's intent and request the GLB,
+        // not reset the animation back to its first frame.
+        if (isOpen) {
+            requestModel(true);
+            return;
+        }
 
-            window.addEventListener('beforeunload', () => {
-                if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
-            });
+        openStage({ directUserGesture: true });
+    });
 
-            setAccessibleState(false);
-        })();
-    </script>
+    stage.addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        isOpen ? closeStage() : openStage({ directUserGesture: true });
+    });
+
+    // Keep the model open while it is being rotated or zoomed.
+    model.addEventListener('pointerdown', () => {
+        if (!stage.classList.contains('overview-model-visible')) return;
+        isOpen = true;
+        stage.classList.add('overview-model-pinned');
+    }, { passive: true });
+
+    document.addEventListener('pointerdown', event => {
+        if (!isOpen || stage.contains(event.target)) return;
+        closeStage();
+    }, { capture: true, passive: true });
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && isOpen) closeStage();
+    });
+
+    localFileInput?.addEventListener('change', () => {
+        const file = localFileInput.files?.[0];
+        if (file) loadLocalModel(file);
+        localFileInput.value = '';
+    });
+
+    model.addEventListener('load', () => {
+        modelReady = true;
+        modelRequested = true;
+        stage.classList.add('model-loaded');
+        stage.classList.remove('model-loading', 'local-preview', 'show-local-model-note');
+        if (isOpen) {
+            const elapsed = performance.now() - openStartedAt;
+            const remainingMotion = Math.max(70, OPEN_DURATION - elapsed);
+            clearTimeout(revealTimer);
+            revealTimer = setTimeout(showModel, remainingMotion);
+        }
+    });
+
+    model.addEventListener('error', () => {
+        modelReady = false;
+        modelRequested = false;
+        stage.classList.remove('overview-model-visible', 'overview-model-pinned', 'model-loading');
+        if (localProtocol) stage.classList.add('show-local-model-note');
+    });
+
+    // Warm only the small viewer library during idle time; the large GLB still
+    // waits for intent so it cannot slow the rest of the portfolio.
+    const warmViewerLibrary = () => loadModelViewerLibraryLast().catch(() => {});
+    if ('requestIdleCallback' in window) requestIdleCallback(warmViewerLibrary, { timeout: 2600 });
+    else addEventListener('load', () => setTimeout(warmViewerLibrary, 900), { once: true });
+
+    addEventListener('beforeunload', () => {
+        if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
+    });
+
+    model.removeAttribute('disable-zoom');
+    setAccessibleState(false);
+})();
+</script>
 
 <script id="showcase-content-priority-runtime">
 (() => {
@@ -14485,22 +14662,131 @@ ${message}`;
 (() => {
     const applyInteractionFix = () => {
         const model = document.getElementById('luxuryGlassesModel');
-        if (!model || model.dataset.wheelZoomFixed === 'true') return;
-        model.dataset.wheelZoomFixed = 'true';
-        model.setAttribute('disable-zoom', '');
+        if (!model) return;
+        model.removeAttribute('disable-zoom');
+        model.setAttribute('camera-controls', '');
         model.setAttribute('interaction-prompt', 'none');
+        model.setAttribute('aria-label', 'Interactive eyeglasses model. Drag to rotate and use the mouse wheel or pinch gesture to zoom.');
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyInteractionFix, { once: true });
+    else applyInteractionFix();
+})();
+</script>
 
-        /* Do not let an accidentally positioned cursor zoom the GLB. With
-           disable-zoom enabled, wheel movement continues scrolling the page. */
-        model.addEventListener('wheel', event => {
-            event.stopPropagation();
-        }, { passive: true, capture: true });
+
+<script id="featured-card-hit-target-runtime">
+(() => {
+    const initializeCards = () => {
+        document.querySelectorAll('#portfolioGrid .slot-card').forEach(card => {
+            card.setAttribute('role', 'button');
+            card.tabIndex = 0;
+            card.setAttribute('aria-label', `Open ${card.querySelector('.slot-title')?.textContent?.trim() || 'project'}`);
+            card.addEventListener('keydown', event => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                event.preventDefault();
+                card.click();
+            });
+        });
+    };
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeCards, { once: true });
+    else initializeCards();
+})();
+</script>
+
+
+<style id="overview-continuous-hit-surface-fix">
+/* =============================================================
+   TOP GLASSES — CONTINUOUS POINTER / DRAG SURFACE
+   The live model now owns every pixel of the stage. Invisible hints,
+   loaders and transition layers cannot create dead interaction strips.
+   ============================================================= */
+.overview-case-stage.overview-model-visible {
+    cursor: grab !important;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.overview-case-stage.overview-model-visible:active {
+    cursor: grabbing !important;
+}
+
+/* Disable hit testing on every sibling while the GLB is active. They remain
+   visually available for transitions but can no longer block the pointer. */
+.overview-case-stage.overview-model-visible > :not(.overview-final-model) {
+    pointer-events: none !important;
+}
+
+/* Make the model-viewer host the single uninterrupted hit target. */
+.overview-case-stage.model-loaded.overview-model-visible
+.overview-final-model.hero-model-viewer {
+    position: absolute !important;
+    inset: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 60 !important;
+    pointer-events: auto !important;
+    touch-action: none !important;
+    overscroll-behavior: contain !important;
+    cursor: inherit !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+}
+
+/* Keep the whole fallback stage clickable before the real model appears. */
+.overview-case-stage:not(.overview-model-visible) {
+    pointer-events: auto !important;
+}
+</style>
+
+<script id="overview-continuous-hit-surface-runtime">
+(() => {
+    const initializeContinuousHitSurface = () => {
+        const stage = document.getElementById('stage3d');
+        const model = document.getElementById('luxuryGlassesModel');
+        if (!stage || !model) return;
+
+        const pinInteraction = () => {
+            if (!stage.classList.contains('overview-model-visible')) return;
+            stage.classList.add('overview-model-pinned');
+            stage.setAttribute('data-pointer-active', 'true');
+        };
+
+        const releaseInteraction = () => {
+            stage.removeAttribute('data-pointer-active');
+        };
+
+        // Capture pointer intent at the stage boundary so a drag can begin from
+        // any transparent part of model-viewer, not only directly over geometry.
+        stage.addEventListener('pointerdown', pinInteraction, {
+            capture: true,
+            passive: true
+        });
+        stage.addEventListener('pointerup', releaseInteraction, {
+            capture: true,
+            passive: true
+        });
+        stage.addEventListener('pointercancel', releaseInteraction, {
+            capture: true,
+            passive: true
+        });
+
+        // Ensure late model-viewer upgrades do not restore pan-y and recreate
+        // vertical drag dead zones.
+        const enforceModelControls = () => {
+            model.setAttribute('camera-controls', '');
+            model.removeAttribute('disable-zoom');
+            model.style.touchAction = 'none';
+        };
+
+        enforceModelControls();
+        customElements.whenDefined('model-viewer').then(enforceModelControls).catch(() => {});
+        model.addEventListener('load', enforceModelControls, { passive: true });
     };
 
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', applyInteractionFix, { once: true });
+        document.addEventListener('DOMContentLoaded', initializeContinuousHitSurface, { once: true });
     } else {
-        applyInteractionFix();
+        initializeContinuousHitSurface();
     }
 })();
 </script>
