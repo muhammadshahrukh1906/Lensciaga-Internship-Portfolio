@@ -11932,7 +11932,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             /* Mobile keeps the same card → case → glasses idea, but uses a
                shorter touch-friendly sequence that matches the stacked lens
                composition used on phones. Desktop choreography is unchanged. */
-            if (compactShowcaseMedia.matches) {
+            if (false && compactShowcaseMedia.matches) {
                 try {
                     resetKineticTransition();
                     applyKineticCaseTheme(contextMode);
@@ -12123,7 +12123,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             }
 
             /* Very low-power devices keep the immediate, low-cost reveal. */
-            if (performanceLiteShowcase) {
+            if (performanceLiteShowcase && !compactShowcaseMedia.matches) {
                 try {
                     resetKineticTransition();
                     modal.classList.remove('is-closing', 'is-animating', 'is-handoff', 'is-content-revealing', 'is-content-synced');
@@ -12170,18 +12170,18 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             const proxyLensHeight = useSecondSlotShape ? 170 : (useThirdSlotShape ? 150 : (useFourthSlotShape ? 188 : (useFifthSlotShape ? 188 : (useSixthSlotShape ? 172 : (useSeventhSlotShape ? 178 : (useEighthSlotShape ? 188 : (useEleventhSlotShape ? 226 : (useTwelfthSlotShape ? 189 : 200))))))));
             const finalLens = assembly.querySelector('.rimless-lens');
             const finalBridge = assembly.querySelector('.gold-center-bridge-assembly');
-            const finalLensWidth = useCustomSlotShape ? finalLens.offsetWidth : 420;
-            const finalBridgeWidth = useCustomSlotShape ? finalBridge.offsetWidth : 60;
-            const finalBridgeStyle = useCustomSlotShape ? getComputedStyle(finalBridge) : null;
+            const finalLensWidth = (useCustomSlotShape || compactShowcaseMedia.matches) ? finalLens.offsetWidth : 420;
+            const finalBridgeWidth = (useCustomSlotShape || compactShowcaseMedia.matches) ? finalBridge.offsetWidth : 60;
+            const finalBridgeStyle = (useCustomSlotShape || compactShowcaseMedia.matches) ? getComputedStyle(finalBridge) : null;
             const finalBridgeSpan = useTwelfthSlotShape
                 ? finalBridgeWidth + parseFloat(finalBridgeStyle.marginLeft || 0) + parseFloat(finalBridgeStyle.marginRight || 0)
                 : finalBridgeWidth;
             const lensLeft = (viewportWidth / 2) - (proxyLensWidth / 2);
             const lensTop = (viewportHeight / 2) - (proxyLensHeight / 2);
-            const unfoldScale = useCustomSlotShape
+            const unfoldScale = (useCustomSlotShape || compactShowcaseMedia.matches)
                 ? finalLensWidth / proxyLensWidth
                 : Math.min(2, Math.max(1.18, (viewportWidth - 72) / 470));
-            const unfoldDistance = useCustomSlotShape
+            const unfoldDistance = (useCustomSlotShape || compactShowcaseMedia.matches)
                 ? (finalLensWidth / 2) + (finalBridgeSpan / 2)
                 : Math.min(250, Math.max(138, viewportWidth * 0.175));
             const unfoldedLensHalfWidth = (proxyLensWidth / 2) * unfoldScale;
@@ -16786,6 +16786,79 @@ ${message}`;
         if (phone.matches && modal.classList.contains('active')) primeVisibleLens(latestCard);
     });
     observer.observe(modal, { attributes: true, attributeFilter: ['class'], childList: true, subtree: true });
+})();
+</script>
+
+
+<style id="mobile-polish-round-two">
+@media (max-width: 768px) {
+  #showcaseModal {
+    min-height: 100dvh !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 16px !important;
+    padding: calc(54px + env(safe-area-inset-top)) 8px calc(22px + env(safe-area-inset-bottom)) !important;
+  }
+  #showcaseModal .rimless-glasses-assembly,
+  #showcaseModal.shape-second-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-third-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-fourth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-fifth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-sixth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-seventh-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-eighth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-eleventh-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-twelfth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(132px, 39.5vw, 164px) !important;
+    --mobile-lens-height: clamp(122px, 36vw, 150px) !important;
+    max-width: calc(100vw - 4px) !important;
+    margin: 0 auto !important;
+  }
+  #showcaseModal .rimless-lens {
+    box-shadow: 0 20px 46px rgba(20,18,28,.25), inset 0 0 0 1px rgba(255,255,255,.62) !important;
+  }
+  #showcaseModal .mobile-showcase-details {
+    width: min(calc(100% - 12px), 460px) !important;
+    margin: 0 auto !important;
+  }
+  #showcaseModal:not(.carousel-ready) .mobile-showcase-details {
+    opacity: 0 !important;
+    transform: translateY(18px) !important;
+    pointer-events: none !important;
+  }
+  #showcaseModal:not(.carousel-ready) .modal-close-btn {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  #showcaseModal.active.carousel-ready .mobile-showcase-details {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+    pointer-events: auto !important;
+  }
+  #brand-section .brand-orbit-items {
+    scroll-margin-top: calc(16px + env(safe-area-inset-top));
+  }
+}
+@media (max-width: 768px) and (max-height: 690px) {
+  #showcaseModal { justify-content: flex-start !important; }
+}
+</style>
+<script id="mobile-framework-jump-fix">
+(() => {
+  const button = document.getElementById('brandStrategyExplore');
+  const list = document.querySelector('#brand-section .brand-orbit-items');
+  if (!button || !list) return;
+  button.addEventListener('click', (event) => {
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    const first = list.querySelector('.brand-orbit-item');
+    list.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.setTimeout(() => {
+      first?.classList.add('is-open');
+      first?.querySelector('.brand-orbit-trigger')?.setAttribute('aria-expanded', 'true');
+    }, 500);
+  }, true);
 })();
 </script>
 
