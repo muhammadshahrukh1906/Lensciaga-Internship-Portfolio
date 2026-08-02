@@ -11150,6 +11150,14 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 
         const compactShowcaseMedia = window.matchMedia('(max-width: 768px)');
         const responsiveFeaturedFlow = window.matchMedia('(max-width: 1120px)');
+        const networkInformation = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const networkEffectiveType = String(networkInformation?.effectiveType || '').toLowerCase();
+        const networkConstrained = Boolean(
+            networkInformation?.saveData
+            || networkEffectiveType === 'slow-2g'
+            || networkEffectiveType === '2g'
+        );
+        document.documentElement.classList.toggle('network-constrained', networkConstrained);
 
         // Preserve the exact page position while the fixed mobile showcase is open.
         // Merely setting overflow:hidden caused mobile browsers to jump upward, so
@@ -11203,6 +11211,10 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
         portfolioThumbs.slice(0, urgentThumbnailCount).forEach(image => hydratePortfolioThumbnail(image, 'high'));
         const deferredPortfolioThumbs = portfolioThumbs.slice(urgentThumbnailCount);
 
+        const portfolioThumbnailRootMargin = compactShowcaseMedia.matches
+            ? (networkConstrained ? '220px 0px' : '480px 0px')
+            : '900px 0px';
+
         if ('IntersectionObserver' in window) {
             const portfolioImageObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
@@ -11210,7 +11222,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     hydratePortfolioThumbnail(entry.target, 'auto');
                     observer.unobserve(entry.target);
                 });
-            }, { rootMargin: '900px 0px', threshold: 0.01 });
+            }, { rootMargin: portfolioThumbnailRootMargin, threshold: 0.01 });
             deferredPortfolioThumbs.forEach(image => portfolioImageObserver.observe(image));
         } else {
             deferredPortfolioThumbs.forEach(image => hydratePortfolioThumbnail(image, 'auto'));
@@ -11917,7 +11929,8 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 
             // Reuse the media element already preloaded at page startup. For video
             // slots, its matching still image remains visible as a zero-delay poster.
-            prewarmShowcaseMedia(contextMode, 'high', true);
+            const warmVideoBeforeTransition = !compactShowcaseMedia.matches;
+            prewarmShowcaseMedia(contextMode, 'high', warmVideoBeforeTransition);
             const instantPosterSource = getShowcasePoster(contextMode, imageSource);
             attachInstantFirstMedia(contextMode, wrapper, instantPosterSource);
             installLensMediaFallbacks(imageSource, instantPosterSource);
@@ -11946,22 +11959,68 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     stage3d.classList.toggle('shape-eleventh-slot', useEleventhSlotShape);
                     stage3d.classList.toggle('shape-twelfth-slot', useTwelfthSlotShape);
 
+                    modal.classList.remove('is-closing', 'is-handoff', 'is-content-revealing', 'is-content-synced');
+                    modal.classList.add('active', 'is-animating', 'is-content-prep');
+                    assembly.style.removeProperty('transition');
+                    Object.assign(assembly.style, {
+                        opacity: '0',
+                        transform: 'translate3d(0, 0, 0) scale(1)'
+                    });
+
+                    stage3d.style.display = 'block';
+                    stage3d.classList.add('is-running', 'mobile-kinetic-running');
+                    box3d.style.setProperty('--kinetic-card-image', imageSource ? `url("${imageSource}")` : 'none');
+                    foldedGlasses.style.setProperty('--kinetic-lens-image', instantPosterSource ? `url("${instantPosterSource}")` : 'none');
+
+                    const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+                    document.body.style.setProperty('--scrollbar-compensation', `${scrollbarCompensation}px`);
+                    lockShowcaseScroll();
+
                     const viewportWidth = window.innerWidth;
                     const viewportHeight = window.visualViewport?.height || window.innerHeight;
-                    const caseWidth = Math.min(360, Math.max(286, viewportWidth - 34));
-                    const caseHeight = Math.min(138, Math.max(108, caseWidth * 0.36));
+                    const caseWidth = Math.min(368, Math.max(284, viewportWidth - 30));
+                    const caseHeight = Math.min(142, Math.max(108, caseWidth * 0.355));
                     const caseLeft = (viewportWidth - caseWidth) / 2;
-                    const caseTop = Math.max(92, Math.min(viewportHeight * 0.31, viewportHeight - caseHeight - 250));
+                    const caseTop = Math.max(
+                        94 + (window.visualViewport?.offsetTop || 0),
+                        Math.min(viewportHeight * 0.31, viewportHeight - caseHeight - 245)
+                    );
+
+                    await nextPaint();
+                    fitLensContent();
+
+                    const leftLens = foldedGlasses.querySelector('.l1');
+                    const rightLens = foldedGlasses.querySelector('.l2');
+                    const proxyBridge = foldedGlasses.querySelector('.proxy-bridge');
+                    const proxyTempleLeft = foldedGlasses.querySelector('.proxy-temple.left');
+                    const proxyTempleRight = foldedGlasses.querySelector('.proxy-temple.right');
+                    const proxyHingeLeft = foldedGlasses.querySelector('.proxy-hinge.left');
+                    const proxyHingeRight = foldedGlasses.querySelector('.proxy-hinge.right');
+                    const finalLens = assembly.querySelector('.rimless-lens');
+                    const finalBridge = assembly.querySelector('.gold-center-bridge-assembly');
+
+                    const proxyLensWidth = leftLens.offsetWidth || 210;
+                    const proxyLensHeight = leftLens.offsetHeight || 180;
+                    const finalLensWidth = finalLens.offsetWidth || Math.min(150, (viewportWidth - 72) / 2);
+                    const finalBridgeWidth = finalBridge.offsetWidth || 20;
+                    const finalBridgeStyle = getComputedStyle(finalBridge);
+                    const finalBridgeSpan = finalBridgeWidth
+                        + parseFloat(finalBridgeStyle.marginLeft || 0)
+                        + parseFloat(finalBridgeStyle.marginRight || 0);
+                    const unfoldScale = Math.max(0.42, Math.min(0.92, finalLensWidth / Math.max(1, proxyLensWidth)));
+                    const unfoldDistance = (finalLensWidth / 2) + (finalBridgeSpan / 2);
+                    const unfoldedLensHalfWidth = (proxyLensWidth / 2) * unfoldScale;
+                    const leftTempleTravel = -(unfoldDistance + unfoldedLensHalfWidth + 150);
+                    const rightTempleTravel = unfoldDistance + unfoldedLensHalfWidth;
+                    const leftHingeTravel = -(unfoldDistance + unfoldedLensHalfWidth + 22);
+                    const rightHingeTravel = unfoldDistance + unfoldedLensHalfWidth;
+
+                    const lensLeft = (viewportWidth / 2) - (proxyLensWidth / 2);
+                    const lensTop = caseTop + (caseHeight / 2) - (proxyLensHeight / 2);
                     const cardRadius = getComputedStyle(cardElement).borderRadius || '12px';
-                    const cardCenterX = cardRect.left + cardRect.width / 2;
-                    const cardCenterY = cardRect.top + cardRect.height / 2;
-                    const caseCenterX = caseLeft + caseWidth / 2;
-                    const caseCenterY = caseTop + caseHeight / 2;
-                    const translateX = caseCenterX - cardCenterX;
-                    const translateY = caseCenterY - cardCenterY;
-                    const scaleX = caseWidth / Math.max(1, cardRect.width);
-                    const scaleY = caseHeight / Math.max(1, cardRect.height);
-                    const caseClip = 'polygon(6% 0, 94% 0, 100% 17%, 100% 84%, 94% 100%, 6% 100%, 0 84%, 0 17%)';
+                    const rectangleClip = 'polygon(0% 0%, 100% 0%, 100% 0%, 100% 100%, 100% 100%, 0% 100%, 0% 100%, 0% 0%)';
+                    const softenedCaseClip = 'polygon(2% 0%, 98% 0%, 100% 7%, 100% 93%, 98% 100%, 2% 100%, 0% 93%, 0% 7%)';
+                    const finalCaseClip = 'polygon(6% 0%, 94% 0%, 100% 17%, 100% 84%, 94% 100%, 6% 100%, 0% 84%, 0% 17%)';
 
                     const cardGhost = cardElement.cloneNode(true);
                     cardGhost.classList.add('kinetic-card-ghost', 'mobile-kinetic-card-ghost');
@@ -11974,126 +12033,250 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                         width: `${cardRect.width}px`,
                         height: `${cardRect.height}px`,
                         opacity: '1',
-                        borderRadius: cardRadius,
-                        clipPath: 'inset(0 round 12px)',
-                        transform: 'translate3d(0,0,0) scale3d(1,1,1)'
+                        transform: 'translate3d(0, 0, 0) scale3d(1, 1, 1)',
+                        clipPath: rectangleClip,
+                        borderRadius: cardRadius
                     });
-
                     stage3d.appendChild(cardGhost);
-                    stage3d.style.display = 'block';
-                    stage3d.classList.add('is-running', 'mobile-kinetic-running');
+
+                    const cardCenterX = cardRect.left + (cardRect.width / 2);
+                    const cardCenterY = cardRect.top + (cardRect.height / 2);
+                    const caseCenterX = caseLeft + (caseWidth / 2);
+                    const caseCenterY = caseTop + (caseHeight / 2);
+                    const startTranslateX = cardCenterX - caseCenterX;
+                    const startTranslateY = cardCenterY - caseCenterY;
+                    const startScaleX = cardRect.width / caseWidth;
+                    const startScaleY = cardRect.height / caseHeight;
+                    const ghostTranslateX = caseCenterX - cardCenterX;
+                    const ghostTranslateY = caseCenterY - cardCenterY;
+                    const ghostScaleX = caseWidth / Math.max(1, cardRect.width);
+                    const ghostScaleY = caseHeight / Math.max(1, cardRect.height);
+                    const mixValue = (from, to, progress) => from + ((to - from) * progress);
+                    const transitionEase = 'cubic-bezier(0.16, 1, 0.30, 1)';
+                    const motionScale = performanceLiteShowcase || networkConstrained ? 0.80 : 1;
+                    const scaledTime = value => Math.round(value * motionScale);
+                    const showcaseTiming = {
+                        cardToBox: scaledTime(980),
+                        caseSkin: scaledTime(430),
+                        lidDelay: scaledTime(610),
+                        lidOpen: scaledTime(820),
+                        lensRiseDelay: scaledTime(720),
+                        lensRise: scaledTime(1040),
+                        unfoldDelay: scaledTime(1080),
+                        unfold: scaledTime(900),
+                        boxExitDelay: scaledTime(1420),
+                        boxExit: scaledTime(660),
+                        handoffDelay: scaledTime(1880),
+                        handoff: scaledTime(430)
+                    };
 
                     Object.assign(box3d.style, {
                         top: `${caseTop}px`,
                         left: `${caseLeft}px`,
                         width: `${caseWidth}px`,
                         height: `${caseHeight}px`,
-                        opacity: '0',
-                        transform: 'translate3d(0, 14px, 0) scale(0.94) rotateX(8deg)'
+                        opacity: '1',
+                        transformOrigin: 'center center',
+                        transform: `translate3d(${startTranslateX}px, ${startTranslateY}px, 0) scale3d(${startScaleX}, ${startScaleY}, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`,
+                        borderRadius: cardRadius
                     });
-                    box3d.classList.add('is-box');
                     Object.assign(boxLid.style, {
-                        clipPath: caseClip,
-                        borderRadius: '24px 24px 19px 19px',
+                        clipPath: rectangleClip,
+                        borderRadius: cardRadius,
                         transform: 'translateZ(3px) rotateX(0deg)'
                     });
-
-                    const proxyWidth = foldedGlasses.offsetWidth || 220;
-                    const proxyHeight = foldedGlasses.offsetHeight || 180;
                     Object.assign(foldedGlasses.style, {
-                        left: `${(viewportWidth - proxyWidth) / 2}px`,
-                        top: `${caseTop + (caseHeight - proxyHeight) / 2}px`,
+                        left: `${lensLeft}px`,
+                        top: `${lensTop}px`,
                         opacity: '0',
-                        transform: 'translate3d(0, 34px, -25px) scale(0.36) rotateX(62deg) rotateZ(-7deg)'
+                        transform: 'translate3d(0, 36px, -32px) scale(0.30) rotateX(60deg) rotateZ(-29deg)'
                     });
 
-                    const scrollbarCompensation = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
-                    document.body.style.setProperty('--scrollbar-compensation', `${scrollbarCompensation}px`);
-                    lockShowcaseScroll();
-                    cardElement.style.opacity = '0';
                     await nextPaint();
+                    cardElement.style.opacity = '0';
 
-                    const ghostMotion = animateAndCommit(cardGhost, [
-                        { opacity: '1', transform: 'translate3d(0,0,0) scale3d(1,1,1)', borderRadius: cardRadius, clipPath: 'inset(0 round 12px)' },
-                        { offset: 0.48, opacity: '1', transform: `translate3d(${translateX * 0.72}px, ${translateY * 0.72}px, 12px) scale3d(${1 + (scaleX - 1) * 0.72}, ${1 + (scaleY - 1) * 0.72}, 1) rotateX(6deg)`, borderRadius: '18px', clipPath: 'inset(0 round 18px)' },
-                        { offset: 0.82, opacity: '0.56', transform: `translate3d(${translateX}px, ${translateY}px, 22px) scale3d(${scaleX}, ${scaleY}, 1) rotateX(17deg)`, borderRadius: '24px', clipPath: caseClip },
-                        { opacity: '0', transform: `translate3d(${translateX}px, ${translateY - 2}px, 22px) scale3d(${scaleX}, ${scaleY}, 1) rotateX(18deg)`, borderRadius: '24px', clipPath: caseClip }
-                    ], {
-                        duration: 760,
-                        easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
-                    }).finally(() => cardGhost.remove());
+                    const morphStops = [
+                        { offset: 0, q: 0, z: 0, rx: 0, ry: 0, rz: 0, radius: cardRadius, clip: rectangleClip },
+                        { offset: 0.10, q: 0.03, z: 6, rx: 0.6, ry: -0.1, rz: -0.1, radius: cardRadius, clip: rectangleClip },
+                        { offset: 0.30, q: 0.28, z: 10, rx: 4, ry: -0.45, rz: -0.7, radius: '15px', clip: rectangleClip },
+                        { offset: 0.56, q: 0.60, z: 20, rx: 12, ry: -1.3, rz: -1.9, radius: '19px', clip: softenedCaseClip },
+                        { offset: 0.72, q: 0.78, z: 31, rx: 20, ry: -2.2, rz: -3.0, radius: '21px', clip: finalCaseClip },
+                        { offset: 0.88, q: 0.95, z: 43, rx: 28, ry: -3.2, rz: -4.2, radius: '23px', clip: finalCaseClip },
+                        { offset: 1, q: 1, z: 50, rx: 31, ry: -3.8, rz: -4.8, radius: '24px', clip: finalCaseClip }
+                    ];
+                    const cardToBoxFrames = morphStops.map(stop => ({
+                        offset: stop.offset,
+                        opacity: '1',
+                        transform: `translate3d(${startTranslateX * (1 - stop.q)}px, ${startTranslateY * (1 - stop.q)}px, ${stop.z}px) scale3d(${mixValue(startScaleX, 1, stop.q)}, ${mixValue(startScaleY, 1, stop.q)}, 1) rotateX(${stop.rx}deg) rotateY(${stop.ry}deg) rotateZ(${stop.rz}deg)`,
+                        borderRadius: stop.radius
+                    }));
+                    const ghostFrames = morphStops.map(stop => ({
+                        offset: stop.offset,
+                        opacity: stop.offset <= 0.56 ? '1' : stop.offset < 0.88
+                            ? String(Math.max(0, 1 - ((stop.offset - 0.56) / 0.24)))
+                            : '0',
+                        transform: `translate3d(${ghostTranslateX * stop.q}px, ${ghostTranslateY * stop.q}px, ${stop.z}px) scale3d(${mixValue(1, ghostScaleX, stop.q)}, ${mixValue(1, ghostScaleY, stop.q)}, 1) rotateX(${stop.rx}deg) rotateY(${stop.ry}deg) rotateZ(${stop.rz}deg)`,
+                        clipPath: stop.clip,
+                        borderRadius: stop.radius
+                    }));
 
-                    const boxArrival = animateAndCommit(box3d, [
-                        { opacity: '0', transform: 'translate3d(0, 14px, 0) scale(0.94) rotateX(8deg)' },
-                        { offset: 0.32, opacity: '0.15', transform: 'translate3d(0, 8px, 0) scale(0.965) rotateX(14deg)' },
-                        { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1) rotateX(20deg)' }
-                    ], {
-                        duration: 650,
-                        delay: 230,
-                        easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
+                    const cardToBox = animateAndCommit(box3d, cardToBoxFrames, {
+                        duration: showcaseTiming.cardToBox,
+                        easing: transitionEase
                     });
+                    const ghostMotion = animateAndCommit(cardGhost, ghostFrames, {
+                        duration: showcaseTiming.cardToBox,
+                        easing: transitionEase
+                    }).finally(() => cardGhost.remove());
+                    const caseShape = sleep(scaledTime(120)).then(() => {
+                        boxLid.style.clipPath = finalCaseClip;
+                        boxLid.style.borderRadius = '24px 24px 19px 19px';
+                    });
+                    const caseSkin = sleep(showcaseTiming.caseSkin).then(() => box3d.classList.add('is-box'));
 
                     const lidOpen = animateAndCommit(boxLid, [
                         { transform: 'translateZ(3px) rotateX(0deg)' },
-                        { offset: 0.45, transform: 'translateZ(8px) rotateX(-52deg)' },
+                        { offset: 0.18, transform: 'translateZ(4px) rotateX(-8deg)' },
+                        { offset: 0.46, transform: 'translateZ(8px) rotateX(-42deg)' },
+                        { offset: 0.78, transform: 'translateZ(11px) rotateX(-92deg)' },
+                        { offset: 0.92, transform: 'translateZ(12px) rotateX(-104deg)' },
                         { transform: 'translateZ(11px) rotateX(-101deg)' }
                     ], {
-                        duration: 630,
-                        delay: 640,
-                        easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
+                        duration: showcaseTiming.lidOpen,
+                        delay: showcaseTiming.lidDelay,
+                        easing: transitionEase
                     });
 
-                    const glassesRise = animateAndCommit(foldedGlasses, [
-                        { opacity: '0', transform: 'translate3d(0, 34px, -25px) scale(0.36) rotateX(62deg) rotateZ(-7deg)' },
-                        { offset: 0.35, opacity: '0.72', transform: 'translate3d(0, 7px, 2px) scale(0.50) rotateX(26deg) rotateZ(-3deg)' },
-                        { offset: 0.82, opacity: '1', transform: 'translate3d(0, -58px, 24px) scale(0.66) rotateX(0deg) rotateZ(0deg)' },
-                        { opacity: '1', transform: 'translate3d(0, -54px, 22px) scale(0.64) rotateX(0deg) rotateZ(0deg)' }
+                    const riseTargetY = -Math.min(112, Math.max(78, caseHeight * 0.78));
+                    const lensRise = animateAndCommit(foldedGlasses, [
+                        { opacity: '0', transform: 'translate3d(0, 36px, -32px) scale(0.30) rotateX(60deg) rotateZ(-29deg)' },
+                        { offset: 0.20, opacity: '0.30', transform: 'translate3d(0, 8px, 16px) scale(0.39) rotateX(44deg) rotateZ(-22deg)' },
+                        { offset: 0.48, opacity: '0.82', transform: `translate3d(0, ${riseTargetY * 0.72}px, 88px) scale(0.66) rotateX(15deg) rotateZ(-7deg)` },
+                        { offset: 0.78, opacity: '1', transform: `translate3d(0, ${riseTargetY - 8}px, 120px) scale(0.90) rotateX(-3deg) rotateZ(1deg)` },
+                        { offset: 0.93, opacity: '1', transform: `translate3d(0, ${riseTargetY + 4}px, 12px) scale(1.018) rotateX(1deg) rotateZ(-0.3deg)` },
+                        { opacity: '1', transform: `translate3d(0, ${riseTargetY}px, 0) scale(1) rotateX(0deg) rotateZ(0deg)` }
                     ], {
-                        duration: 820,
-                        delay: 710,
-                        easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
+                        duration: showcaseTiming.lensRise,
+                        delay: showcaseTiming.lensRiseDelay,
+                        easing: transitionEase
                     });
 
-                    modal.classList.remove('is-closing', 'is-animating', 'is-handoff', 'is-content-revealing', 'is-content-synced');
-                    modal.classList.add('is-content-prep');
-                    Object.assign(assembly.style, {
-                        opacity: '0',
-                        transform: 'translate3d(0, 18px, 0) scale(0.94)'
-                    });
+                    const unfoldDelay = showcaseTiming.unfoldDelay;
+                    const unfoldDuration = showcaseTiming.unfold;
+                    const lensOptions = { duration: unfoldDuration, delay: unfoldDelay, easing: transitionEase };
+                    const bridgeOptions = { duration: unfoldDuration * 0.82, delay: unfoldDelay + scaledTime(45), easing: transitionEase };
+                    const hingeOptions = { duration: unfoldDuration * 0.78, delay: unfoldDelay + scaledTime(85), easing: transitionEase };
+                    const templeOptions = { duration: unfoldDuration * 0.88, delay: unfoldDelay + scaledTime(115), easing: transitionEase };
+                    const leftLensMid = `translateX(-${unfoldDistance * 0.57}px) scale(${1 + ((unfoldScale - 1) * 0.52)}) rotateY(-6deg) translateZ(5px)`;
+                    const leftLensOvershoot = `translateX(-${unfoldDistance * 1.018}px) scale(${unfoldScale * 1.008}) rotateY(1.4deg) translateZ(0)`;
+                    const leftLensFinal = `translateX(-${unfoldDistance}px) scale(${unfoldScale}) rotateY(0deg) translateZ(0)`;
+                    const rightLensMid = useTwelfthSlotShape
+                        ? `translateX(${unfoldDistance * 0.57}px) scale(${1 + ((unfoldScale - 1) * 0.52)}) rotateY(7deg) translateZ(-4px)`
+                        : `translateX(${unfoldDistance * 0.57}px) scale(${1 + ((unfoldScale - 1) * 0.52)}) rotateY(7deg) translateZ(-4px) scaleX(-1)`;
+                    const rightLensOvershoot = useTwelfthSlotShape
+                        ? `translateX(${unfoldDistance * 1.018}px) scale(${unfoldScale * 1.008}) rotateY(-1.4deg) translateZ(0)`
+                        : `translateX(${unfoldDistance * 1.018}px) scale(${unfoldScale * 1.008}) rotateY(-1.4deg) translateZ(0) scaleX(-1)`;
+                    const rightLensFinal = useTwelfthSlotShape
+                        ? `translateX(${unfoldDistance}px) scale(${unfoldScale}) rotateY(0deg) translateZ(0)`
+                        : `translateX(${unfoldDistance}px) scale(${unfoldScale}) rotateY(0deg) translateZ(0) scaleX(-1)`;
 
-                    await sleep(1020);
-                    modal.classList.add('active', 'is-content-synced');
-                    modal.classList.remove('is-content-prep');
-                    await nextPaint();
+                    const lensUnfold = Promise.all([
+                        animateAndCommit(leftLens, [
+                            { transform: 'rotateY(-15deg) translateZ(5px)' },
+                            { offset: 0.24, transform: `translateX(-${unfoldDistance * 0.18}px) scale(${1 + ((unfoldScale - 1) * 0.14)}) rotateY(-12deg) translateZ(8px)` },
+                            { offset: 0.58, transform: leftLensMid },
+                            { offset: 0.88, transform: leftLensOvershoot },
+                            { transform: leftLensFinal }
+                        ], lensOptions),
+                        animateAndCommit(rightLens, [
+                            { transform: useTwelfthSlotShape ? 'rotateY(20deg) translateZ(-5px)' : 'rotateY(20deg) translateZ(-5px) scaleX(-1)' },
+                            { offset: 0.24, transform: useTwelfthSlotShape
+                                ? `translateX(${unfoldDistance * 0.18}px) scale(${1 + ((unfoldScale - 1) * 0.14)}) rotateY(15deg) translateZ(-7px)`
+                                : `translateX(${unfoldDistance * 0.18}px) scale(${1 + ((unfoldScale - 1) * 0.14)}) rotateY(15deg) translateZ(-7px) scaleX(-1)` },
+                            { offset: 0.58, transform: rightLensMid },
+                            { offset: 0.88, transform: rightLensOvershoot },
+                            { transform: rightLensFinal }
+                        ], lensOptions),
+                        animateAndCommit(proxyBridge, [
+                            { opacity: '0', transform: 'translateY(9px) scaleX(0.06)' },
+                            { offset: 0.30, opacity: '0.34', transform: 'translateY(5px) scaleX(0.38)' },
+                            { offset: 0.86, opacity: '1', transform: 'translateY(-1px) scaleX(1.025)' },
+                            { opacity: '1', transform: 'translateY(0) scaleX(1)' }
+                        ], bridgeOptions),
+                        animateAndCommit(proxyTempleLeft, [
+                            { opacity: '0', transform: 'translateX(-112px) rotateY(86deg) scaleX(0.16)' },
+                            { offset: 0.32, opacity: '0.30' },
+                            { offset: 0.86, opacity: '1', transform: `translateX(${leftTempleTravel - 5}px) rotateY(-2deg) scaleX(1.015)` },
+                            { opacity: '1', transform: `translateX(${leftTempleTravel}px) rotateY(0deg) scaleX(1)` }
+                        ], templeOptions),
+                        animateAndCommit(proxyTempleRight, [
+                            { opacity: '0', transform: 'translateX(-38px) rotateY(-86deg) scaleX(0.16)' },
+                            { offset: 0.32, opacity: '0.30' },
+                            { offset: 0.86, opacity: '1', transform: `translateX(${rightTempleTravel + 5}px) rotateY(2deg) scaleX(1.015)` },
+                            { opacity: '1', transform: `translateX(${rightTempleTravel}px) rotateY(0deg) scaleX(1)` }
+                        ], templeOptions),
+                        animateAndCommit(proxyHingeLeft, [
+                            { opacity: '0', transform: 'translateX(-20px) scale(0.42)' },
+                            { offset: 0.42, opacity: '0.48' },
+                            { offset: 0.88, opacity: '1', transform: `translateX(${leftHingeTravel - 2}px) scale(1.04)` },
+                            { opacity: '1', transform: `translateX(${leftHingeTravel}px) scale(1)` }
+                        ], hingeOptions),
+                        animateAndCommit(proxyHingeRight, [
+                            { opacity: '0', transform: 'translateX(0) scale(0.42)' },
+                            { offset: 0.42, opacity: '0.48' },
+                            { offset: 0.88, opacity: '1', transform: `translateX(${rightHingeTravel + 2}px) scale(1.04)` },
+                            { opacity: '1', transform: `translateX(${rightHingeTravel}px) scale(1)` }
+                        ], hingeOptions)
+                    ]);
 
-                    const modalReveal = animateAndCommit(assembly, [
-                        { opacity: '0', transform: 'translate3d(0, 18px, 0) scale(0.94)' },
-                        { offset: 0.62, opacity: '0.92', transform: 'translate3d(0, 2px, 0) scale(0.992)' },
-                        { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' }
+                    const boxExit = animateAndCommit(box3d, [
+                        { opacity: '1', transform: 'translate3d(0, 0, 50px) scale(1) rotateX(31deg) rotateY(-3.8deg) rotateZ(-4.8deg)' },
+                        { offset: 0.36, opacity: '0.86', transform: 'translate3d(0, 4px, 40px) scale(0.98) rotateX(35deg) rotateY(-4deg) rotateZ(-5deg)' },
+                        { offset: 0.72, opacity: '0.40', transform: 'translate3d(0, 13px, 18px) scale(0.92) rotateX(40deg) rotateY(-4.6deg) rotateZ(-5.5deg)' },
+                        { opacity: '0', transform: 'translate3d(0, 23px, -4px) scale(0.85) rotateX(44deg) rotateY(-5deg) rotateZ(-6deg)' }
                     ], {
-                        duration: 560,
-                        easing: 'cubic-bezier(0.16, 1, 0.30, 1)'
+                        duration: showcaseTiming.boxExit,
+                        delay: showcaseTiming.boxExitDelay,
+                        easing: 'cubic-bezier(0.22, 0.72, 0.24, 1)'
                     });
 
-                    const proxyExit = animateAndCommit(foldedGlasses, [
-                        { opacity: '1', transform: 'translate3d(0, -54px, 22px) scale(0.64) rotateX(0deg)' },
-                        { opacity: '0', transform: 'translate3d(0, -80px, 5px) scale(0.78) rotateX(-8deg)' }
-                    ], {
-                        duration: 470,
-                        delay: 80,
-                        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-                    });
+                    const kineticMotion = Promise.all([
+                        cardToBox,
+                        ghostMotion,
+                        caseShape,
+                        caseSkin,
+                        lidOpen,
+                        lensRise,
+                        lensUnfold,
+                        boxExit
+                    ]);
 
-                    const caseExit = animateAndCommit(box3d, [
-                        { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1) rotateX(20deg)' },
-                        { opacity: '0', transform: 'translate3d(0, 24px, -24px) scale(0.90) rotateX(28deg)' }
-                    ], {
-                        duration: 520,
-                        delay: 60,
-                        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-                    });
+                    await sleep(showcaseTiming.handoffDelay);
+                    showcaseMediaPlaybackEnabled = false;
+                    modal.classList.add('is-content-synced', 'is-handoff');
+                    modal.classList.remove('is-content-prep', 'is-animating');
 
-                    await Promise.all([ghostMotion, boxArrival, lidOpen, glassesRise, modalReveal, proxyExit, caseExit]);
+                    await Promise.all([
+                        kineticMotion,
+                        animateAndCommit(assembly, [
+                            { opacity: '0', transform: 'translate3d(0, 0, 0) scale(1)' },
+                            { offset: 0.48, opacity: '0.58', transform: 'translate3d(0, 0, 0) scale(1)' },
+                            { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' }
+                        ], {
+                            duration: showcaseTiming.handoff,
+                            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                        }),
+                        animateAndCommit(foldedGlasses, [
+                            { opacity: '1', transform: `translate3d(0, ${riseTargetY}px, 0) scale(1)` },
+                            { offset: 0.48, opacity: '0.42', transform: `translate3d(0, ${riseTargetY}px, 0) scale(1)` },
+                            { opacity: '0', transform: `translate3d(0, ${riseTargetY - 5}px, 0) scale(1.015)` }
+                        ], {
+                            duration: showcaseTiming.handoff,
+                            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                        })
+                    ]);
+
+                    modal.classList.remove('is-handoff');
                     resetKineticTransition();
                     cardElement.style.removeProperty('opacity');
                     assembly.style.removeProperty('opacity');
@@ -12108,7 +12291,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     resetKineticTransition();
                     cardElement.style.removeProperty('opacity');
                     modal.classList.add('active', 'is-content-synced', 'carousel-ready');
-                    modal.classList.remove('is-content-prep');
+                    modal.classList.remove('is-content-prep', 'is-animating', 'is-handoff');
                     showcaseMediaPlaybackEnabled = true;
                     hydrateLensMediaAroundActiveSlide();
                     lockShowcaseScroll();
@@ -13232,7 +13415,11 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 mediaWarmed = true;
                 const contextMode = getCardShowcaseContext(card);
                 hydratePortfolioThumbnail(card.querySelector('.slot-card-img'), 'high');
-                prewarmShowcaseMedia(contextMode, 'high', true);
+                prewarmShowcaseMedia(
+                    contextMode,
+                    'high',
+                    !compactShowcaseMedia.matches
+                );
             };
 
             card.addEventListener('pointerenter', warmPoster, { once: true, passive: true });
@@ -13245,7 +13432,8 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
         // blur and shadow work is reduced.
         const constrainedHardware = (navigator.deviceMemory && navigator.deviceMemory <= 4)
             || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4)
-            || navigator.connection?.saveData;
+            || networkInformation?.saveData
+            || (compactShowcaseMedia.matches && networkConstrained);
         document.documentElement.classList.toggle('performance-lite', Boolean(constrainedHardware));
 
         const touchLens = document.getElementById('leftLensAnchor');
@@ -17268,6 +17456,58 @@ ${message}`;
   }, true);
 })();
 </script>
+
+
+<style id="mobile-complete-kinetic-performance-v5">
+@media (max-width: 768px) {
+  /* The full-screen stage may be paint-contained, but its moving 3D children
+     must remain overflow-visible or the lid, temples and separating lenses are clipped. */
+  #kinetic3dStage.mobile-kinetic-running {
+    contain: layout style paint !important;
+    overflow: hidden !important;
+    perspective: 1500px !important;
+  }
+  #kinetic3dStage.mobile-kinetic-running .kinetic-box,
+  #kinetic3dStage.mobile-kinetic-running .folded-glasses-proxy,
+  #kinetic3dStage.mobile-kinetic-running .folded-lens,
+  #kinetic3dStage.mobile-kinetic-running .proxy-bridge,
+  #kinetic3dStage.mobile-kinetic-running .proxy-hinge,
+  #kinetic3dStage.mobile-kinetic-running .proxy-temple {
+    contain: none !important;
+    overflow: visible !important;
+  }
+  #kinetic3dStage.mobile-kinetic-running .kinetic-box,
+  #kinetic3dStage.mobile-kinetic-running .folded-glasses-proxy {
+    transform-style: preserve-3d !important;
+  }
+  #kinetic3dStage.mobile-kinetic-running .box-lid,
+  #kinetic3dStage.mobile-kinetic-running .box-side,
+  #kinetic3dStage.mobile-kinetic-running .case-rim {
+    transform-style: preserve-3d !important;
+  }
+
+  /* Keep touch targets immediate while the popup media is hydrated after handoff. */
+  #showcaseModal.carousel-ready .lens-nav-btn,
+  #showcaseModal.carousel-ready .modal-close-btn,
+  #showcaseModal.carousel-ready .mobile-showcase-link {
+    touch-action: manipulation;
+  }
+
+  /* Slow-data mode keeps all content and image quality, but removes expensive
+     live blur and avoids repaint-heavy shadows during scrolling. */
+  html.network-constrained #showcaseModal .modal-mesh-bg {
+    filter: blur(14px) !important;
+  }
+  html.network-constrained #showcaseModal .mobile-showcase-details {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(12, 13, 20, 0.96) !important;
+  }
+  html.network-constrained #featured-section .slot-card {
+    box-shadow: 0 5px 16px rgba(0,0,0,0.18) !important;
+  }
+}
+</style>
 
 </body>
 </html>
