@@ -11932,7 +11932,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             /* Mobile keeps the same card → case → glasses idea, but uses a
                shorter touch-friendly sequence that matches the stacked lens
                composition used on phones. Desktop choreography is unchanged. */
-            if (false && compactShowcaseMedia.matches) {
+            if (compactShowcaseMedia.matches) {
                 try {
                     resetKineticTransition();
                     applyKineticCaseTheme(contextMode);
@@ -16843,21 +16843,428 @@ ${message}`;
   #showcaseModal { justify-content: flex-start !important; }
 }
 </style>
+
+<style id="mobile-slot-geometry-v4">
+/* Mobile-only shape, transition and performance correction.
+   Desktop geometry and choreography remain untouched. */
+@media (max-width: 768px) {
+  /* Keep the compact popup centered while allowing short screens to scroll. */
+  #showcaseModal {
+    --lens-nav-prev-x: 18;
+    --lens-nav-next-x: 82;
+    --lens-nav-y: 52;
+    gap: 13px !important;
+    padding-top: calc(56px + env(safe-area-inset-top)) !important;
+    padding-bottom: calc(18px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #showcaseModal .modal-mesh-bg {
+    filter: blur(20px) !important;
+    transform: translateZ(0);
+  }
+
+  #showcaseModal .rimless-glasses-assembly,
+  #showcaseModal.shape-second-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-third-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-fourth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-fifth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-sixth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-seventh-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-eighth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-eleventh-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-twelfth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(124px, calc((100vw - 72px) / 2), 150px) !important;
+    --mobile-lens-height: clamp(112px, 33.5vw, 128px) !important;
+    width: max-content !important;
+    max-width: calc(100vw - 4px) !important;
+    min-height: var(--mobile-lens-height) !important;
+    margin: 1px auto 0 !important;
+    contain: layout style;
+    isolation: isolate;
+  }
+
+  /* Compact hardware prevents the pair from being clipped on 320–390 px phones. */
+  #showcaseModal .glasses-temple {
+    flex-basis: clamp(8px, 2.6vw, 11px) !important;
+    width: clamp(8px, 2.6vw, 11px) !important;
+    height: 6px !important;
+    min-width: 0 !important;
+  }
+  #showcaseModal .gold-hinge-assembly {
+    flex-basis: 6px !important;
+    width: 6px !important;
+    height: 22px !important;
+    margin: 0 -1px !important;
+  }
+  #showcaseModal .gold-center-bridge-assembly {
+    flex-basis: clamp(18px, 5.4vw, 22px) !important;
+    width: clamp(18px, 5.4vw, 22px) !important;
+    height: 25px !important;
+    margin: 0 -2px !important;
+  }
+  #showcaseModal .gold-center-bridge-assembly .bridge-arch {
+    height: 16px !important;
+    border-width: 2.5px !important;
+  }
+  #showcaseModal .gold-center-bridge-assembly .nose-pads-container {
+    top: 16px !important;
+    transform: scale(.62) !important;
+  }
+
+  #showcaseModal .rimless-lens {
+    position: relative !important;
+    flex: 0 0 var(--mobile-lens-width) !important;
+    width: var(--mobile-lens-width) !important;
+    height: var(--mobile-lens-height) !important;
+    min-width: var(--mobile-lens-width) !important;
+    min-height: var(--mobile-lens-height) !important;
+    max-width: var(--mobile-lens-width) !important;
+    max-height: var(--mobile-lens-height) !important;
+    border: 0 !important;
+    transform: none !important;
+    transform-origin: center !important;
+    backface-visibility: hidden;
+  }
+
+  #showcaseModal .lens-display-left .lens-slider-wrapper {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: inherit !important;
+    clip-path: inherit;
+    -webkit-clip-path: inherit;
+  }
+
+  #showcaseModal .lens-slider-slide,
+  #showcaseModal .lens-slider-slide img,
+  #showcaseModal .lens-slider-slide video {
+    border-radius: inherit !important;
+  }
+
+  /* Default, multi and hand projects: softly rectangular technical frame. */
+  #showcaseModal:not(.shape-second-slot):not(.shape-third-slot):not(.shape-fourth-slot):not(.shape-fifth-slot):not(.shape-sixth-slot):not(.shape-seventh-slot):not(.shape-eighth-slot):not(.shape-eleventh-slot):not(.shape-twelfth-slot) .lens-display-left {
+    border-radius: 24px 29px 35px 28px / 24px 27px 34px 31px !important;
+    background: rgba(225,230,235,.92) !important;
+    box-shadow: 0 18px 36px rgba(20,18,28,.21), inset 0 0 0 2px rgba(255,255,255,.72) !important;
+  }
+  #showcaseModal:not(.shape-second-slot):not(.shape-third-slot):not(.shape-fourth-slot):not(.shape-fifth-slot):not(.shape-sixth-slot):not(.shape-seventh-slot):not(.shape-eighth-slot):not(.shape-eleventh-slot):not(.shape-twelfth-slot) .lens-info-right {
+    border-radius: 29px 24px 28px 35px / 27px 24px 31px 34px !important;
+    background: linear-gradient(145deg, #202238 0%, #101521 72%, #080b12 100%) !important;
+    box-shadow: 0 18px 36px rgba(20,18,28,.24), inset 0 0 0 2px rgba(130,143,188,.16) !important;
+  }
+
+  /* Slot 2 — wide warm tinted silhouette. */
+  #showcaseModal.shape-second-slot {
+    --lens-nav-prev-x: 19; --lens-nav-next-x: 81; --lens-nav-y: 53;
+  }
+  #showcaseModal.shape-second-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(126px, calc((100vw - 70px) / 2), 151px) !important;
+    --mobile-lens-height: clamp(102px, 29.5vw, 116px) !important;
+  }
+  #showcaseModal.shape-second-slot .lens-display-left,
+  #showcaseModal.shape-second-slot .lens-info-right {
+    box-shadow: 0 18px 38px rgba(66,35,27,.25), inset 0 0 0 4px rgba(177,112,70,.88), inset 0 0 0 6px rgba(255,220,180,.25) !important;
+  }
+  #showcaseModal.shape-second-slot .lens-info-right {
+    background: radial-gradient(circle at 28% 18%, rgba(255,213,177,.20), transparent 34%), linear-gradient(145deg, #6d3b2d, #321d1d 72%, #160f12) !important;
+  }
+
+  /* Slot 3 — blue wing lens. */
+  #showcaseModal.shape-third-slot {
+    --lens-nav-prev-x: 22; --lens-nav-next-x: 78; --lens-nav-y: 55;
+  }
+  #showcaseModal.shape-third-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(128px, calc((100vw - 68px) / 2), 153px) !important;
+    --mobile-lens-height: clamp(98px, 28.5vw, 112px) !important;
+  }
+  #showcaseModal.shape-third-slot .lens-display-left,
+  #showcaseModal.shape-third-slot .lens-info-right {
+    box-shadow: 0 18px 38px rgba(25,93,123,.25), inset 0 0 0 3px rgba(153,231,246,.76) !important;
+  }
+  #showcaseModal.shape-third-slot .lens-info-right {
+    background: radial-gradient(circle at 30% 17%, rgba(203,247,255,.25), transparent 31%), linear-gradient(145deg, #4db9d1, #176d94 64%, #0b3655) !important;
+  }
+
+  /* Slot 4 — lime butterfly lens. */
+  #showcaseModal.shape-fourth-slot {
+    --lens-nav-prev-x: 23; --lens-nav-next-x: 77; --lens-nav-y: 56;
+  }
+  #showcaseModal.shape-fourth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(128px, calc((100vw - 68px) / 2), 153px) !important;
+    --mobile-lens-height: clamp(104px, 30.5vw, 120px) !important;
+  }
+  #showcaseModal.shape-fourth-slot .lens-display-left,
+  #showcaseModal.shape-fourth-slot .lens-info-right {
+    box-shadow: 0 18px 38px rgba(75,86,24,.24), inset 0 0 0 3px rgba(226,240,117,.78) !important;
+  }
+  #showcaseModal.shape-fourth-slot .lens-info-right {
+    background: radial-gradient(circle at 32% 16%, rgba(247,255,181,.24), transparent 31%), linear-gradient(145deg, #a9bb4d, #59691f 68%, #29320c) !important;
+  }
+
+  /* Slot 5 — black clip/full-rim shape. */
+  #showcaseModal.shape-fifth-slot {
+    --lens-nav-prev-x: 20; --lens-nav-next-x: 80; --lens-nav-y: 52;
+  }
+  #showcaseModal.shape-fifth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(124px, calc((100vw - 70px) / 2), 149px) !important;
+    --mobile-lens-height: clamp(106px, 31.5vw, 122px) !important;
+  }
+  #showcaseModal.shape-fifth-slot .lens-display-left,
+  #showcaseModal.shape-fifth-slot .lens-info-right {
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    border-radius: 42px 44px 68px 60px / 31px 33px 63px 55px !important;
+    box-shadow: 0 18px 38px rgba(0,0,0,.25), inset 0 0 0 7px #05070d, inset 0 0 0 9px rgba(255,255,255,.10) !important;
+  }
+  #showcaseModal.shape-fifth-slot .lens-display-left {
+    border-radius: 44px 42px 60px 68px / 33px 31px 55px 63px !important;
+    background: #dce1e5 !important;
+  }
+  #showcaseModal.shape-fifth-slot .lens-info-right {
+    background: radial-gradient(circle at 75% 15%, rgba(255,255,255,.15), transparent 36%), linear-gradient(145deg, #252a32, #080b10 75%) !important;
+  }
+
+  /* Slot 6 — pink upswept acetate frame. */
+  #showcaseModal.shape-sixth-slot {
+    --lens-nav-prev-x: 19; --lens-nav-next-x: 81; --lens-nav-y: 52;
+  }
+  #showcaseModal.shape-sixth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(126px, calc((100vw - 68px) / 2), 151px) !important;
+    --mobile-lens-height: clamp(101px, 29.5vw, 116px) !important;
+  }
+  #showcaseModal.shape-sixth-slot .lens-display-left,
+  #showcaseModal.shape-sixth-slot .lens-info-right {
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    border-radius: 29% 24% 35% 38% / 25% 27% 42% 47% !important;
+    box-shadow: 0 18px 38px rgba(111,35,72,.23), inset 0 0 0 5px rgba(224,111,156,.88), inset 0 0 0 7px rgba(255,218,234,.58) !important;
+  }
+  #showcaseModal.shape-sixth-slot .lens-display-left {
+    border-radius: 24% 29% 38% 35% / 27% 25% 47% 42% !important;
+    background: #f5c7dc !important;
+  }
+  #showcaseModal.shape-sixth-slot .lens-info-right {
+    background: radial-gradient(circle at 75% 14%, rgba(255,245,250,.30), transparent 34%), linear-gradient(145deg, #c95c91, #742851 70%, #37142b) !important;
+  }
+
+  /* Slot 7 — gold navigator. This removes the mobile square seen in the reference. */
+  #showcaseModal.shape-seventh-slot {
+    --lens-nav-prev-x: 19; --lens-nav-next-x: 81; --lens-nav-y: 52;
+  }
+  #showcaseModal.shape-seventh-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(127px, calc((100vw - 68px) / 2), 152px) !important;
+    --mobile-lens-height: clamp(98px, 28.5vw, 113px) !important;
+  }
+  #showcaseModal.shape-seventh-slot .lens-display-left,
+  #showcaseModal.shape-seventh-slot .lens-info-right {
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    border-radius: 42px 40px 61px 65px / 30px 29px 53px 56px !important;
+    transform: none !important;
+    box-shadow: 0 18px 38px rgba(80,56,10,.24), inset 0 0 0 4px #c99b2d, inset 0 0 0 6px rgba(255,240,170,.48) !important;
+  }
+  #showcaseModal.shape-seventh-slot .lens-display-left {
+    border-radius: 40px 42px 65px 61px / 29px 30px 56px 53px !important;
+    background: #f7efda !important;
+  }
+  #showcaseModal.shape-seventh-slot .lens-info-right {
+    background: radial-gradient(circle at 76% 14%, rgba(255,236,169,.23), transparent 32%), linear-gradient(145deg, #42351d, #17140f 72%, #090908) !important;
+  }
+
+  /* Slot 8 — round black optical frame. */
+  #showcaseModal.shape-eighth-slot {
+    --lens-nav-prev-x: 22; --lens-nav-next-x: 78; --lens-nav-y: 50;
+  }
+  #showcaseModal.shape-eighth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(116px, 35.5vw, 136px) !important;
+    --mobile-lens-height: clamp(116px, 35.5vw, 136px) !important;
+  }
+  #showcaseModal.shape-eighth-slot .lens-display-left,
+  #showcaseModal.shape-eighth-slot .lens-info-right {
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    border-radius: 49% 49% 45% 45% / 44% 44% 52% 52% !important;
+    box-shadow: 0 19px 40px rgba(0,0,0,.25), inset 0 0 0 7px #06080c, inset 0 0 0 9px #1a1e25 !important;
+  }
+  #showcaseModal.shape-eighth-slot .lens-display-left { background: #dde3e9 !important; }
+  #showcaseModal.shape-eighth-slot .lens-info-right {
+    background: radial-gradient(circle at 72% 13%, rgba(255,255,255,.13), transparent 34%), linear-gradient(145deg, #252c36, #0c1016 76%) !important;
+  }
+
+  /* Slot 11 — circular amber aura frame. */
+  #showcaseModal.shape-eleventh-slot {
+    --lens-nav-prev-x: 22; --lens-nav-next-x: 78; --lens-nav-y: 50;
+  }
+  #showcaseModal.shape-eleventh-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(116px, 35.5vw, 136px) !important;
+    --mobile-lens-height: clamp(116px, 35.5vw, 136px) !important;
+  }
+  #showcaseModal.shape-eleventh-slot .lens-display-left,
+  #showcaseModal.shape-eleventh-slot .lens-info-right {
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+    border-radius: 50% !important;
+    box-shadow: 0 19px 40px rgba(72,34,7,.28), inset 0 0 0 4px #d5a447, inset 0 0 0 6px #71420f !important;
+  }
+  #showcaseModal.shape-eleventh-slot .lens-info-right {
+    background: radial-gradient(circle at 30% 16%, rgba(255,221,155,.20), transparent 30%), linear-gradient(145deg, #a44c0e, #4c1c05 78%) !important;
+  }
+
+  /* Slot 12 — cream cat-eye. Both final lenses and the transition proxy use matching clips. */
+  #showcaseModal.shape-twelfth-slot {
+    --lens-nav-prev-x: 22; --lens-nav-next-x: 78; --lens-nav-y: 55;
+  }
+  #showcaseModal.shape-twelfth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(128px, calc((100vw - 68px) / 2), 153px) !important;
+    --mobile-lens-height: clamp(100px, 29.2vw, 116px) !important;
+  }
+  #showcaseModal.shape-twelfth-slot .lens-display-left,
+  #showcaseModal.shape-twelfth-slot .lens-info-right {
+    border-radius: 0 !important;
+    background: linear-gradient(145deg, #fffaf0 0%, #eee3c9 56%, #d7c6a5 100%) !important;
+    box-shadow: 0 18px 39px rgba(82,55,30,.24), inset 0 0 0 1px rgba(255,255,255,.82) !important;
+  }
+  #showcaseModal.shape-twelfth-slot .lens-display-left .lens-slider-wrapper {
+    position: absolute !important;
+    left: 7px !important;
+    top: 7px !important;
+    width: calc(100% - 14px) !important;
+    height: calc(100% - 14px) !important;
+    clip-path: url(#catEyeLeftClip) !important;
+    -webkit-clip-path: url(#catEyeLeftClip) !important;
+  }
+  #showcaseModal.shape-twelfth-slot .lens-info-right {
+    background: radial-gradient(circle at 25% 16%, rgba(255,225,173,.20), transparent 31%), linear-gradient(145deg, #754015, #2b1709 76%) !important;
+    box-shadow: 0 18px 39px rgba(82,55,30,.24), inset 0 0 0 7px #fff4dc, inset 0 0 0 9px #d7c6a5, inset 0 0 0 10px rgba(255,255,255,.38) !important;
+  }
+
+  /* Right-lens copy stays legible inside every unusual silhouette. */
+  #showcaseModal .lens-info-right .lens-content-fit {
+    inset: 19% 12% !important;
+    gap: 5px !important;
+  }
+  #showcaseModal.shape-third-slot .lens-info-right .lens-content-fit,
+  #showcaseModal.shape-fourth-slot .lens-info-right .lens-content-fit,
+  #showcaseModal.shape-twelfth-slot .lens-info-right .lens-content-fit {
+    inset: 24% 17% 18% !important;
+  }
+  #showcaseModal.shape-eighth-slot .lens-info-right .lens-content-fit,
+  #showcaseModal.shape-eleventh-slot .lens-info-right .lens-content-fit {
+    inset: 23% 15% !important;
+  }
+  #showcaseModal .lens-info-right .modal-body-title {
+    color: #fff !important;
+    text-shadow: 0 1px 7px rgba(0,0,0,.36);
+  }
+
+  /* Place both carousel arrows inside the left lens using the measured lens box. */
+  #showcaseModal > .lens-nav-btn {
+    display: flex !important;
+    position: fixed !important;
+    left: var(--lens-nav-left, -200px) !important;
+    right: auto !important;
+    top: var(--lens-nav-top, -200px) !important;
+    width: clamp(28px, 8.6vw, 33px) !important;
+    height: clamp(28px, 8.6vw, 33px) !important;
+    transform: translate(-50%, -50%) scale(.92) !important;
+    border: 1px solid rgba(255,255,255,.18) !important;
+    background: rgba(7,7,10,.72) !important;
+    box-shadow: 0 7px 18px rgba(0,0,0,.22) !important;
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  #showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn.is-positioned {
+    left: var(--lens-nav-left, -200px) !important;
+    right: auto !important;
+    top: var(--lens-nav-top, -200px) !important;
+    transform: translate(-50%, -50%) scale(1) !important;
+    opacity: .96 !important;
+    pointer-events: auto !important;
+  }
+  #showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn.is-positioned:hover,
+  #showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn.is-positioned:active {
+    transform: translate(-50%, -50%) scale(1.05) !important;
+  }
+
+  /* Lightweight rendering without removing media, interactions or visual quality. */
+  #showcaseModal .mobile-showcase-details {
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+  }
+  #kinetic3dStage.mobile-kinetic-running,
+  #kinetic3dStage.mobile-kinetic-running .kinetic-box,
+  #kinetic3dStage.mobile-kinetic-running .folded-glasses-proxy {
+    contain: layout style paint;
+  }
+  #showcaseModal.carousel-ready .rimless-glasses-assembly,
+  #showcaseModal.carousel-ready .rimless-lens,
+  #showcaseModal.carousel-ready .mobile-showcase-details {
+    will-change: auto !important;
+  }
+  #brand-section .brand-orbit-items,
+  #contact-section {
+    content-visibility: auto;
+    contain-intrinsic-size: 720px;
+  }
+  #brand-section .brand-orbit-items {
+    scroll-margin-top: calc(14px + env(safe-area-inset-top)) !important;
+  }
+}
+
+@media (max-width: 340px) {
+  #showcaseModal .rimless-glasses-assembly,
+  #showcaseModal.shape-second-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-third-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-fourth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-fifth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-sixth-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-seventh-slot .rimless-glasses-assembly,
+  #showcaseModal.shape-twelfth-slot .rimless-glasses-assembly {
+    --mobile-lens-width: clamp(116px, calc((100vw - 66px) / 2), 132px) !important;
+  }
+  #showcaseModal .glasses-temple { flex-basis: 7px !important; width: 7px !important; }
+  #showcaseModal .gold-center-bridge-assembly { flex-basis: 17px !important; width: 17px !important; }
+}
+</style>
+
 <script id="mobile-framework-jump-fix">
 (() => {
+  const phone = window.matchMedia('(max-width: 768px)');
   const button = document.getElementById('brandStrategyExplore');
   const list = document.querySelector('#brand-section .brand-orbit-items');
   if (!button || !list) return;
+
   button.addEventListener('click', (event) => {
-    if (!window.matchMedia('(max-width: 768px)').matches) return;
+    if (!phone.matches) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-    const first = list.querySelector('.brand-orbit-item');
-    list.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    window.setTimeout(() => {
-      first?.classList.add('is-open');
-      first?.querySelector('.brand-orbit-trigger')?.setAttribute('aria-expanded', 'true');
-    }, 500);
+
+    const items = Array.from(list.querySelectorAll('.brand-orbit-item'));
+    const first = items[0];
+    const trigger = first?.querySelector('.brand-orbit-trigger');
+    if (!first || !trigger) return;
+
+    items.forEach((item, index) => {
+      const itemTrigger = item.querySelector('.brand-orbit-trigger');
+      const open = index === 0;
+      item.classList.toggle('is-open', open);
+      itemTrigger?.setAttribute('aria-expanded', String(open));
+    });
+
+    // Wait for the first card to expand, then align that card—not the large
+    // illustration—with the top of the mobile viewport.
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      const safeOffset = 14 + parseFloat(getComputedStyle(document.documentElement)
+        .getPropertyValue('--safe-top') || '0');
+      const top = Math.max(0, window.scrollY + first.getBoundingClientRect().top - safeOffset);
+      window.scrollTo({ top, behavior: 'smooth' });
+      window.setTimeout(() => trigger.focus({ preventScroll: true }), 480);
+    }));
   }, true);
 })();
 </script>
