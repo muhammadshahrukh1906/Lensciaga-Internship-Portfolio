@@ -11283,6 +11283,14 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             const lenses = foldedGlasses.querySelectorAll('.folded-lens');
             const proxyParts = foldedGlasses.querySelectorAll('.proxy-bridge, .proxy-hinge, .proxy-temple');
 
+            // Mobile Safari can keep delayed Web Animations alive for a frame after
+            // their elements have been reset. Cancel every animation in the kinetic
+            // subtree first so no lens, bridge or temple from the previous slot can
+            // flash over the next transition.
+            [stage3d, ...stage3d.querySelectorAll('*')].forEach(element => {
+                try { element.getAnimations?.().forEach(animation => animation.cancel()); } catch (_) {}
+            });
+
             stage3d.querySelectorAll('.kinetic-card-ghost').forEach(ghost => ghost.remove());
             stage3d.style.display = 'none';
             stage3d.classList.remove('is-running', 'mobile-kinetic-running');
@@ -11943,8 +11951,8 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     stage3d.classList.toggle('shape-eleventh-slot', useEleventhSlotShape);
                     stage3d.classList.toggle('shape-twelfth-slot', useTwelfthSlotShape);
 
-                    modal.classList.remove('is-closing', 'is-handoff', 'is-content-revealing', 'is-content-synced');
-                    modal.classList.add('active', 'is-animating', 'is-content-prep');
+                    modal.classList.remove('is-closing', 'is-handoff', 'is-content-revealing', 'is-content-synced', 'mobile-proxy-only');
+                    modal.classList.add('active', 'is-animating', 'is-content-prep', 'mobile-proxy-only');
                     assembly.style.removeProperty('transition');
                     Object.assign(assembly.style, {
                         opacity: '0',
@@ -12237,33 +12245,47 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                         boxExit
                     ]);
 
-                    await sleep(showcaseTiming.handoffDelay);
+                    // Wait until every proxy component has fully settled. The previous
+                    // mobile handoff began while the lenses and case were still moving,
+                    // which made Safari composite the proxy, live lenses and open case at
+                    // the same time. That produced the stacked/duplicated shapes visible
+                    // in a few slots.
+                    await kineticMotion;
+                    await nextPaint();
+
                     showcaseMediaPlaybackEnabled = false;
                     modal.classList.add('is-content-synced', 'is-handoff');
                     modal.classList.remove('is-content-prep', 'is-animating');
 
-                    await Promise.all([
-                        kineticMotion,
-                        animateAndCommit(assembly, [
-                            { opacity: '0', transform: 'translate3d(0, 0, 0) scale(1)' },
-                            { offset: 0.48, opacity: '0.58', transform: 'translate3d(0, 0, 0) scale(1)' },
-                            { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' }
-                        ], {
-                            duration: showcaseTiming.handoff,
-                            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-                        }),
-                        animateAndCommit(foldedGlasses, [
-                            { opacity: '1', transform: `translate3d(0, ${riseTargetY}px, 0) scale(1)` },
-                            { offset: 0.48, opacity: '0.42', transform: `translate3d(0, ${riseTargetY}px, 0) scale(1)` },
-                            { opacity: '0', transform: `translate3d(0, ${riseTargetY - 5}px, 0) scale(1.015)` }
-                        ], {
-                            duration: showcaseTiming.handoff,
-                            easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
-                        })
-                    ]);
+                    // Fade the completed proxy out first. The real popup remains fully
+                    // hidden by mobile-proxy-only, so there is never a frame containing
+                    // two complete pairs of glasses.
+                    await animateAndCommit(foldedGlasses, [
+                        { opacity: '1', transform: `translate3d(0, ${riseTargetY}px, 0) scale(1)` },
+                        { offset: 0.72, opacity: '0.16', transform: `translate3d(0, ${riseTargetY - 2}px, 0) scale(1.006)` },
+                        { opacity: '0', transform: `translate3d(0, ${riseTargetY - 3}px, 0) scale(1.008)` }
+                    ], {
+                        duration: 260,
+                        easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+                    });
 
-                    modal.classList.remove('is-handoff');
+                    // Remove the kinetic stage before revealing the populated popup,
+                    // then use a short, clean fade/settle for the live assembly.
+                    assembly.style.opacity = '0';
+                    assembly.style.transform = 'translate3d(0, 5px, 0) scale(0.992)';
                     resetKineticTransition();
+                    await nextPaint();
+                    modal.classList.remove('is-handoff', 'mobile-proxy-only');
+
+                    await animateAndCommit(assembly, [
+                        { opacity: '0', transform: 'translate3d(0, 5px, 0) scale(0.992)' },
+                        { offset: 0.55, opacity: '0.72', transform: 'translate3d(0, 1px, 0) scale(0.998)' },
+                        { opacity: '1', transform: 'translate3d(0, 0, 0) scale(1)' }
+                    ], {
+                        duration: 420,
+                        easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+
                     cardElement.style.removeProperty('opacity');
                     assembly.style.removeProperty('opacity');
                     assembly.style.removeProperty('transform');
@@ -12277,7 +12299,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     resetKineticTransition();
                     cardElement.style.removeProperty('opacity');
                     modal.classList.add('active', 'is-content-synced', 'carousel-ready');
-                    modal.classList.remove('is-content-prep', 'is-animating', 'is-handoff');
+                    modal.classList.remove('is-content-prep', 'is-animating', 'is-handoff', 'mobile-proxy-only');
                     showcaseMediaPlaybackEnabled = true;
                     hydrateLensMediaAroundActiveSlide();
                     lockShowcaseScroll();
@@ -18480,5 +18502,51 @@ html.network-constrained .portfolio-guide-panel {
   }
 })();
 </script>
+
+<style id="mobile-kinetic-artifact-fix-v7">
+@media (max-width: 768px) {
+  /* During the mobile card-to-glasses sequence, only the kinetic proxy is
+     allowed to render. This prevents the final popup temples, bridge and lens
+     shells from appearing underneath it during Safari's compositing handoff. */
+  #showcaseModal.mobile-proxy-only .rimless-glasses-assembly {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition: none !important;
+  }
+
+  /* Each travelling lens now receives only its own half of the poster instead
+     of repeating the complete product image in both lenses. This removes the
+     stacked full-frame silhouettes seen in winged and butterfly slots. */
+  #kinetic3dStage.mobile-kinetic-running .folded-lens {
+    background-size: 100% 100%, 210% auto !important;
+    background-repeat: no-repeat, no-repeat !important;
+    background-position: center, center !important;
+    isolation: isolate;
+  }
+  #kinetic3dStage.mobile-kinetic-running .folded-lens.l1 {
+    background-position: center, 0% 50% !important;
+  }
+  #kinetic3dStage.mobile-kinetic-running .folded-lens.l2 {
+    background-position: center, 100% 50% !important;
+  }
+
+  /* Keep the proxy itself on one stable compositor layer. Individual parts
+     remain transformable, but Safari no longer snapshots them into multiple
+     stale layers while the parent rises and unfolds. */
+  #kinetic3dStage.mobile-kinetic-running .folded-glasses-proxy {
+    transform-origin: center center !important;
+    -webkit-transform-style: preserve-3d !important;
+    transform-style: preserve-3d !important;
+  }
+  #kinetic3dStage.mobile-kinetic-running .folded-lens,
+  #kinetic3dStage.mobile-kinetic-running .proxy-bridge,
+  #kinetic3dStage.mobile-kinetic-running .proxy-hinge,
+  #kinetic3dStage.mobile-kinetic-running .proxy-temple {
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+  }
+}
+</style>
 </body>
 </html>
