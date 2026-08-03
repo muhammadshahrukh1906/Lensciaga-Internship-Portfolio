@@ -11937,7 +11937,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             /* Mobile now follows the complete desktop card → case → glasses
                choreography at the same measured pace. Only the geometry is
                adapted to the smaller viewport; no animation phase is skipped. */
-            if (compactShowcaseMedia.matches) {
+            if (false && compactShowcaseMedia.matches) {
                 try {
                     resetKineticTransition();
                     applyKineticCaseTheme(contextMode);
@@ -12407,6 +12407,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 assembly.style.removeProperty('transform');
 
                 stage3d.classList.add('is-running');
+                if (compactShowcaseMedia.matches) stage3d.classList.add('mobile-kinetic-running');
                 stage3d.style.display = 'block';
                 box3d.style.setProperty('--kinetic-card-image', imageSource ? `url("${imageSource}")` : 'none');
                 foldedGlasses.style.setProperty('--kinetic-lens-image', instantPosterSource ? `url("${instantPosterSource}")` : 'none');
@@ -18548,5 +18549,322 @@ html.network-constrained .portfolio-guide-panel {
   }
 }
 </style>
+
+<style id="portfolio-final-interaction-and-motion-fixes-v20">
+/* =============================================================
+   FINAL RELIABILITY PATCH
+   - one desktop-identical project transition on every viewport
+   - complete card hit surfaces on desktop
+   - contained avatar copy on narrow screens
+   - stable click-driven strategy expansion on desktop and mobile
+   ============================================================= */
+
+/* Every visible part of every card is now one uninterrupted hit target. */
+#portfolioGrid .slot-card {
+  isolation: isolate;
+  cursor: pointer;
+  pointer-events: auto !important;
+}
+#portfolioGrid .slot-card::after {
+  content: '' !important;
+  position: absolute !important;
+  inset: 0 !important;
+  z-index: 40 !important;
+  display: block !important;
+  pointer-events: auto !important;
+  background: transparent !important;
+  border-radius: inherit !important;
+}
+#featured-section .featured-bottom-rail,
+#featured-section .featured-view-progress,
+#featured-section .featured-scroll-track::before,
+#featured-section .featured-scroll-track::after {
+  pointer-events: none !important;
+}
+#portfolioGrid {
+  position: relative;
+  z-index: 5;
+  pointer-events: auto !important;
+}
+
+/* The lightweight guide nudge wraps inside its bubble rather than extending
+   beyond the viewport or behind the avatar. */
+.guide-nudge {
+  width: min(210px, calc(100vw - 122px)) !important;
+  max-width: min(210px, calc(100vw - 122px)) !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere !important;
+  word-break: normal !important;
+  text-align: left !important;
+  line-height: 1.35 !important;
+}
+.guide-message,
+.guide-panel-title,
+.guide-panel-title strong,
+.guide-action {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 768px) {
+  .guide-nudge {
+    right: 68px !important;
+    width: min(190px, calc(100vw - 98px)) !important;
+    max-width: min(190px, calc(100vw - 98px)) !important;
+    padding: 8px 10px !important;
+    font-size: .59rem !important;
+    line-height: 1.32 !important;
+  }
+}
+
+/* The shared desktop choreography runs on phones too. These rules only adapt
+   compositing and available space; they do not change the animation phases. */
+@media (max-width: 768px) {
+  #kinetic3dStage.is-running {
+    contain: layout style paint !important;
+    overflow: hidden !important;
+    perspective: 1500px !important;
+  }
+  #kinetic3dStage.is-running .kinetic-box,
+  #kinetic3dStage.is-running .folded-glasses-proxy,
+  #kinetic3dStage.is-running .folded-lens,
+  #kinetic3dStage.is-running .proxy-bridge,
+  #kinetic3dStage.is-running .proxy-hinge,
+  #kinetic3dStage.is-running .proxy-temple {
+    contain: none !important;
+    overflow: visible !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+  }
+  #kinetic3dStage.is-running .kinetic-box,
+  #kinetic3dStage.is-running .folded-glasses-proxy,
+  #kinetic3dStage.is-running .box-lid,
+  #kinetic3dStage.is-running .box-side,
+  #kinetic3dStage.is-running .case-rim {
+    transform-style: preserve-3d !important;
+  }
+  #kinetic3dStage.is-running .kinetic-card-ghost,
+  #kinetic3dStage.is-running .kinetic-box,
+  #kinetic3dStage.is-running .folded-glasses-proxy,
+  #kinetic3dStage.is-running .folded-lens,
+  #kinetic3dStage.is-running .proxy-bridge,
+  #kinetic3dStage.is-running .proxy-hinge,
+  #kinetic3dStage.is-running .proxy-temple {
+    will-change: transform, opacity !important;
+  }
+
+  /* Apply the corrected gold bridge to the shared transition branch as well. */
+  #kinetic3dStage.is-running.shape-seventh-slot .proxy-bridge {
+    left: 86px !important;
+    top: 78px !important;
+    width: 38px !important;
+    height: 31px !important;
+  }
+  #kinetic3dStage.is-running.shape-seventh-slot .proxy-bridge::before {
+    top: 1px !important;
+    width: 52px !important;
+    height: 5px !important;
+  }
+  #kinetic3dStage.is-running.shape-seventh-slot .proxy-bridge-arch {
+    top: 11px !important;
+    width: 26px !important;
+    height: 7px !important;
+  }
+  #kinetic3dStage.is-running.shape-seventh-slot .proxy-bridge-arch::before,
+  #kinetic3dStage.is-running.shape-seventh-slot .proxy-bridge-arch::after {
+    top: 1px !important;
+    width: 5px !important;
+    height: 5px !important;
+  }
+  #kinetic3dStage.is-running.shape-seventh-slot .proxy-nose-pad {
+    top: 20px !important;
+    width: 7px !important;
+    height: 10px !important;
+  }
+}
+
+/* Strategy controls expand only when deliberately selected. Hover no longer
+   makes a panel shift under the pointer and immediately collapse. */
+#brand-section .brand-strategy-visual,
+#brand-section .brand-orbit-items {
+  overflow: visible !important;
+}
+#brand-section .brand-orbit-item {
+  z-index: 1;
+}
+#brand-section .brand-orbit-item.is-open {
+  z-index: 30 !important;
+}
+
+@media (min-width: 769px) {
+  #brand-section .brand-orbit-trigger:hover,
+  #brand-section .brand-orbit-trigger:focus-visible {
+    width: 54px !important;
+    min-height: 54px !important;
+    height: 54px !important;
+    border-radius: 999px !important;
+  }
+  #brand-section .brand-orbit-trigger:hover .brand-orbit-window,
+  #brand-section .brand-orbit-trigger:focus-visible .brand-orbit-window {
+    width: 0 !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+  }
+  #brand-section .brand-orbit-item.is-open .brand-orbit-trigger {
+    width: min(260px, 36vw) !important;
+    min-height: 118px !important;
+    height: auto !important;
+    border-radius: 24px !important;
+  }
+  #brand-section .brand-node-strategy.is-open .brand-orbit-trigger {
+    width: 260px !important;
+  }
+  #brand-section .brand-orbit-item.is-open .brand-orbit-window {
+    width: 184px !important;
+    max-height: 170px !important;
+    margin: 0 8px !important;
+    opacity: 1 !important;
+  }
+  #brand-section .brand-orbit-item.is-open .brand-orbit-caption {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #brand-section .brand-orbit-trigger:hover,
+  #brand-section .brand-orbit-trigger:focus-visible {
+    min-height: 64px !important;
+  }
+  #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window small {
+    max-height: 0 !important;
+    margin-top: 0 !important;
+    opacity: 0 !important;
+  }
+  #brand-section .brand-orbit-item.is-open .brand-orbit-trigger {
+    min-height: 0 !important;
+    height: auto !important;
+    padding-top: 12px !important;
+    padding-bottom: 12px !important;
+  }
+  #brand-section .brand-orbit-item.is-open .brand-orbit-window small {
+    max-height: 180px !important;
+    margin-top: 7px !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+}
+</style>
+<script id="portfolio-final-interaction-and-strategy-controller-v20">
+(() => {
+  const start = () => {
+    /* Replace the previous strategy listeners with one predictable controller. */
+    const visual = document.getElementById('brandStrategyVisual');
+    const oldExplore = document.getElementById('brandStrategyExplore');
+    if (visual) {
+      const oldTriggers = Array.from(visual.querySelectorAll('.brand-orbit-trigger'));
+      const triggers = oldTriggers.map(oldTrigger => {
+        const clean = oldTrigger.cloneNode(true);
+        oldTrigger.replaceWith(clean);
+        return clean;
+      });
+      const items = triggers.map(trigger => trigger.closest('.brand-orbit-item'));
+
+      const closeAll = (except = null) => {
+        items.forEach(item => {
+          if (!item || item === except) return;
+          item.classList.remove('is-open');
+          item.querySelector('.brand-orbit-trigger')?.setAttribute('aria-expanded', 'false');
+        });
+      };
+
+      triggers.forEach(trigger => {
+        trigger.addEventListener('click', event => {
+          event.preventDefault();
+          event.stopPropagation();
+          const item = trigger.closest('.brand-orbit-item');
+          const opening = !item.classList.contains('is-open');
+          closeAll(item);
+          item.classList.toggle('is-open', opening);
+          trigger.setAttribute('aria-expanded', String(opening));
+        });
+        trigger.addEventListener('keydown', event => {
+          if (event.key !== 'Escape') return;
+          const item = trigger.closest('.brand-orbit-item');
+          item?.classList.remove('is-open');
+          trigger.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      document.addEventListener('pointerdown', event => {
+        if (!visual.contains(event.target)) closeAll();
+      }, { passive: true });
+
+      if (oldExplore) {
+        const explore = oldExplore.cloneNode(true);
+        oldExplore.replaceWith(explore);
+        explore.addEventListener('click', event => {
+          event.preventDefault();
+          const first = items[0];
+          const firstTrigger = first?.querySelector('.brand-orbit-trigger');
+          if (!first || !firstTrigger) return;
+          closeAll(first);
+          first.classList.add('is-open');
+          firstTrigger.setAttribute('aria-expanded', 'true');
+
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            const phone = window.matchMedia('(max-width: 768px)').matches;
+            const target = phone ? first : visual;
+            const safeTop = phone
+              ? 14 + (parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top')) || 0)
+              : 24;
+            const top = Math.max(0, window.scrollY + target.getBoundingClientRect().top - safeTop);
+            window.scrollTo({ top, behavior: 'smooth' });
+            window.setTimeout(() => firstTrigger.focus({ preventScroll: true }), phone ? 460 : 360);
+          }));
+        });
+      }
+    }
+
+    /* Pointer capture on the cards prevents transformed desktop layers from
+       producing isolated click gaps in embedded browsers. */
+    const grid = document.getElementById('portfolioGrid');
+    if (grid) {
+      let downCard = null;
+      let downX = 0;
+      let downY = 0;
+      grid.addEventListener('pointerdown', event => {
+        const card = event.target.closest?.('.slot-card');
+        if (!card) return;
+        downCard = card;
+        downX = event.clientX;
+        downY = event.clientY;
+      }, { capture: true, passive: true });
+      grid.addEventListener('pointerup', event => {
+        const card = event.target.closest?.('.slot-card');
+        if (!card || card !== downCard) return;
+        const moved = Math.hypot(event.clientX - downX, event.clientY - downY);
+        downCard = null;
+        if (moved > 9 || event.pointerType === 'touch') return;
+        /* The normal click follows immediately. This call only repairs cases
+           where a transformed child swallowed that click. */
+        window.setTimeout(() => {
+          const modal = document.getElementById('showcaseModal');
+          if (!modal?.classList.contains('active') && !modal?.classList.contains('is-animating')) {
+            card.click();
+          }
+        }, 0);
+      }, { capture: true, passive: true });
+    }
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start, { once: true });
+  } else {
+    start();
+  }
+})();
+</script>
 </body>
 </html>
