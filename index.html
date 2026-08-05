@@ -18344,23 +18344,22 @@ html.network-constrained .portfolio-guide-panel {
     title.textContent = nextTitle;
     message.textContent = nextMessage;
 
-    // On phones, animate only the spoken copy. Avoid forcing a synchronous
-    // layout of the full guide panel, which previously made high-end devices
-    // feel abrupt whenever several tour messages changed close together.
+    // Keep mobile copy changes soft but inexpensive. Only the words fade/settle;
+    // the fixed guide shell, progress bar and page layout stay completely still.
     if (autoTourRunning && window.matchMedia('(max-width: 768px)').matches) {
-      panel.querySelectorAll('.guide-panel-title, .guide-message, .guide-progress').forEach((node, index) => {
+      [title, message].forEach((node, index) => {
         node.getAnimations?.().forEach(animation => {
           if (animation.id === 'mobile-guide-copy') animation.cancel();
         });
         const animation = node.animate(
           [
-            { opacity: 0.58, transform: 'translate3d(0, 4px, 0)' },
+            { opacity: 0.72, transform: 'translate3d(0, 2px, 0)' },
             { opacity: 1, transform: 'translate3d(0, 0, 0)' }
           ],
           {
-            duration: reducedMotion ? 1 : 300,
-            delay: reducedMotion ? 0 : index * 24,
-            easing: 'cubic-bezier(.22,1,.36,1)',
+            duration: reducedMotion ? 1 : 220,
+            delay: reducedMotion ? 0 : index * 18,
+            easing: 'cubic-bezier(.2,.8,.2,1)',
             fill: 'both'
           }
         );
@@ -18468,40 +18467,50 @@ html.network-constrained .portfolio-guide-panel {
   function animateMobileTourScroll(target, block, runId, token) {
     return new Promise(resolve => {
       cancelAnimationFrame(mobileTourScrollFrame);
-      const startY = window.scrollY;
       const endY = mobileTourScrollDestination(target, block);
-      const distance = endY - startY;
-      if (Math.abs(distance) < 2 || reducedMotion) {
+      const startY = window.scrollY;
+      if (Math.abs(endY - startY) < 2 || reducedMotion) {
         window.scrollTo(0, endY);
         resolve(autoTourIsCurrent(runId));
         return;
       }
 
-      const duration = Math.max(760, Math.min(1380, 720 + Math.abs(distance) * 0.38));
-      const started = performance.now();
+      // Let the browser's compositor perform the phone scroll. The previous
+      // JavaScript-per-frame scroll competed with video decoding and the process
+      // card expansion, which made even fast phones appear choppy.
       document.documentElement.classList.add('avatar-tour-programmatic-scroll');
+      let lastY = startY;
+      let stableFrames = 0;
+      const started = performance.now();
 
-      const ease = value => value < 0.5
-        ? 4 * value * value * value
-        : 1 - Math.pow(-2 * value + 2, 3) / 2;
+      try { window.scrollTo({ top: endY, behavior: 'smooth' }); }
+      catch (_) { window.scrollTo(0, endY); }
 
-      const step = now => {
+      const finish = result => {
+        document.documentElement.classList.remove('avatar-tour-programmatic-scroll');
+        resolve(result);
+      };
+
+      const check = () => {
         if (!autoTourIsCurrent(runId) || token !== mobileTourScrollToken) {
-          document.documentElement.classList.remove('avatar-tour-programmatic-scroll');
-          resolve(false);
+          finish(false);
           return;
         }
-        const progress = Math.min(1, (now - started) / duration);
-        window.scrollTo(0, startY + distance * ease(progress));
-        if (progress < 1) {
-          mobileTourScrollFrame = requestAnimationFrame(step);
-        } else {
+
+        const currentY = window.scrollY;
+        const nearTarget = Math.abs(currentY - endY) < 1.5;
+        const stable = Math.abs(currentY - lastY) < 0.45;
+        stableFrames = nearTarget && stable ? stableFrames + 1 : 0;
+        lastY = currentY;
+
+        if (stableFrames >= 4 || performance.now() - started > 2600) {
           window.scrollTo(0, endY);
-          document.documentElement.classList.remove('avatar-tour-programmatic-scroll');
-          resolve(true);
+          finish(true);
+          return;
         }
+        mobileTourScrollFrame = requestAnimationFrame(check);
       };
-      mobileTourScrollFrame = requestAnimationFrame(step);
+      mobileTourScrollFrame = requestAnimationFrame(check);
     });
   }
 
@@ -18881,57 +18890,115 @@ html.network-constrained .portfolio-guide-panel {
     if (!visual || !triggers.length) return autoTourIsCurrent(runId);
 
     const phoneLayout = window.matchMedia('(max-width: 768px)').matches;
-    await focusAutoTourTargetAndWait(visual, runId, phoneLayout ? 'start' : 'center');
-    closePanel();
+    const items = triggers.map(trigger => trigger.closest('.brand-orbit-item'));
+    let currentItem = null;
+    let currentTrigger = null;
 
-    for (let index = 0; index < triggers.length; index += 1) {
-      if (!autoTourIsCurrent(runId)) return false;
-      const trigger = triggers[index];
-      const item = trigger.closest('.brand-orbit-item');
-      const label = trigger.querySelector('strong')?.textContent?.trim() || `Stage ${index + 1}`;
-
-      if (trigger.getAttribute('aria-expanded') !== 'true') trigger.click();
-      await waitForAutoTourReady(
-        () => trigger.getAttribute('aria-expanded') === 'true' && item?.classList.contains('is-open'),
-        runId,
-        {
-          stepNumber: 5,
-          title: `Opening ${label}`,
-          message: 'This process stage is expanding before the tour moves on.',
-          openPanelWhileWaiting: false,
-          maximumWait: 8000
-        }
-      );
-
-      if (phoneLayout) {
-        await focusAutoTourTargetAndWait(item || trigger, runId, 'center');
-      } else {
-        clearAutoTourFocus();
-        autoTourFocusTarget = item || trigger;
-        autoTourFocusTarget.classList.add('avatar-tour-focus');
+    const settleShape = async (trigger, expectedOpen) => {
+      if (!trigger || reducedMotion) {
         await nextAutoTourPaint();
+        return autoTourIsCurrent(runId);
       }
-      if (phoneLayout) {
-        setExpression(index === triggers.length - 1 ? 'success' : 'explaining');
-        setCopy(
-          'Guided tour · 05',
-          `${label} · ${index + 1} of ${triggers.length}`,
-          'This process shape is fully expanded. Take a moment to read it before I move smoothly to the next stage.'
-        );
-        openPanel();
-      } else {
-        showNudge(`${label} · ${index + 1} of ${triggers.length}`, 40, autoTourPace.shape + 650);
-      }
-      if (!await autoTourDelay(autoTourPace.shape, runId)) return false;
-    }
+      return new Promise(resolve => {
+        let finished = false;
+        const done = () => {
+          if (finished) return;
+          finished = true;
+          trigger.removeEventListener('transitionend', onEnd);
+          window.clearTimeout(timer);
+          requestAnimationFrame(() => requestAnimationFrame(() => resolve(autoTourIsCurrent(runId))));
+        };
+        const onEnd = event => {
+          if (event.target !== trigger) return;
+          if (!['min-height', 'height', 'width', 'padding-top', 'padding-bottom'].includes(event.propertyName)) return;
+          if ((trigger.getAttribute('aria-expanded') === 'true') === expectedOpen) done();
+        };
+        const timer = window.setTimeout(done, phoneLayout ? 560 : 520);
+        trigger.addEventListener('transitionend', onEnd);
+      });
+    };
 
-    const openTrigger = triggers.find(trigger => trigger.getAttribute('aria-expanded') === 'true');
-    const openItem = openTrigger?.closest('.brand-orbit-item');
-    openItem?.classList.remove('is-open');
-    openTrigger?.setAttribute('aria-expanded', 'false');
-    await nextAutoTourPaint();
-    clearAutoTourFocus();
-    return autoTourIsCurrent(runId);
+    const closeCurrent = async () => {
+      if (!currentItem || !currentTrigger) return true;
+      currentItem.classList.remove('is-open');
+      currentTrigger.setAttribute('aria-expanded', 'false');
+      const settled = await settleShape(currentTrigger, false);
+      currentItem = null;
+      currentTrigger = null;
+      return settled;
+    };
+
+    document.body.classList.toggle('avatar-tour-process-active', phoneLayout);
+
+    try {
+      if (!await focusAutoTourTargetAndWait(visual, runId, phoneLayout ? 'start' : 'center')) return false;
+      if (phoneLayout && !await autoTourDelay(260, runId)) return false;
+
+      for (let index = 0; index < triggers.length; index += 1) {
+        if (!autoTourIsCurrent(runId)) return false;
+        const trigger = triggers[index];
+        const item = items[index];
+        const label = trigger.querySelector('strong')?.textContent?.trim() || `Stage ${index + 1}`;
+
+        // Collapse and settle the previous card before moving to the next one.
+        // This prevents two height animations and a scroll from fighting in the
+        // same frame, the main source of Section 3's mobile stutter.
+        if (!await closeCurrent()) return false;
+
+        items.forEach((otherItem, otherIndex) => {
+          if (!otherItem || otherIndex === index) return;
+          otherItem.classList.remove('is-open');
+          triggers[otherIndex]?.setAttribute('aria-expanded', 'false');
+        });
+        item?.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+        currentItem = item;
+        currentTrigger = trigger;
+
+        if (!await settleShape(trigger, true)) return false;
+        if (!await waitForAutoTourReady(
+          () => trigger.getAttribute('aria-expanded') === 'true' && item?.classList.contains('is-open'),
+          runId,
+          {
+            stepNumber: 5,
+            title: `Opening ${label}`,
+            message: 'This process stage is settling before the tour continues.',
+            openPanelWhileWaiting: false,
+            noticeDelay: 900,
+            maximumWait: 8000
+          }
+        )) return false;
+
+        if (phoneLayout) {
+          // One compositor-driven glide per stage, and only when the expanded
+          // item is outside the usable area above the guide.
+          if (!await focusAutoTourTargetAndWait(item || trigger, runId, 'end')) return false;
+
+          setExpression(index === triggers.length - 1 ? 'success' : 'explaining');
+          setCopy(
+            'Guided tour · 05',
+            `${label} · ${index + 1} of ${triggers.length}`,
+            'This stage is open. Take a moment to read it before I continue.'
+          );
+          openPanel();
+        } else {
+          clearAutoTourFocus();
+          autoTourFocusTarget = item || trigger;
+          autoTourFocusTarget?.classList.add('avatar-tour-focus');
+          await nextAutoTourPaint();
+          showNudge(`${label} · ${index + 1} of ${triggers.length}`, 40, autoTourPace.shape + 650);
+        }
+
+        const readingTime = phoneLayout ? 1950 : autoTourPace.shape;
+        if (!await autoTourDelay(readingTime, runId)) return false;
+      }
+
+      if (!await closeCurrent()) return false;
+      clearAutoTourFocus();
+      return autoTourIsCurrent(runId);
+    } finally {
+      document.body.classList.remove('avatar-tour-process-active');
+    }
   }
 
   function setAutomatedTourStep(stepNumber, nextTitle, nextMessage, expression = 'explaining') {
@@ -18959,7 +19026,7 @@ html.network-constrained .portfolio-guide-panel {
     autoTourRunning = false;
     awaitingLateModelNotice = false;
     root.classList.remove('is-tour', 'auto-tour-running');
-    document.body.classList.remove('avatar-tour-active');
+    document.body.classList.remove('avatar-tour-active', 'avatar-tour-process-active');
     clearAutoTourFocus();
     savePreference('self');
     if (closeProject) closeTourOpenedShowcase();
@@ -19114,8 +19181,8 @@ html.network-constrained .portfolio-guide-panel {
 
       if (!await autoTourDelay(autoTourPace.featured, runId)) return;
 
-      setAutomatedTourStep(3, 'Opening the selected slot', 'The selected Winged Rimless project will now transform into its custom eyeglasses popup. I will wait for the transition and its opening video before continuing.', 'curious');
-      if (!await focusAutoTourTargetAndWait(thirdCard, runId, 'center')) return;
+      setAutomatedTourStep(3, 'Opening the selected slot', mobileTour ? 'I will open Winged Rimless, wait for its custom transition, then begin the opening video.' : 'The selected Winged Rimless project will now transform into its custom eyeglasses popup. I will wait for the transition and its opening video before continuing.', 'curious');
+      if (!await focusAutoTourTargetAndWait(thirdCard, runId, mobileTour ? 'start' : 'center')) return;
       if (!await autoTourDelay(autoTourPace.projectIntro, runId)) return;
       closePanel();
       await nextAutoTourPaint();
@@ -20653,6 +20720,169 @@ html body #showcaseModal.modal-container:not(.active) * {
   body.avatar-tour-active .portfolio-guide.auto-tour-running.in-showcase .portfolio-guide-toggle {
     width: 54px !important;
     height: 54px !important;
+  }
+}
+</style>
+
+
+<style id="mobile-tour-compact-companion-and-process-smoothing-v25">
+@media (max-width: 768px) {
+  /* Wider, shallower speech companion: it stays with the avatar but occupies far
+     less vertical space than the previous card. The avatar overlaps only a
+     deliberately reserved corner, never the spoken copy or controls. */
+  body.avatar-tour-active {
+    padding-bottom: calc(150px + env(safe-area-inset-bottom)) !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running {
+    left: 6px !important;
+    right: 6px !important;
+    bottom: calc(6px + env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    height: 132px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .portfolio-guide-panel,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.in-showcase .portfolio-guide-panel {
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100% !important;
+    height: 124px !important;
+    min-height: 124px !important;
+    max-height: 124px !important;
+    overflow: hidden !important;
+    padding: 10px 68px 9px 12px !important;
+    border-radius: 16px !important;
+    transform: translate3d(0,0,0) !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .portfolio-guide-panel::after {
+    display: none !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .portfolio-guide-toggle,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.in-showcase .portfolio-guide-toggle {
+    right: 4px !important;
+    bottom: 4px !important;
+    width: 54px !important;
+    height: 54px !important;
+    z-index: 524 !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-panel-head {
+    min-height: 25px !important;
+    height: 25px !important;
+    margin-bottom: 4px !important;
+    padding-right: 26px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-panel-kicker {
+    font-size: .49rem !important;
+    letter-spacing: 1.05px !important;
+    line-height: 1 !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-panel-title strong {
+    display: block !important;
+    overflow: hidden !important;
+    white-space: nowrap !important;
+    text-overflow: ellipsis !important;
+    font-size: .72rem !important;
+    line-height: 1.1 !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-message {
+    display: -webkit-box !important;
+    min-height: 0 !important;
+    max-height: 52px !important;
+    overflow: hidden !important;
+    padding: 0 !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 4 !important;
+    color: rgba(255,255,255,.93) !important;
+    font-size: .64rem !important;
+    line-height: 1.28 !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-progress {
+    left: 12px !important;
+    right: 142px !important;
+    bottom: 10px !important;
+    gap: 7px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-actions {
+    right: 66px !important;
+    bottom: 5px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-action {
+    min-height: 28px !important;
+    padding: 5px 9px !important;
+    font-size: .49rem !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-panel-close {
+    top: 8px !important;
+    right: 64px !important;
+    width: 23px !important;
+    height: 23px !important;
+  }
+
+  /* Section 3 performance isolation. The shapes keep the same expansion and
+     content animation, but the large case illustration no longer repaints for
+     every card and only the current list item participates in layout work. */
+  body.avatar-tour-process-active #brandStrategyVisual {
+    contain: layout style !important;
+  }
+
+  body.avatar-tour-process-active #brand-section .brand-case-art {
+    transform: scale(.98) translateZ(0) !important;
+    transition: none !important;
+    will-change: auto !important;
+  }
+
+  body.avatar-tour-process-active #brand-section .brand-orbit-item {
+    contain: layout style !important;
+  }
+
+  body.avatar-tour-process-active #brand-section .brand-orbit-trigger,
+  body.avatar-tour-process-active #brand-section .brand-orbit-window small {
+    -webkit-backface-visibility: hidden !important;
+    backface-visibility: hidden !important;
+  }
+
+  body.avatar-tour-process-active .portfolio-guide-panel,
+  body.avatar-tour-process-active .portfolio-guide-toggle {
+    transform: translateZ(0) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  body.avatar-tour-active .portfolio-guide.auto-tour-running {
+    left: 5px !important;
+    right: 5px !important;
+    width: auto !important;
+    height: 134px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .portfolio-guide-panel,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.in-showcase .portfolio-guide-panel {
+    height: 126px !important;
+    min-height: 126px !important;
+    max-height: 126px !important;
+    padding-left: 10px !important;
+    padding-right: 64px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-progress {
+    left: 10px !important;
+    right: 134px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-actions {
+    right: 62px !important;
   }
 }
 </style>
