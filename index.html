@@ -16950,6 +16950,7 @@ ${message}`;
     grid.addEventListener('click', event => {
         const card = event.target.closest('.slot-card');
         if (!card || !phone.matches) return;
+        delete modal.dataset.tourClosing;
         primeVisibleLens(card);
 
         // Media markup is replaced inside openShowcase, so re-prime it after
@@ -16959,7 +16960,7 @@ ${message}`;
         // A defensive handoff for restrictive in-app browsers. Normally the
         // native mobile animation activates the popup long before this fires.
         setTimeout(() => {
-            if (!latestCard || modal.classList.contains('active')) return;
+            if (!latestCard || modal.classList.contains('active') || modal.dataset.tourClosing === 'true') return;
             try { typeof lockShowcaseScroll === 'function' && lockShowcaseScroll(); } catch (_) {}
             modal.classList.remove('is-content-prep', 'is-closing');
             modal.classList.add('active', 'is-content-synced', 'carousel-ready');
@@ -18369,6 +18370,233 @@ html.network-constrained .portfolio-guide-panel {
     });
   }
 
+
+  const autoTourPace = {
+    overview: 1650,
+    featured: 1500,
+    projectIntro: 1150,
+    slide: 1650,
+    shape: 1450,
+    contact: 1750
+  };
+
+  function autoTourIsCurrent(runId) {
+    return autoTourRunning && runId === autoTourRunId;
+  }
+
+  function nextAutoTourPaint() {
+    return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+
+  async function waitForAutoTourScroll(target, runId, timeout = 3200) {
+    if (!target) return false;
+    const started = performance.now();
+    let lastY = window.scrollY;
+    let lastTop = target.getBoundingClientRect().top;
+    let stableFrames = 0;
+
+    while (autoTourIsCurrent(runId) && performance.now() - started < timeout) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      const rect = target.getBoundingClientRect();
+      const viewportHeight = window.visualViewport?.height || window.innerHeight || 1;
+      const visible = rect.bottom > 0 && rect.top < viewportHeight;
+      const stable = Math.abs(window.scrollY - lastY) < 0.75 && Math.abs(rect.top - lastTop) < 0.75;
+      stableFrames = visible && stable ? stableFrames + 1 : 0;
+      if (stableFrames >= 5) return true;
+      lastY = window.scrollY;
+      lastTop = rect.top;
+    }
+    return autoTourIsCurrent(runId);
+  }
+
+  async function focusAutoTourTargetAndWait(target, runId, block = 'center') {
+    if (!target || !autoTourIsCurrent(runId)) return false;
+    focusAutoTourTarget(target, block);
+    await waitForAutoTourScroll(target, runId);
+    await nextAutoTourPaint();
+    return autoTourIsCurrent(runId);
+  }
+
+  function setAutoTourWaiting(stepNumber, nextTitle, nextMessage, open = true) {
+    if (!autoTourRunning) return;
+    root.classList.add('is-tour', 'auto-tour-running');
+    setExpression('focused');
+    setCopy(`Guided tour · ${String(stepNumber).padStart(2, '0')}`, nextTitle, nextMessage);
+    progressFill.style.width = `${(stepNumber / autoTourTotalSteps) * 100}%`;
+    progressCount.textContent = `${String(stepNumber).padStart(2, '0')} / ${String(autoTourTotalSteps).padStart(2, '0')}`;
+    setActions([{ label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(true) }]);
+    if (open) openPanel();
+  }
+
+  async function waitForAutoTourReady(predicate, runId, options = {}) {
+    const {
+      stepNumber = 1,
+      title = 'Loading content',
+      message = 'I will continue as soon as this part of the portfolio is ready.',
+      openPanelWhileWaiting = true,
+      noticeDelay = 620,
+      maximumWait = 120000
+    } = options;
+
+    const started = performance.now();
+    let noticeShown = false;
+    let lastUpdate = 0;
+
+    while (autoTourIsCurrent(runId) && performance.now() - started < maximumWait) {
+      let matched = false;
+      try { matched = Boolean(predicate()); } catch (_) {}
+      if (matched) return true;
+
+      const elapsed = performance.now() - started;
+      if (!noticeShown && elapsed >= noticeDelay) {
+        noticeShown = true;
+        if (openPanelWhileWaiting) setAutoTourWaiting(stepNumber, title, message, true);
+        else showNudge(title, 60, 5200);
+      } else if (noticeShown && openPanelWhileWaiting && elapsed - lastUpdate > 12000) {
+        lastUpdate = elapsed;
+        setAutoTourWaiting(stepNumber, title, `${message} The tour is paused here so nothing is skipped on a slower connection.`, true);
+      }
+
+      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 24 : 90));
+    }
+    return false;
+  }
+
+  function requestTourImage(image, priority = 'high') {
+    if (!image) return;
+    try {
+      if (image.dataset.src && !image.getAttribute('src')) {
+        image.loading = 'eager';
+        image.fetchPriority = priority;
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      } else if (image.dataset.src) {
+        image.loading = 'eager';
+        image.fetchPriority = priority;
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      }
+    } catch (_) {}
+  }
+
+  function requestTourSlideMedia(slide) {
+    if (!slide) return;
+    const media = slide.querySelector('img, video');
+    if (!media) return;
+    if (media.tagName === 'IMG') {
+      media.loading = 'eager';
+      media.fetchPriority = 'high';
+      if (media.dataset.src && !media.getAttribute('src')) {
+        media.src = media.dataset.src;
+        delete media.dataset.src;
+      }
+    } else {
+      media.preload = 'auto';
+      media.muted = true;
+      media.playsInline = true;
+      if (media.dataset.src && !media.getAttribute('src')) {
+        media.src = media.dataset.src;
+        delete media.dataset.src;
+      }
+      try { media.load(); } catch (_) {}
+    }
+  }
+
+  function isTourSlideReady(slide) {
+    if (!slide) return false;
+    if (slide.classList.contains('is-media-ready') || slide.classList.contains('is-media-error')) return true;
+    const media = slide.querySelector('img, video');
+    if (!media) return true;
+    if (media.tagName === 'IMG') return Boolean(media.complete && media.naturalWidth > 0);
+    return media.readyState >= 2;
+  }
+
+  async function waitForTourSlide(slide, slideNumber, slideCount, runId) {
+    requestTourSlideMedia(slide);
+    const ready = await waitForAutoTourReady(
+      () => isTourSlideReady(slide),
+      runId,
+      {
+        stepNumber: 4,
+        title: `Loading project view ${slideNumber} of ${slideCount}`,
+        message: 'The current view will remain on screen until the next image or video is fully ready.',
+        openPanelWhileWaiting: false,
+        maximumWait: 120000
+      }
+    );
+    if (!ready && autoTourIsCurrent(runId)) {
+      showNudge(`View ${slideNumber} could not finish loading; using the available fallback.`, 60, 4000);
+    }
+    return autoTourIsCurrent(runId);
+  }
+
+  async function waitForLensMovement(wrapper, expectedIndex, runId) {
+    return waitForAutoTourReady(
+      () => {
+        const progress = document.getElementById('modalProjectProgress')?.textContent || '';
+        return !wrapper?.classList.contains('is-sliding') && progress.startsWith(String(expectedIndex + 1).padStart(2, '0'));
+      },
+      runId,
+      {
+        stepNumber: 4,
+        title: 'Positioning project view',
+        message: 'The lens movement is settling before the tour continues.',
+        openPanelWhileWaiting: false,
+        noticeDelay: 850,
+        maximumWait: 10000
+      }
+    );
+  }
+
+  async function exploreStrategyShapes(brand, runId) {
+    const visual = brand?.querySelector('#brandStrategyVisual');
+    const triggers = Array.from(brand?.querySelectorAll('.brand-orbit-trigger') || []);
+    if (!visual || !triggers.length) return autoTourIsCurrent(runId);
+
+    const phoneLayout = window.matchMedia('(max-width: 768px)').matches;
+    await focusAutoTourTargetAndWait(visual, runId, phoneLayout ? 'start' : 'center');
+    closePanel();
+
+    for (let index = 0; index < triggers.length; index += 1) {
+      if (!autoTourIsCurrent(runId)) return false;
+      const trigger = triggers[index];
+      const item = trigger.closest('.brand-orbit-item');
+      const label = trigger.querySelector('strong')?.textContent?.trim() || `Stage ${index + 1}`;
+
+      if (trigger.getAttribute('aria-expanded') !== 'true') trigger.click();
+      await waitForAutoTourReady(
+        () => trigger.getAttribute('aria-expanded') === 'true' && item?.classList.contains('is-open'),
+        runId,
+        {
+          stepNumber: 5,
+          title: `Opening ${label}`,
+          message: 'This process stage is expanding before the tour moves on.',
+          openPanelWhileWaiting: false,
+          maximumWait: 8000
+        }
+      );
+
+      if (phoneLayout) {
+        await focusAutoTourTargetAndWait(item || trigger, runId, 'center');
+      } else {
+        clearAutoTourFocus();
+        autoTourFocusTarget = item || trigger;
+        autoTourFocusTarget.classList.add('avatar-tour-focus');
+        await nextAutoTourPaint();
+      }
+      showNudge(`${label} · ${index + 1} of ${triggers.length}`, 40, autoTourPace.shape + 650);
+      if (!await autoTourDelay(autoTourPace.shape, runId)) return false;
+    }
+
+    const openTrigger = triggers.find(trigger => trigger.getAttribute('aria-expanded') === 'true');
+    const openItem = openTrigger?.closest('.brand-orbit-item');
+    openItem?.classList.remove('is-open');
+    openTrigger?.setAttribute('aria-expanded', 'false');
+    await nextAutoTourPaint();
+    clearAutoTourFocus();
+    return autoTourIsCurrent(runId);
+  }
+
   function setAutomatedTourStep(stepNumber, nextTitle, nextMessage, expression = 'explaining') {
     root.classList.add('is-tour', 'auto-tour-running');
     setGlasses(null, false);
@@ -18384,6 +18612,7 @@ html.network-constrained .portfolio-guide-panel {
 
   function closeTourOpenedShowcase() {
     if (!modal?.classList.contains('active')) return;
+    modal.dataset.tourClosing = 'true';
     const modalClose = modal.querySelector('.modal-close-btn');
     modalClose?.click();
   }
@@ -18440,6 +18669,7 @@ html.network-constrained .portfolio-guide-panel {
     document.body.classList.add('avatar-tour-active');
 
     const stage = document.getElementById('stage3d');
+    const overview = document.getElementById('overview-section');
     const featured = document.getElementById('featured-section');
     const brand = document.getElementById('brand-section');
     const contact = document.getElementById('contact-section');
@@ -18447,75 +18677,162 @@ html.network-constrained .portfolio-guide-panel {
     const overviewApi = window.portfolioOverviewModel;
 
     try {
-      setAutomatedTourStep(1, 'Meet the interactive eyewear model', 'We will begin in the overview. I am also starting the 3D model in the background so it can be ready by the end of the tour.', 'happy');
-      focusAutoTourTarget(stage || document.getElementById('overview-section'), 'center');
+      setAutomatedTourStep(1, 'Meet the interactive eyewear model', 'The tour will wait for every section, project view, and animation to be ready before moving. The 3D model will continue loading in the background.', 'happy');
+      if (!await focusAutoTourTargetAndWait(stage || overview, runId, 'center')) return;
+
+      await waitForAutoTourReady(
+        () => {
+          const target = stage || overview;
+          if (!target) return false;
+          const rect = target.getBoundingClientRect();
+          return rect.width > 80 && rect.height > 80;
+        },
+        runId,
+        {
+          stepNumber: 1,
+          title: 'Preparing the overview',
+          message: 'The overview is being painted before the guided route begins.',
+          maximumWait: 30000
+        }
+      );
+
       if (!(overviewApi?.isReady?.() || stage?.classList.contains('model-loaded'))) {
         overviewApi?.request?.();
         if (!overviewApi?.request) document.getElementById('load3dModelButton')?.click();
       }
-      if (!await autoTourDelay(3000, runId)) return;
+      if (!await autoTourDelay(autoTourPace.overview, runId)) return;
 
-      setAutomatedTourStep(2, 'Featured work', 'This section contains the main project slots. I will open the third slot so you can see the full transformation and project presentation.', 'explaining');
-      focusAutoTourTarget(featured, 'start');
-      if (!await autoTourDelay(2800, runId)) return;
+      setAutomatedTourStep(2, 'Featured work', 'These are the main project slots. I will wait for Main Slot 03 to be ready, then open its full eyeglasses presentation.', 'explaining');
+      if (!await focusAutoTourTargetAndWait(featured, runId, 'start')) return;
 
-      setAutomatedTourStep(3, 'Opening main slot 3', 'The Winged Rimless project will now transform into its custom eyeglasses popup on both desktop and mobile.', 'curious');
-      focusAutoTourTarget(thirdCard, 'center');
-      if (!await autoTourDelay(1300, runId)) return;
       const tourCardImage = thirdCard?.querySelector('.slot-card-img');
       if (tourCardImage?.dataset.src) {
         try {
           if (typeof hydratePortfolioThumbnail === 'function') hydratePortfolioThumbnail(tourCardImage, 'high');
-          else {
-            tourCardImage.loading = 'eager';
-            tourCardImage.fetchPriority = 'high';
-            tourCardImage.src = tourCardImage.dataset.src;
-            delete tourCardImage.dataset.src;
-          }
-        } catch (_) {}
+          else requestTourImage(tourCardImage, 'high');
+        } catch (_) { requestTourImage(tourCardImage, 'high'); }
       }
+
+      await waitForAutoTourReady(
+        () => {
+          if (!thirdCard) return false;
+          const rect = thirdCard.getBoundingClientRect();
+          const imageReady = !tourCardImage || (tourCardImage.complete && tourCardImage.naturalWidth > 0) || tourCardImage.classList.contains('is-loaded');
+          return rect.width > 60 && rect.height > 60 && imageReady;
+        },
+        runId,
+        {
+          stepNumber: 2,
+          title: 'Loading Main Slot 03',
+          message: 'I will open the project only after its thumbnail and card layout are ready.',
+          maximumWait: 90000
+        }
+      );
+      if (!await autoTourDelay(autoTourPace.featured, runId)) return;
+
+      setAutomatedTourStep(3, 'Opening Main Slot 03', 'The Winged Rimless card will now transform into its custom eyeglasses popup. The tour is paused until that transition and its first project view are ready.', 'curious');
+      if (!await focusAutoTourTargetAndWait(thirdCard, runId, 'center')) return;
+      if (!await autoTourDelay(autoTourPace.projectIntro, runId)) return;
+      closePanel();
+      await nextAutoTourPaint();
       thirdCard?.click();
 
-      const showcaseOpened = await waitForAutoTourCondition(
+      const showcaseOpened = await waitForAutoTourReady(
         () => modal?.classList.contains('active') && modal.classList.contains('carousel-ready'),
         runId,
-        18000
-      );
-      if (!showcaseOpened) {
-        setAutomatedTourStep(4, 'Project preview delayed', 'The popup took longer than expected to become ready, so I will continue with the rest of the portfolio without interrupting the page.', 'concerned');
-        await autoTourDelay(1800, runId);
-      } else {
-        setAutomatedTourStep(4, 'Exploring the left-lens carousel', 'Watch the left lens. I will move through every project view automatically, while the normal arrows and swipe controls remain available.', 'focused');
-        await autoTourDelay(1500, runId);
-        closePanel();
-        const activeTourSlider = document.getElementById('lensSliderWrapper');
-        const slideCount = Math.max(1, activeTourSlider?.querySelectorAll('.lens-slider-slide').length || 1);
-        for (let index = 1; index < slideCount; index += 1) {
-          if (!autoTourRunning || runId !== autoTourRunId) return;
-          document.getElementById('modalLensNextBtn')?.click();
-          if (!await autoTourDelay(1650, runId)) return;
+        {
+          stepNumber: 3,
+          title: 'Building the project popup',
+          message: 'The card-to-case-to-glasses animation is completing. I will not skip ahead while it is still rendering.',
+          openPanelWhileWaiting: false,
+          maximumWait: 120000
         }
+      );
+
+      if (!showcaseOpened) {
+        setAutomatedTourStep(4, 'Project preview unavailable', 'The project popup could not finish preparing, so the tour will close it safely and continue to the creative process.', 'concerned');
+        await autoTourDelay(1500, runId);
+        closeTourOpenedShowcase();
+        await waitForAutoTourCondition(() => !modal?.classList.contains('active'), runId, 8000);
+      } else {
+        setAutomatedTourStep(4, 'Exploring the left-lens carousel', 'Each next view will load while the current one stays visible. Once ready, it will slide into place and remain briefly so you can take it in.', 'focused');
+        if (!await autoTourDelay(950, runId)) return;
+        closePanel();
+
+        const activeTourSlider = document.getElementById('lensSliderWrapper');
+        const slides = Array.from(activeTourSlider?.querySelectorAll('.lens-slider-slide') || []);
+        const slideCount = Math.max(1, slides.length);
+
+        if (slides[0]) {
+          if (!await waitForTourSlide(slides[0], 1, slideCount, runId)) return;
+          showNudge(`Project view 1 of ${slideCount}`, 50, autoTourPace.slide + 550);
+          if (!await autoTourDelay(autoTourPace.slide, runId)) return;
+        }
+
+        for (let index = 1; index < slideCount; index += 1) {
+          if (!autoTourIsCurrent(runId)) return;
+          if (!await waitForTourSlide(slides[index], index + 1, slideCount, runId)) return;
+          document.getElementById('modalLensNextBtn')?.click();
+          await waitForLensMovement(activeTourSlider, index, runId);
+          showNudge(`Project view ${index + 1} of ${slideCount}`, 40, autoTourPace.slide + 550);
+          if (!await autoTourDelay(autoTourPace.slide, runId)) return;
+        }
+
         setExpression('success');
-        setCopy('Guided tour · 04', 'Left-lens carousel complete', 'You have now seen every view in main slot 3. I will close the popup and continue to the creative process section.');
+        setCopy('Guided tour · 04', 'Left-lens carousel complete', 'Every project view has loaded and been shown. I will close the popup and continue to the interactive creative process.');
         setActions([{ label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(true) }]);
         openPanel();
-        if (!await autoTourDelay(1800, runId)) return;
+        if (!await autoTourDelay(1250, runId)) return;
         closeTourOpenedShowcase();
-        await waitForAutoTourCondition(() => !modal?.classList.contains('active'), runId, 5000);
+        await waitForAutoTourReady(
+          () => !modal?.classList.contains('active') && !document.body.classList.contains('showcase-lock'),
+          runId,
+          {
+            stepNumber: 4,
+            title: 'Closing the project',
+            message: 'The project is closing cleanly before the page scroll resumes.',
+            maximumWait: 15000
+          }
+        );
       }
 
-      setAutomatedTourStep(5, 'Section 3 · Creative process', 'This section explains how research, positioning, creative direction, production, and optimisation shaped the final work.', 'thinking');
-      focusAutoTourTarget(brand, 'start');
-      if (!await autoTourDelay(3600, runId)) return;
+      setAutomatedTourStep(5, 'Section 3 · Creative process', 'On the right, five shapes explain the workflow from research to optimisation. I will open them one at a time and pause briefly on each.', 'thinking');
+      if (!await focusAutoTourTargetAndWait(brand, runId, 'start')) return;
+      await waitForAutoTourReady(
+        () => {
+          const visual = brand?.querySelector('#brandStrategyVisual');
+          const rect = visual?.getBoundingClientRect();
+          return Boolean(rect && rect.width > 120 && rect.height > 120 && brand.querySelectorAll('.brand-orbit-trigger').length >= 5);
+        },
+        runId,
+        {
+          stepNumber: 5,
+          title: 'Preparing the creative process',
+          message: 'The interactive shapes are being laid out before I begin opening them.',
+          maximumWait: 30000
+        }
+      );
+      if (!await autoTourDelay(950, runId)) return;
+      if (!await exploreStrategyShapes(brand, runId)) return;
 
-      setAutomatedTourStep(6, 'Contact me', 'The final portfolio section provides the contact form, email, and LinkedIn details for collaborations or further discussion.', 'encouraging');
-      focusAutoTourTarget(contact, 'start');
-      if (!await autoTourDelay(3600, runId)) return;
+      setAutomatedTourStep(6, 'Contact me', 'This final section contains the contact form, email, and LinkedIn details. I will wait until the complete section is ready before finishing the route.', 'encouraging');
+      if (!await focusAutoTourTargetAndWait(contact, runId, 'start')) return;
+      await waitForAutoTourReady(
+        () => Boolean(contact?.querySelector('#contactForm') && contact.querySelector('#contactEmailLink')),
+        runId,
+        {
+          stepNumber: 6,
+          title: 'Preparing contact details',
+          message: 'The contact controls are being checked before the tour concludes.',
+          maximumWait: 30000
+        }
+      );
+      if (!await autoTourDelay(autoTourPace.contact, runId)) return;
 
       const modelReady = Boolean(overviewApi?.isReady?.() || stage?.classList.contains('model-loaded'));
       if (modelReady) {
-        setAutomatedTourStep(7, 'The 3D model is ready', 'The model finished loading during the tour. I will take you back to it now and reveal the interactive view.', 'success');
-        if (!await autoTourDelay(1200, runId)) return;
+        setAutomatedTourStep(7, 'The 3D model is ready', 'The model finished loading during the tour. I will take you back and reveal the interactive viewer now.', 'success');
+        if (!await autoTourDelay(1050, runId)) return;
         closePanel();
         await revealOverviewModelFromGuide();
         autoTourRunning = false;
@@ -18524,7 +18841,7 @@ html.network-constrained .portfolio-guide-panel {
         clearAutoTourFocus();
         savePreference('self');
         setExpression('success');
-        showNudge('Tour complete — drag the 3D model to explore it.', 160, 5200);
+        showNudge('Tour complete — drag the 3D model to explore it.', 120, 5200);
       } else {
         progressFill.style.width = '100%';
         progressCount.textContent = `${String(autoTourTotalSteps).padStart(2, '0')} / ${String(autoTourTotalSteps).padStart(2, '0')}`;
@@ -18536,7 +18853,7 @@ html.network-constrained .portfolio-guide-panel {
         savePreference('self');
         setExpression('encouraging');
         const localFileMessage = location.protocol === 'file:'
-          ? 'The browser is waiting for the local GLB to be opened from the model area. Feel free to explore the portfolio by yourself; I will inform you as soon as the model loads.'
+          ? 'The browser is still preparing the local 3D model. Feel free to explore the portfolio by yourself; I will inform you as soon as it is ready.'
           : 'The 3D model is still loading. Feel free to explore the portfolio by yourself; I will inform you as soon as it is ready.';
         setCopy('Tour complete', 'Feel free to explore', localFileMessage);
         setActions([
@@ -18739,7 +19056,9 @@ html.network-constrained .portfolio-guide-panel {
     setExpression('neutral');
     root.classList.add('is-ready');
     if (!guideMode) {
-      window.setTimeout(showChoice, 850);
+      window.setTimeout(() => {
+        if (!autoTourRunning && !guideMode) showChoice();
+      }, 850);
     } else {
       showNudge(guideMode === 'tour' ? 'Continue your guided tour.' : 'Need help? Ask me.', 900, 4200);
     }
@@ -19146,6 +19465,31 @@ body.avatar-tour-active .portfolio-guide-toggle::after {
 }
 @media (prefers-reduced-motion: reduce) {
   body.avatar-tour-active .portfolio-guide-toggle::after { animation: none; }
+}
+
+
+/* Loading-aware tour performance pass: keep the avatar responsive without
+   competing with project video decoding, smooth scrolling, or shape expansion. */
+body.avatar-tour-active .portfolio-guide-toggle::after {
+  animation: none;
+  opacity: .24;
+  transform: scale(1.03);
+}
+body.avatar-tour-active .portfolio-guide-panel {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(21, 18, 31, .97);
+}
+body.avatar-tour-active .avatar-tour-focus {
+  box-shadow: 0 0 0 6px rgba(130, 71, 255, .08), 0 12px 30px rgba(55, 33, 92, .12) !important;
+}
+body.avatar-tour-active #lensSliderWrapper {
+  will-change: transform;
+}
+@media (max-width: 768px) {
+  body.avatar-tour-active .portfolio-guide-panel {
+    background: #15121f;
+  }
 }
 </style>
 </body>
