@@ -18343,6 +18343,16 @@ html.network-constrained .portfolio-guide-panel {
     kicker.textContent = nextKicker;
     title.textContent = nextTitle;
     message.textContent = nextMessage;
+
+    // On phones, soften each guide-copy change instead of replacing the words
+    // in a single abrupt paint. The content remains immediately available to
+    // assistive technology and the animation is purely visual.
+    if (autoTourRunning && window.matchMedia('(max-width: 768px)').matches) {
+      panel.classList.remove('guide-copy-enter');
+      void panel.offsetWidth;
+      panel.classList.add('guide-copy-enter');
+      window.setTimeout(() => panel.classList.remove('guide-copy-enter'), 360);
+    }
   }
 
   function setActions(buttons) {
@@ -18365,7 +18375,14 @@ html.network-constrained .portfolio-guide-panel {
     toggle.setAttribute('aria-label', 'Close portfolio guide');
   }
 
-  function closePanel() {
+  function closePanel(force = false) {
+    // Keep the spoken guidance visible throughout the automated phone tour.
+    // Calls that previously hid the panel during scrolling, popup construction,
+    // carousel playback, or shape expansion now retain the compact mobile panel.
+    if (!force && autoTourRunning && window.matchMedia('(max-width: 768px)').matches) {
+      openPanel();
+      return;
+    }
     root.classList.remove('is-open');
     panel.setAttribute('aria-hidden', 'true');
     toggle.setAttribute('aria-expanded', 'false');
@@ -18383,21 +18400,111 @@ html.network-constrained .portfolio-guide-panel {
     }, delay);
   }
 
+  let mobileTourScrollFrame = 0;
+  let mobileTourScrollToken = 0;
+  let mobileTourScrollPromise = Promise.resolve(true);
+
   function clearAutoTourFocus() {
-    autoTourFocusTarget?.classList.remove('avatar-tour-focus');
+    if (autoTourFocusTarget) {
+      autoTourFocusTarget.classList.remove('avatar-tour-focus', 'avatar-tour-prepared');
+    }
     autoTourFocusTarget = null;
+  }
+
+  function mobileTourScrollDestination(target, block = 'center') {
+    const viewport = window.visualViewport;
+    const viewportHeight = viewport?.height || window.innerHeight || 1;
+    const viewportOffset = viewport?.offsetTop || 0;
+    const panelRect = root.classList.contains('is-open') ? panel.getBoundingClientRect() : null;
+    const safeTop = Math.max(12 + viewportOffset, panelRect?.bottom ? panelRect.bottom + 14 : 12 + viewportOffset);
+    const safeBottom = viewportOffset + viewportHeight - 18;
+    const rect = target.getBoundingClientRect();
+    const currentY = window.scrollY;
+
+    // Do not move the page when the target is already comfortably visible.
+    // This removes the repeated micro-jumps that made the process tour feel abrupt.
+    const comfortablyVisible = rect.top >= safeTop && rect.bottom <= safeBottom;
+    if (comfortablyVisible) return currentY;
+
+    const available = Math.max(80, safeBottom - safeTop);
+    let topInViewport;
+    if (block === 'start' || rect.height >= available) {
+      topInViewport = safeTop;
+    } else if (block === 'end') {
+      topInViewport = safeBottom - rect.height;
+    } else {
+      topInViewport = safeTop + Math.max(0, (available - Math.min(rect.height, available)) / 2);
+    }
+
+    const maxY = Math.max(0, document.documentElement.scrollHeight - viewportHeight);
+    return Math.max(0, Math.min(maxY, currentY + rect.top - topInViewport));
+  }
+
+  function animateMobileTourScroll(target, block, runId, token) {
+    return new Promise(resolve => {
+      cancelAnimationFrame(mobileTourScrollFrame);
+      const startY = window.scrollY;
+      const endY = mobileTourScrollDestination(target, block);
+      const distance = endY - startY;
+      if (Math.abs(distance) < 2 || reducedMotion) {
+        window.scrollTo(0, endY);
+        resolve(autoTourIsCurrent(runId));
+        return;
+      }
+
+      const duration = Math.max(680, Math.min(1180, 650 + Math.abs(distance) * 0.32));
+      const started = performance.now();
+      document.documentElement.classList.add('avatar-tour-programmatic-scroll');
+
+      const ease = value => value < 0.5
+        ? 4 * value * value * value
+        : 1 - Math.pow(-2 * value + 2, 3) / 2;
+
+      const step = now => {
+        if (!autoTourIsCurrent(runId) || token !== mobileTourScrollToken) {
+          document.documentElement.classList.remove('avatar-tour-programmatic-scroll');
+          resolve(false);
+          return;
+        }
+        const progress = Math.min(1, (now - started) / duration);
+        window.scrollTo(0, startY + distance * ease(progress));
+        if (progress < 1) {
+          mobileTourScrollFrame = requestAnimationFrame(step);
+        } else {
+          window.scrollTo(0, endY);
+          document.documentElement.classList.remove('avatar-tour-programmatic-scroll');
+          resolve(true);
+        }
+      };
+      mobileTourScrollFrame = requestAnimationFrame(step);
+    });
   }
 
   function focusAutoTourTarget(target, block = 'center') {
     if (!target) return;
     clearAutoTourFocus();
     autoTourFocusTarget = target;
-    target.classList.add('avatar-tour-focus');
+    target.classList.add('avatar-tour-focus', 'avatar-tour-prepared');
+
+    const mobileAutoTour = autoTourRunning && window.matchMedia('(max-width: 768px)').matches;
+    if (mobileAutoTour) {
+      const token = ++mobileTourScrollToken;
+      const runId = autoTourRunId;
+      // Give content-visibility and the fixed guide panel two paints to settle
+      // before calculating the destination and beginning the glide.
+      mobileTourScrollPromise = (async () => {
+        await nextAutoTourPaint();
+        return animateMobileTourScroll(target, block, runId, token);
+      })();
+      return;
+    }
+
     target.scrollIntoView({
       behavior: reducedMotion ? 'auto' : 'smooth',
       block,
       inline: 'center'
     });
+    mobileTourScrollPromise = Promise.resolve(true);
   }
 
   function autoTourDelay(ms, runId) {
@@ -18462,6 +18569,17 @@ html.network-constrained .portfolio-guide-panel {
   async function focusAutoTourTargetAndWait(target, runId, block = 'center') {
     if (!target || !autoTourIsCurrent(runId)) return false;
     focusAutoTourTarget(target, block);
+
+    if (window.matchMedia('(max-width: 768px)').matches) {
+      const completed = await mobileTourScrollPromise;
+      if (!completed || !autoTourIsCurrent(runId)) return false;
+      await nextAutoTourPaint();
+      // A short visual settle makes the transition read as one continuous move
+      // instead of a scroll immediately followed by another animation.
+      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : 180));
+      return autoTourIsCurrent(runId);
+    }
+
     await waitForAutoTourScroll(target, runId);
     await nextAutoTourPaint();
     return autoTourIsCurrent(runId);
@@ -18498,11 +18616,12 @@ html.network-constrained .portfolio-guide-panel {
       if (matched) return true;
 
       const elapsed = performance.now() - started;
+      const keepMobileTourCopyVisible = autoTourRunning && window.matchMedia('(max-width: 768px)').matches;
       if (!noticeShown && elapsed >= noticeDelay) {
         noticeShown = true;
-        if (openPanelWhileWaiting) setAutoTourWaiting(stepNumber, title, message, true);
+        if (openPanelWhileWaiting || keepMobileTourCopyVisible) setAutoTourWaiting(stepNumber, title, message, true);
         else showNudge(title, 60, 5200);
-      } else if (noticeShown && openPanelWhileWaiting && elapsed - lastUpdate > 12000) {
+      } else if (noticeShown && (openPanelWhileWaiting || keepMobileTourCopyVisible) && elapsed - lastUpdate > 12000) {
         lastUpdate = elapsed;
         setAutoTourWaiting(stepNumber, title, `${message} The tour is paused here so nothing is skipped on a slower connection.`, true);
       }
@@ -18719,7 +18838,17 @@ html.network-constrained .portfolio-guide-panel {
         autoTourFocusTarget.classList.add('avatar-tour-focus');
         await nextAutoTourPaint();
       }
-      showNudge(`${label} · ${index + 1} of ${triggers.length}`, 40, autoTourPace.shape + 650);
+      if (phoneLayout) {
+        setExpression(index === triggers.length - 1 ? 'success' : 'explaining');
+        setCopy(
+          'Guided tour · 05',
+          `${label} · ${index + 1} of ${triggers.length}`,
+          'This process shape is fully expanded. Take a moment to read it before I move smoothly to the next stage.'
+        );
+        openPanel();
+      } else {
+        showNudge(`${label} · ${index + 1} of ${triggers.length}`, 40, autoTourPace.shape + 650);
+      }
       if (!await autoTourDelay(autoTourPace.shape, runId)) return false;
     }
 
@@ -18770,8 +18899,13 @@ html.network-constrained .portfolio-guide-panel {
   async function revealOverviewModelFromGuide() {
     const stage = document.getElementById('stage3d');
     if (!stage) return false;
-    focusAutoTourTarget(stage, 'center');
-    await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : 720));
+    if (autoTourRunning) {
+      const focused = await focusAutoTourTargetAndWait(stage, autoTourRunId, 'center');
+      if (!focused) return false;
+    } else {
+      focusAutoTourTarget(stage, 'center');
+      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : 720));
+    }
     const api = window.portfolioOverviewModel;
     const ready = Boolean(api?.isReady?.() || stage.classList.contains('model-loaded'));
     if (!ready) return false;
@@ -18944,13 +19078,27 @@ html.network-constrained .portfolio-guide-panel {
           if (!await waitForTourSlide(slides[0], 1, slideCount, runId)) return;
           const openingMedia = slides[0].querySelector('img, video');
           const openingViewTime = openingMedia?.tagName === 'VIDEO' ? 3900 : autoTourPace.slide;
-          showNudge(
-            openingMedia?.tagName === 'VIDEO'
-              ? `Opening video · view 1 of ${slideCount}`
-              : `Project view 1 of ${slideCount}`,
-            50,
-            openingViewTime + 550
-          );
+          if (mobileTour) {
+            setExpression(openingMedia?.tagName === 'VIDEO' ? 'impressed' : 'focused');
+            setCopy(
+              'Guided tour · 04',
+              openingMedia?.tagName === 'VIDEO'
+                ? `Opening video · view 1 of ${slideCount}`
+                : `Project view 1 of ${slideCount}`,
+              openingMedia?.tagName === 'VIDEO'
+                ? 'The opening reel is now playing. I will leave it on screen long enough for you to take in the first project view.'
+                : 'The first project view is fully loaded and will remain visible briefly before the carousel continues.'
+            );
+            openPanel();
+          } else {
+            showNudge(
+              openingMedia?.tagName === 'VIDEO'
+                ? `Opening video · view 1 of ${slideCount}`
+                : `Project view 1 of ${slideCount}`,
+              50,
+              openingViewTime + 550
+            );
+          }
           if (!await autoTourDelay(openingViewTime, runId)) return;
         }
 
@@ -18959,7 +19107,17 @@ html.network-constrained .portfolio-guide-panel {
           if (!await waitForTourSlide(slides[index], index + 1, slideCount, runId)) return;
           document.getElementById('modalLensNextBtn')?.click();
           await waitForLensMovement(activeTourSlider, index, runId);
-          showNudge(`Project view ${index + 1} of ${slideCount}`, 40, autoTourPace.slide + 550);
+          if (mobileTour) {
+            setExpression('explaining');
+            setCopy(
+              'Guided tour · 04',
+              `Project view ${index + 1} of ${slideCount}`,
+              'This carousel view has finished loading and moving into position. I will pause briefly before continuing.'
+            );
+            openPanel();
+          } else {
+            showNudge(`Project view ${index + 1} of ${slideCount}`, 40, autoTourPace.slide + 550);
+          }
           if (!await autoTourDelay(autoTourPace.slide, runId)) return;
         }
 
@@ -20082,6 +20240,141 @@ html body #showcaseModal.modal-container:not(.active) * {
   queueSync();
 })();
 </script>
+
+
+<style id="mobile-guided-tour-seamless-visibility-v23">
+@media (max-width: 768px) {
+  /* The previous paint containment clipped the absolutely positioned speech
+     panel to the avatar's small fixed box. Keep the guide isolated without
+     clipping any of its spoken content. */
+  body.avatar-tour-active .portfolio-guide {
+    contain: none !important;
+    overflow: visible !important;
+    transform: none !important;
+    z-index: 420 !important;
+  }
+
+  /* The guide must remain present while the card is becoming a case and while
+     the popup is assembling. The authored project animation remains untouched. */
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.is-hidden-for-transition,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.is-menu-hidden {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+  }
+
+  /* During the automated phone route, show the avatar's words in a compact,
+     safe-area-aware panel at the top. The avatar button remains at the bottom. */
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .portfolio-guide-panel,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.in-showcase .portfolio-guide-panel {
+    position: fixed !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: calc(10px + env(safe-area-inset-top)) !important;
+    bottom: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    max-height: min(34vh, 245px) !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    padding: 14px 15px 13px !important;
+    border-radius: 18px !important;
+    opacity: 1;
+    visibility: visible;
+    transform-origin: center top !important;
+    box-shadow: 0 14px 38px rgba(9, 5, 20, .34) !important;
+    contain: layout style paint !important;
+    z-index: 430 !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.is-open .portfolio-guide-panel {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translate3d(0, 0, 0) scale(1) !important;
+    pointer-events: auto !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-panel-head {
+    margin-bottom: 9px !important;
+    padding-right: 30px !important;
+    gap: 9px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-panel-mini-avatar {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-panel-title strong {
+    font-size: .82rem !important;
+    line-height: 1.25 !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-message {
+    display: block !important;
+    color: rgba(255,255,255,.94) !important;
+    font-size: .76rem !important;
+    line-height: 1.48 !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-progress {
+    margin-top: 10px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-actions {
+    margin-top: 10px !important;
+  }
+
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .guide-action {
+    min-height: 34px !important;
+    padding: 8px 12px !important;
+  }
+
+  /* A soft copy entrance makes each spoken step feel connected to the previous
+     one without delaying or hiding the actual text. */
+  body.avatar-tour-active .portfolio-guide-panel.guide-copy-enter .guide-panel-title,
+  body.avatar-tour-active .portfolio-guide-panel.guide-copy-enter .guide-message,
+  body.avatar-tour-active .portfolio-guide-panel.guide-copy-enter .guide-progress {
+    animation: mobileGuideCopyEnter .34s cubic-bezier(.22,1,.36,1) both;
+  }
+
+  /* Temporarily neutralise the page-level smooth-scroll rule while the tour's
+     frame-coordinated easing is driving the viewport. */
+  html.avatar-tour-programmatic-scroll {
+    scroll-behavior: auto !important;
+  }
+
+  .avatar-tour-prepared {
+    content-visibility: visible !important;
+  }
+}
+
+@keyframes mobileGuideCopyEnter {
+  0% { opacity: .45; transform: translate3d(0, 5px, 0); }
+  100% { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+@media (max-width: 380px) {
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .portfolio-guide-panel,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.in-showcase .portfolio-guide-panel {
+    left: 8px !important;
+    right: 8px !important;
+    top: calc(7px + env(safe-area-inset-top)) !important;
+    max-height: min(36vh, 235px) !important;
+    padding: 12px 13px 11px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) and (max-width: 768px) {
+  body.avatar-tour-active .portfolio-guide-panel.guide-copy-enter .guide-panel-title,
+  body.avatar-tour-active .portfolio-guide-panel.guide-copy-enter .guide-message,
+  body.avatar-tour-active .portfolio-guide-panel.guide-copy-enter .guide-progress {
+    animation: none !important;
+  }
+}
+</style>
 
 </body>
 </html>
