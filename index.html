@@ -11486,11 +11486,15 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                     video.src = video.dataset.src;
                     delete video.dataset.src;
                 }
-                video.load();
+                video.defaultMuted = true;
+                video.setAttribute('playsinline', '');
+                video.setAttribute('webkit-playsinline', '');
+                video.setAttribute('fetchpriority', 'high');
+                if (video.readyState === 0) video.load();
 
-                if (video.readyState >= 2) return Promise.resolve();
+                if (video.readyState >= 3 && video.videoWidth > 0) return Promise.resolve();
                 return new Promise(resolve => {
-                    video.addEventListener('loadeddata', resolve, { once: true });
+                    video.addEventListener('canplay', resolve, { once: true });
                     video.addEventListener('error', resolve, { once: true });
                 });
             }
@@ -13340,10 +13344,14 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 const video = document.createElement('video');
                 video.preload = 'auto';
                 video.muted = true;
+                video.defaultMuted = true;
                 video.playsInline = true;
                 video.loop = true;
                 video.autoplay = false;
                 video.poster = asset.poster || '';
+                video.setAttribute('playsinline', '');
+                video.setAttribute('webkit-playsinline', '');
+                video.setAttribute('fetchpriority', priority === 'high' ? 'high' : 'auto');
                 video.dataset.instantPreloaded = 'true';
                 record.media = video;
                 record.mediaReady = new Promise(resolve => {
@@ -13459,10 +13467,13 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
                 mediaWarmed = true;
                 const contextMode = getCardShowcaseContext(card);
                 hydratePortfolioThumbnail(card.querySelector('.slot-card-img'), 'high');
+                // A deliberate tap is strong intent. Begin the selected first
+                // video on phones as well as desktop so its poster can hand off to a
+                // real playable frame without waiting until the popup animation ends.
                 prewarmShowcaseMedia(
                     contextMode,
                     'high',
-                    !compactShowcaseMedia.matches
+                    true
                 );
             };
 
@@ -18514,53 +18525,138 @@ html.network-constrained .portfolio-guide-panel {
     } catch (_) {}
   }
 
+  function watchTourVideoFrame(video) {
+    if (!video || video.dataset.tourFrameWatch === 'true') return;
+    video.dataset.tourFrameWatch = 'true';
+
+    const markFrame = () => {
+      video.dataset.tourFramePresented = 'true';
+    };
+
+    const requestFrame = () => {
+      if (typeof video.requestVideoFrameCallback === 'function') {
+        try { video.requestVideoFrameCallback(markFrame); return; } catch (_) {}
+      }
+      window.setTimeout(markFrame, 90);
+    };
+
+    video.addEventListener('playing', requestFrame, { once: true });
+    video.addEventListener('timeupdate', markFrame, { once: true });
+    if (!video.paused && video.readyState >= 2) requestFrame();
+  }
+
   function requestTourSlideMedia(slide) {
     if (!slide) return;
     const media = slide.querySelector('img, video');
     if (!media) return;
+
     if (media.tagName === 'IMG') {
       media.loading = 'eager';
       media.fetchPriority = 'high';
+      media.decoding = 'async';
       if (media.dataset.src && !media.getAttribute('src')) {
         media.src = media.dataset.src;
         delete media.dataset.src;
       }
-    } else {
-      media.preload = 'auto';
-      media.muted = true;
-      media.playsInline = true;
-      if (media.dataset.src && !media.getAttribute('src')) {
-        media.src = media.dataset.src;
-        delete media.dataset.src;
-      }
+
+      const markDecoded = () => {
+        const decoded = media.decode?.();
+        if (decoded) decoded.catch(() => {}).finally(() => { media.dataset.tourDecoded = 'true'; });
+        else media.dataset.tourDecoded = 'true';
+      };
+      if (media.complete && media.naturalWidth > 0) markDecoded();
+      else media.addEventListener('load', markDecoded, { once: true });
+      return;
+    }
+
+    if (media.error && media.poster) {
+      const fallbackImage = new Image();
+      fallbackImage.alt = 'Project preview';
+      fallbackImage.loading = 'eager';
+      fallbackImage.decoding = 'async';
+      fallbackImage.fetchPriority = 'high';
+      fallbackImage.src = media.poster;
+      media.replaceWith(fallbackImage);
+      slide.classList.add('is-fallback-media');
+      requestTourSlideMedia(slide);
+      return;
+    }
+
+    media.preload = 'auto';
+    media.muted = true;
+    media.defaultMuted = true;
+    media.playsInline = true;
+    media.autoplay = true;
+    media.setAttribute('playsinline', '');
+    media.setAttribute('webkit-playsinline', '');
+    media.setAttribute('fetchpriority', 'high');
+
+    let sourceAssigned = false;
+    if (media.dataset.src && !media.getAttribute('src')) {
+      media.src = media.dataset.src;
+      delete media.dataset.src;
+      sourceAssigned = true;
+    }
+    if (sourceAssigned || (media.readyState === 0 && media.getAttribute('src'))) {
       try { media.load(); } catch (_) {}
     }
+
+    watchTourVideoFrame(media);
+    const playback = media.play();
+    playback?.catch?.(() => {});
   }
 
   function isTourSlideReady(slide) {
     if (!slide) return false;
-    if (slide.classList.contains('is-media-ready') || slide.classList.contains('is-media-error')) return true;
     const media = slide.querySelector('img, video');
     if (!media) return true;
-    if (media.tagName === 'IMG') return Boolean(media.complete && media.naturalWidth > 0);
-    return media.readyState >= 2;
+
+    if (media.tagName === 'IMG') {
+      if (!(media.complete && media.naturalWidth > 0)) return false;
+      if (media.dataset.tourDecoded === 'true' || typeof media.decode !== 'function') return true;
+      if (media.dataset.tourDecodeRequested !== 'true') {
+        media.dataset.tourDecodeRequested = 'true';
+        media.decode().catch(() => {}).finally(() => { media.dataset.tourDecoded = 'true'; });
+      }
+      return false;
+    }
+
+    // A poster, a generic ready class, or loaded metadata is not the video.
+    // The tour advances only after the video can continue playing and the browser
+    // has actually presented a decoded frame in the lens.
+    if (media.error) return false;
+    const playable = media.readyState >= 3 && media.videoWidth > 0 && media.videoHeight > 0;
+    const framePresented = media.dataset.tourFramePresented === 'true' || media.currentTime > 0.04;
+    return Boolean(playable && !media.paused && !media.ended && framePresented);
   }
 
   async function waitForTourSlide(slide, slideNumber, slideCount, runId) {
     requestTourSlideMedia(slide);
+    const media = slide?.querySelector('img, video');
+    const isVideo = media?.tagName === 'VIDEO';
     const ready = await waitForAutoTourReady(
       () => isTourSlideReady(slide),
       runId,
       {
         stepNumber: 4,
         title: `Loading project view ${slideNumber} of ${slideCount}`,
-        message: 'The current view will remain on screen until the next image or video is fully ready.',
+        message: isVideo
+          ? 'The tour is waiting for the video itself—not only its poster—to become playable and show its first frame.'
+          : 'The current view will remain on screen until the next image has loaded and decoded.',
         openPanelWhileWaiting: false,
-        maximumWait: 120000
+        noticeDelay: isVideo ? 420 : 620,
+        maximumWait: isVideo ? 300000 : 180000
       }
     );
+
     if (!ready && autoTourIsCurrent(runId)) {
-      showNudge(`View ${slideNumber} could not finish loading; using the available fallback.`, 60, 4000);
+      setAutoTourWaiting(
+        4,
+        'Project media is still unavailable',
+        'I have paused the tour here instead of skipping this view. You can end the tour and continue exploring while the media finishes loading.',
+        true
+      );
+      return false;
     }
     return autoTourIsCurrent(runId);
   }
@@ -18710,6 +18806,18 @@ html.network-constrained .portfolio-guide-panel {
     const contact = document.getElementById('contact-section');
     const thirdCard = grid?.querySelectorAll('.slot-card')?.[2] || null;
     const overviewApi = window.portfolioOverviewModel;
+    const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    const constrainedTourNetwork = Boolean(
+      connection?.saveData
+      || ['slow-2g', '2g'].includes(String(connection?.effectiveType || '').toLowerCase())
+      || document.documentElement.classList.contains('network-constrained')
+    );
+    const canWarmSelectedVideo = typeof prewarmShowcaseMedia === 'function';
+
+    // Slot 03 remains the only selected project. Its opening reel begins loading
+    // while the visitor is still viewing the overview, preventing the large 3D
+    // model from competing with the tour's immediate media on constrained networks.
+    try { if (canWarmSelectedVideo) prewarmShowcaseMedia('doffy', 'high', true); } catch (_) {}
 
     try {
       setAutomatedTourStep(1, 'Meet the interactive eyewear model', 'The tour will wait for every section, project view, and animation to be ready before moving. The 3D model will continue loading in the background.', 'happy');
@@ -18731,13 +18839,13 @@ html.network-constrained .portfolio-guide-panel {
         }
       );
 
-      if (!(overviewApi?.isReady?.() || stage?.classList.contains('model-loaded'))) {
+      if (!constrainedTourNetwork && !(overviewApi?.isReady?.() || stage?.classList.contains('model-loaded'))) {
         overviewApi?.request?.();
         if (!overviewApi?.request) document.getElementById('load3dModelButton')?.click();
       }
       if (!await autoTourDelay(autoTourPace.overview, runId)) return;
 
-      setAutomatedTourStep(2, 'Featured work', 'These are the main project slots. I will wait for Main Slot 03 to be ready, then open its full eyeglasses presentation.', 'explaining');
+      setAutomatedTourStep(2, 'Featured work', 'These are the main project slots. I will select a random slot for us to explore, then wait until its preview is ready before opening it.', 'explaining');
       if (!await focusAutoTourTargetAndWait(featured, runId, 'start')) return;
 
       const tourCardImage = thirdCard?.querySelector('.slot-card-img');
@@ -18758,14 +18866,43 @@ html.network-constrained .portfolio-guide-panel {
         runId,
         {
           stepNumber: 2,
-          title: 'Loading Main Slot 03',
-          message: 'I will open the project only after its thumbnail and card layout are ready.',
+          title: 'Preparing the selected slot',
+          message: 'I will open the randomly selected project only after its thumbnail and card layout are ready.',
           maximumWait: 90000
         }
       );
+
+      if (canWarmSelectedVideo) {
+        await waitForAutoTourReady(
+          () => {
+            let record = null;
+            try { record = showcasePreloadRegistry?.get?.('doffy') || null; } catch (_) {}
+            const video = record?.media;
+            if (!video) return false;
+            if (video.error) return true;
+            return video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0;
+          },
+          runId,
+          {
+            stepNumber: 2,
+            title: 'Loading the selected project video',
+            message: 'The opening reel is being prepared now so the popup begins with the real video rather than moving past an unloaded poster.',
+            maximumWait: 240000
+          }
+        );
+      }
+
+      // On a slow/data-saving connection, start the much larger 3D download only
+      // after the selected reel has its first decoded frame. It still loads during
+      // the rest of the tour, but no longer starves the immediate project content.
+      if (constrainedTourNetwork && !(overviewApi?.isReady?.() || stage?.classList.contains('model-loaded'))) {
+        overviewApi?.request?.();
+        if (!overviewApi?.request) document.getElementById('load3dModelButton')?.click();
+      }
+
       if (!await autoTourDelay(autoTourPace.featured, runId)) return;
 
-      setAutomatedTourStep(3, 'Opening Main Slot 03', 'The Winged Rimless card will now transform into its custom eyeglasses popup. The tour is paused until that transition and its first project view are ready.', 'curious');
+      setAutomatedTourStep(3, 'Opening the selected slot', 'The selected Winged Rimless project will now transform into its custom eyeglasses popup. I will wait for the transition and its opening video before continuing.', 'curious');
       if (!await focusAutoTourTargetAndWait(thirdCard, runId, 'center')) return;
       if (!await autoTourDelay(autoTourPace.projectIntro, runId)) return;
       closePanel();
@@ -18800,8 +18937,16 @@ html.network-constrained .portfolio-guide-panel {
 
         if (slides[0]) {
           if (!await waitForTourSlide(slides[0], 1, slideCount, runId)) return;
-          showNudge(`Project view 1 of ${slideCount}`, 50, autoTourPace.slide + 550);
-          if (!await autoTourDelay(autoTourPace.slide, runId)) return;
+          const openingMedia = slides[0].querySelector('img, video');
+          const openingViewTime = openingMedia?.tagName === 'VIDEO' ? 2850 : autoTourPace.slide;
+          showNudge(
+            openingMedia?.tagName === 'VIDEO'
+              ? `Opening video · view 1 of ${slideCount}`
+              : `Project view 1 of ${slideCount}`,
+            50,
+            openingViewTime + 550
+          );
+          if (!await autoTourDelay(openingViewTime, runId)) return;
         }
 
         for (let index = 1; index < slideCount; index += 1) {
