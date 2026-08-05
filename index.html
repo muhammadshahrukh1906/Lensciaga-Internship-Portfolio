@@ -11180,6 +11180,41 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             delete image.dataset.src;
         }
 
+        // Near-viewport thumbnails are released through a small queue instead
+        // of beginning as one burst. Deliberately selected cards still bypass
+        // this queue through hydratePortfolioThumbnail(..., 'high').
+        const portfolioThumbnailQueue = [];
+        const portfolioThumbnailConcurrency = networkConstrained
+            ? 1
+            : (compactShowcaseMedia.matches ? 2 : 3);
+        let portfolioThumbnailLoadsInFlight = 0;
+
+        function drainPortfolioThumbnailQueue() {
+            while (portfolioThumbnailLoadsInFlight < portfolioThumbnailConcurrency && portfolioThumbnailQueue.length) {
+                const image = portfolioThumbnailQueue.shift();
+                if (!image || !image.dataset.src) {
+                    if (image) delete image.dataset.thumbnailQueued;
+                    continue;
+                }
+                portfolioThumbnailLoadsInFlight += 1;
+                delete image.dataset.thumbnailQueued;
+                const release = () => {
+                    portfolioThumbnailLoadsInFlight = Math.max(0, portfolioThumbnailLoadsInFlight - 1);
+                    drainPortfolioThumbnailQueue();
+                };
+                image.addEventListener('load', release, { once: true });
+                image.addEventListener('error', release, { once: true });
+                hydratePortfolioThumbnail(image, 'auto');
+            }
+        }
+
+        function queuePortfolioThumbnail(image) {
+            if (!image || !image.dataset.src || image.dataset.thumbnailQueued === 'true') return;
+            image.dataset.thumbnailQueued = 'true';
+            portfolioThumbnailQueue.push(image);
+            drainPortfolioThumbnailQueue();
+        }
+
         // The first desktop row (or the first mobile row) is requested immediately.
         // These are the cards a visitor can reach first, so their imagery wins network
         // priority over decorative or below-the-fold media.
@@ -11197,13 +11232,13 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             const portfolioImageObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (!entry.isIntersecting) return;
-                    hydratePortfolioThumbnail(entry.target, 'auto');
+                    queuePortfolioThumbnail(entry.target);
                     observer.unobserve(entry.target);
                 });
             }, { rootMargin: portfolioThumbnailRootMargin, threshold: 0.01 });
             deferredPortfolioThumbs.forEach(image => portfolioImageObserver.observe(image));
         } else {
-            deferredPortfolioThumbs.forEach(image => hydratePortfolioThumbnail(image, 'auto'));
+            deferredPortfolioThumbs.forEach(queuePortfolioThumbnail);
         }
 
         let responsiveViewportFrame = 0;
@@ -19492,5 +19527,333 @@ body.avatar-tour-active #lensSliderWrapper {
   }
 }
 </style>
+<style id="portfolio-final-hit-testing-performance-pass-v21">
+/* Final input reliability layer. Visuals and animation timings remain unchanged. */
+#portfolioGrid .slot-card {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+#portfolioGrid .slot-card::before,
+#portfolioGrid .slot-card::after,
+#portfolioGrid .slot-card > *,
+#portfolioGrid .slot-card .slot-overlay,
+#portfolioGrid .slot-card .slot-overlay * {
+  pointer-events: none !important;
+}
+#portfolioGrid .slot-card[role="button"]:focus-visible {
+  outline: 3px solid rgba(130,71,255,.68) !important;
+  outline-offset: 4px !important;
+}
+
+/* Decorative strategy artwork can never sit above a process control. */
+#brand-section .brand-orbit-rings,
+#brand-section .brand-orbit-rings *,
+#brand-section .brand-case-art,
+#brand-section .brand-case-art *,
+#brand-section .brand-orbit-caption,
+#brand-section .brand-orbit-caption * {
+  pointer-events: none !important;
+}
+#brand-section .brand-orbit-items {
+  pointer-events: none !important;
+}
+#brand-section .brand-orbit-item,
+#brand-section .brand-orbit-trigger,
+#brand-section .brand-strategy-explore {
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+#brand-section .brand-orbit-trigger {
+  isolation: isolate;
+}
+#brand-section .brand-orbit-trigger::before {
+  content: '';
+  position: absolute;
+  inset: -9px;
+  z-index: 20;
+  border-radius: inherit;
+  background: transparent;
+  pointer-events: auto;
+}
+#brand-section .brand-orbit-trigger > * {
+  position: relative;
+  z-index: 21;
+  pointer-events: none !important;
+}
+#brand-section .brand-orbit-item.is-open {
+  z-index: 60 !important;
+}
+#brand-section .brand-orbit-trigger:focus-visible,
+#brand-section .brand-strategy-explore:focus-visible {
+  outline: 3px solid rgba(130,71,255,.68) !important;
+  outline-offset: 4px !important;
+}
+
+/* A visually closed popup must also be completely absent from hit testing.
+   Some lens content extends far beyond its visible silhouette, so allowing
+   descendant pointer events here creates invisible dead zones on the page. */
+html body #showcaseModal.modal-container:not(.active),
+html body #showcaseModal.modal-container:not(.active) * {
+  pointer-events: none !important;
+}
+#showcaseModal:not(.active) video,
+#showcaseModal:not(.active) model-viewer {
+  visibility: hidden;
+}
+#showcaseModal.active {
+  pointer-events: auto !important;
+}
+#showcaseModal.active #mainAssembly {
+  pointer-events: none !important;
+}
+#showcaseModal.active #mainAssembly .rimless-lens,
+#showcaseModal.active #mainAssembly .glasses-temple,
+#showcaseModal.active #mainAssembly .gold-hinge-assembly,
+#showcaseModal.active #mainAssembly .gold-center-bridge-assembly,
+#showcaseModal.active .lens-nav-btn,
+#showcaseModal.active .modal-close-btn,
+#showcaseModal.active .modal-action-btn,
+#showcaseModal.active .mobile-showcase-details,
+#showcaseModal.active .mobile-showcase-details * {
+  pointer-events: auto !important;
+}
+
+@media (max-width: 768px) {
+  #brand-section .brand-orbit-trigger::before { inset: -5px; }
+  #portfolioGrid .slot-card { touch-action: pan-y pinch-zoom; }
+}
+</style>
+<script id="portfolio-final-unified-interaction-controller-v21">
+(() => {
+  const boot = () => {
+    const grid = document.getElementById('portfolioGrid');
+    const modal = document.getElementById('showcaseModal');
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    /* One card activation path for mouse, touch, pen, keyboard and assistive tech. */
+    if (grid && !grid.dataset.unifiedCardInput) {
+      grid.dataset.unifiedCardInput = 'true';
+      const cards = Array.from(grid.querySelectorAll('.slot-card'));
+      const actions = new WeakMap();
+      let gesture = null;
+      let pendingCard = null;
+      let lastPointerCard = null;
+      let lastPointerAt = 0;
+      let activationLockedUntil = 0;
+
+      cards.forEach((card, index) => {
+        const action = typeof card.onclick === 'function' ? card.onclick : null;
+        if (action) actions.set(card, action);
+        /* Keep the authored inline metadata available to the portfolio's
+           existing media prewarmer. This controller intercepts the click before
+           the inline handler can run twice, then invokes the saved action once. */
+        card.setAttribute('role', 'button');
+        card.setAttribute('tabindex', '0');
+        card.setAttribute('aria-label', `Open ${card.querySelector('.slot-title')?.textContent?.trim() || `project ${index + 1}`}`);
+      });
+
+      const primeCard = card => {
+        const image = card?.querySelector('.slot-card-img');
+        if (!image) return;
+        image.fetchPriority = 'high';
+        image.loading = 'eager';
+        try {
+          if (typeof window.hydratePortfolioThumbnail === 'function') {
+            window.hydratePortfolioThumbnail(image, 'high');
+          } else if (image.dataset.src && (!image.currentSrc || image.currentSrc.startsWith('data:image/gif'))) {
+            image.src = image.dataset.src;
+          }
+          if (typeof image.decode === 'function' && image.complete) image.decode().catch(() => {});
+        } catch (_) {}
+      };
+
+      const activate = (card, sourceEvent) => {
+        if (!card || performance.now() < activationLockedUntil) return;
+        if (modal?.classList.contains('active') || modal?.classList.contains('is-animating') || modal?.classList.contains('is-closing')) return;
+        const action = actions.get(card);
+        if (typeof action !== 'function') return;
+        activationLockedUntil = performance.now() + 700;
+        primeCard(card);
+        try { action.call(card, sourceEvent || new Event('click')); } catch (error) { console.error('Project activation failed:', error); }
+      };
+
+      grid.addEventListener('pointerdown', event => {
+        if (event.button !== undefined && event.button !== 0) return;
+        const card = event.target.closest?.('.slot-card');
+        if (!card) return;
+        gesture = {
+          card,
+          pointerId: event.pointerId,
+          x: event.clientX,
+          y: event.clientY,
+          time: performance.now()
+        };
+        primeCard(card);
+      }, { capture: true, passive: true });
+
+      grid.addEventListener('pointermove', event => {
+        if (!gesture || gesture.pointerId !== event.pointerId) return;
+        if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 12) gesture.moved = true;
+      }, { capture: true, passive: true });
+
+      grid.addEventListener('pointercancel', () => { gesture = null; pendingCard = null; }, { capture: true, passive: true });
+
+      grid.addEventListener('pointerup', event => {
+        const card = event.target.closest?.('.slot-card');
+        const current = gesture;
+        gesture = null;
+        if (!current || current.pointerId !== event.pointerId || current.card !== card || current.moved) return;
+        if (Math.hypot(event.clientX - current.x, event.clientY - current.y) > 12) return;
+        pendingCard = card;
+        lastPointerCard = card;
+        lastPointerAt = performance.now();
+        event.preventDefault();
+        /* A programmatic click keeps the portfolio's existing preload and avatar
+           capture listeners in the loop before this controller opens the project. */
+        card.click();
+      }, { capture: true, passive: false });
+
+      grid.addEventListener('click', event => {
+        const card = event.target.closest?.('.slot-card');
+        if (!card) return;
+        const now = performance.now();
+        if (pendingCard === card) {
+          pendingCard = null;
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          activate(card, event);
+          return;
+        }
+        if (lastPointerCard === card && now - lastPointerAt < 850) {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          return;
+        }
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        activate(card, event);
+      }, true);
+
+      cards.forEach(card => {
+        card.addEventListener('keydown', event => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          card.click();
+        });
+      });
+
+    }
+
+    /* Replace accumulated process-button listeners with one stable controller. */
+    const visual = document.getElementById('brandStrategyVisual');
+    const exploreOld = document.getElementById('brandStrategyExplore');
+    if (visual && !visual.dataset.unifiedProcessInput) {
+      visual.dataset.unifiedProcessInput = 'true';
+      const oldTriggers = Array.from(visual.querySelectorAll('.brand-orbit-trigger'));
+      const triggers = oldTriggers.map((oldTrigger, index) => {
+        const trigger = oldTrigger.cloneNode(true);
+        trigger.id = trigger.id || `brand-process-trigger-${index + 1}`;
+        oldTrigger.replaceWith(trigger);
+        return trigger;
+      });
+      const items = triggers.map(trigger => trigger.closest('.brand-orbit-item'));
+      let transitionLock = false;
+
+      const closeItem = item => {
+        if (!item) return;
+        item.classList.remove('is-open');
+        item.querySelector('.brand-orbit-trigger')?.setAttribute('aria-expanded', 'false');
+      };
+      const closeAll = except => items.forEach(item => { if (item !== except) closeItem(item); });
+      const openItem = (item, trigger) => {
+        closeAll(item);
+        item.classList.add('is-open');
+        trigger.setAttribute('aria-expanded', 'true');
+      };
+      const toggleItem = (item, trigger) => {
+        if (!item || !trigger || transitionLock) return;
+        transitionLock = true;
+        const opening = !item.classList.contains('is-open');
+        if (opening) openItem(item, trigger); else closeItem(item);
+        window.setTimeout(() => { transitionLock = false; }, reducedMotion ? 30 : 240);
+      };
+
+      triggers.forEach(trigger => {
+        trigger.addEventListener('click', event => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          toggleItem(trigger.closest('.brand-orbit-item'), trigger);
+        });
+        trigger.addEventListener('keydown', event => {
+          if (event.key !== 'Escape') return;
+          event.preventDefault();
+          closeItem(trigger.closest('.brand-orbit-item'));
+          trigger.focus({ preventScroll: true });
+        });
+      });
+
+      document.addEventListener('pointerdown', event => {
+        if (visual.contains(event.target) || document.getElementById('brandStrategyExplore')?.contains(event.target)) return;
+        closeAll(null);
+      }, { passive: true });
+
+      if (exploreOld) {
+        const explore = exploreOld.cloneNode(true);
+        exploreOld.replaceWith(explore);
+        let exploreLocked = false;
+        explore.addEventListener('click', event => {
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          if (exploreLocked) return;
+          exploreLocked = true;
+          const first = items[0];
+          const firstTrigger = triggers[0];
+          if (!first || !firstTrigger) { exploreLocked = false; return; }
+          openItem(first, firstTrigger);
+
+          requestAnimationFrame(() => requestAnimationFrame(() => {
+            const phone = window.matchMedia('(max-width: 768px)').matches;
+            const target = phone ? first : visual;
+            const rect = target.getBoundingClientRect();
+            const safeTop = phone ? 14 : 24;
+            const needsScroll = rect.top < safeTop || rect.bottom > window.innerHeight - 18;
+            if (needsScroll) {
+              const top = Math.max(0, window.scrollY + rect.top - safeTop);
+              window.scrollTo({ top, behavior: reducedMotion ? 'auto' : 'smooth' });
+            }
+            window.setTimeout(() => {
+              firstTrigger.focus({ preventScroll: true });
+              exploreLocked = false;
+            }, reducedMotion ? 30 : 420);
+          }));
+        });
+      }
+    }
+
+    /* Prevent hidden modal media from continuing to decode off-screen. */
+    if (modal && !modal.dataset.mediaLifecycleBound) {
+      modal.dataset.mediaLifecycleBound = 'true';
+      const syncMedia = () => {
+        const active = modal.classList.contains('active');
+        modal.querySelectorAll('video').forEach(video => {
+          if (!active) {
+            try { video.pause(); } catch (_) {}
+          }
+        });
+      };
+      new MutationObserver(syncMedia).observe(modal, { attributes: true, attributeFilter: ['class'] });
+      syncMedia();
+    }
+  };
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot, { once: true });
+  else boot();
+})();
+</script>
+
 </body>
 </html>
