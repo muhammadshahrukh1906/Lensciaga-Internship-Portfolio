@@ -24230,5 +24230,346 @@ body.featured-focus .portfolio-social-link {
 })();
 </script>
 
+
+
+<!-- FINAL MOBILE PAUSED-TOUR LAYOUT + FREE-INTERACTION REPAIR -->
+<style id="mobile-paused-tour-free-interaction-final-v28">
+/* The detached fallback button caused duplicate/out-of-place Resume controls.
+   Resume remains inside the guide panel; the avatar reopens that panel if closed. */
+#guideResumeFloating,
+#portfolioGuide #guideResumeFloating,
+body.avatar-tour-paused #guideResumeFloating {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* The guide wrapper itself never blocks portfolio controls. Only its visible
+   panel, avatar button and actions receive input. */
+#portfolioGuide,
+body.avatar-tour-paused #portfolioGuide,
+body.avatar-tour-active #portfolioGuide {
+  pointer-events: none !important;
+}
+#portfolioGuide .portfolio-guide-panel,
+#portfolioGuide .portfolio-guide-toggle,
+#portfolioGuide .guide-panel-close,
+#portfolioGuide #guideActions,
+#portfolioGuide #guideActions .guide-action {
+  pointer-events: auto !important;
+}
+
+/* Project navigation stays above every paused-guide layer. */
+#showcaseModal.active .modal-close-btn {
+  z-index: 30050 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+#showcaseModal.active > .lens-nav-btn {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+}
+
+@media (max-width: 768px) {
+  /* A paused tour is a small bottom sheet, not the automatic-tour speech dock.
+     These rules intentionally override all older absolute action positioning. */
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused {
+    position: fixed !important;
+    left: max(7px, env(safe-area-inset-left)) !important;
+    right: max(7px, env(safe-area-inset-right)) !important;
+    bottom: calc(7px + env(safe-area-inset-bottom)) !important;
+    top: auto !important;
+    width: auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    display: block !important;
+    contain: none !important;
+    overflow: visible !important;
+    transform: none !important;
+    z-index: 30000 !important;
+  }
+
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .portfolio-guide-panel,
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused.in-showcase .portfolio-guide-panel {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: min(42dvh, 270px) !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    padding: 13px 14px 12px !important;
+    border-radius: 17px !important;
+    transform: none !important;
+    transform-origin: center bottom !important;
+    contain: layout paint style !important;
+    box-shadow: 0 13px 32px rgba(9,5,20,.34) !important;
+    scrollbar-width: thin;
+  }
+
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .portfolio-guide-panel::after {
+    display: none !important;
+    content: none !important;
+  }
+
+  /* The large corner avatar is unnecessary while the panel is already open.
+     When the panel is closed it becomes the unobtrusive way to reopen it. */
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused.is-open .portfolio-guide-toggle {
+    display: none !important;
+  }
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused:not(.is-open) .portfolio-guide-toggle {
+    position: fixed !important;
+    display: block !important;
+    right: calc(10px + env(safe-area-inset-right)) !important;
+    bottom: calc(10px + env(safe-area-inset-bottom)) !important;
+    width: 58px !important;
+    height: 58px !important;
+    z-index: 30020 !important;
+  }
+
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-panel-head {
+    position: relative !important;
+    min-height: 32px !important;
+    height: auto !important;
+    margin: 0 0 7px !important;
+    padding: 0 34px 0 0 !important;
+  }
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-panel-mini-avatar {
+    display: block !important;
+    width: 34px !important;
+    height: 34px !important;
+  }
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-panel-kicker {
+    font-size: .48rem !important;
+    letter-spacing: 1.05px !important;
+  }
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-panel-title strong {
+    display: -webkit-box !important;
+    overflow: hidden !important;
+    white-space: normal !important;
+    text-overflow: clip !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+    font-size: .72rem !important;
+    line-height: 1.17 !important;
+  }
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-panel-close {
+    position: absolute !important;
+    top: 9px !important;
+    right: 9px !important;
+    width: 25px !important;
+    height: 25px !important;
+  }
+
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-message {
+    display: block !important;
+    min-height: 0 !important;
+    max-height: 58px !important;
+    overflow-y: auto !important;
+    margin: 0 !important;
+    padding: 0 2px 0 0 !important;
+    font-size: .67rem !important;
+    line-height: 1.35 !important;
+    -webkit-line-clamp: unset !important;
+    scrollbar-width: thin;
+  }
+
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-progress {
+    position: static !important;
+    display: flex !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    margin: 10px 0 0 !important;
+    gap: 8px !important;
+  }
+
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused #guideActions,
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-actions {
+    position: static !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+    margin: 10px 0 0 !important;
+    padding: 0 !important;
+  }
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused #guideActions .guide-action,
+  body.avatar-tour-paused #portfolioGuide.auto-tour-paused .guide-actions .guide-action {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 34px !important;
+    padding: 7px 8px !important;
+    margin: 0 !important;
+    font-size: .51rem !important;
+    line-height: 1.1 !important;
+    white-space: nowrap !important;
+  }
+
+  /* Keep the popup usable while the tour is paused. The guide no longer owns
+     the rest of the viewport or turns the popup into a modal-within-a-modal. */
+  body.avatar-tour-paused #showcaseModal.active {
+    pointer-events: auto !important;
+  }
+  body.avatar-tour-paused #showcaseModal.active .modal-close-btn,
+  body.avatar-tour-paused #showcaseModal.active .lens-nav-btn,
+  body.avatar-tour-paused #showcaseModal.active .modal-action-btn,
+  body.avatar-tour-paused #showcaseModal.active .mobile-showcase-details,
+  body.avatar-tour-paused #showcaseModal.active .mobile-showcase-details * {
+    pointer-events: auto !important;
+  }
+}
+</style>
+<script id="mobile-paused-tour-free-interaction-controller-v28">
+(() => {
+  'use strict';
+
+  const guide = document.getElementById('portfolioGuide');
+  const panel = document.getElementById('portfolioGuidePanel');
+  const toggle = document.getElementById('portfolioGuideToggle');
+  const floating = document.getElementById('guideResumeFloating');
+  const modal = document.getElementById('showcaseModal');
+  const featured = document.getElementById('featured-section');
+  const closeButton = modal?.querySelector('.modal-close-btn');
+  if (!guide || !panel || !toggle || !modal || !closeButton) return;
+
+  /* Remove the obsolete fallback completely. Older watchdogs retain a detached
+     reference, so they cannot put a second Resume button back on screen. */
+  try { floating?.remove(); } catch (_) {}
+
+  const state = () => window.portfolioGuidedTourState || null;
+  let closeInProgress = false;
+  let lastCloseGestureAt = 0;
+
+  function pausedTour() {
+    const current = state();
+    return Boolean(current?.running && current.paused);
+  }
+
+  function reopenGuide() {
+    if (!pausedTour()) return;
+    guide.classList.add('is-open', 'auto-tour-paused');
+    panel.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true');
+  }
+
+  /* If the visitor dismisses the paused panel, the avatar remains available to
+     reopen it. No floating Resume control is needed. */
+  toggle.addEventListener('click', () => {
+    if (!pausedTour()) return;
+    requestAnimationFrame(() => {
+      if (!guide.classList.contains('is-open')) reopenGuide();
+    });
+  }, true);
+
+  async function waitForModalClose(timeout = 4200) {
+    const start = performance.now();
+    while (modal.classList.contains('active') && performance.now() - start < timeout) {
+      await new Promise(resolve => window.setTimeout(resolve, 90));
+    }
+    return !modal.classList.contains('active');
+  }
+
+  async function closePausedShowcase(event) {
+    if (!pausedTour() || !modal.classList.contains('active') || closeInProgress) return;
+    const now = performance.now();
+    if (now - lastCloseGestureAt < 450) return;
+    lastCloseGestureAt = now;
+    closeInProgress = true;
+
+    event?.preventDefault?.();
+    event?.stopPropagation?.();
+    event?.stopImmediatePropagation?.();
+    modal.dataset.tourClosing = 'true';
+
+    try {
+      /* The authored close function may briefly reject input while the opening
+         animation is finishing. Retry after that transition instead of trapping
+         the visitor inside the project. */
+      const invoke = () => {
+        try {
+          if (typeof window.closeShowcase === 'function') {
+            return window.closeShowcase({ target: closeButton });
+          }
+          if (typeof closeShowcase === 'function') {
+            return closeShowcase({ target: closeButton });
+          }
+        } catch (_) {}
+        return null;
+      };
+
+      invoke();
+      if (!await waitForModalClose(1050)) {
+        await new Promise(resolve => window.setTimeout(resolve, 360));
+        invoke();
+      }
+      const closed = await waitForModalClose(3300);
+
+      if (closed) {
+        delete modal.dataset.tourClosing;
+        /* Keep the route paused, but narrate the featured section rather than
+           restoring the project the visitor deliberately left. */
+        try { state()?.pauseForTest?.(featured || document.body); } catch (_) {}
+      }
+    } finally {
+      closeInProgress = false;
+    }
+  }
+
+  /* Capture the genuine mobile gesture and perform one deterministic close.
+     This survives old guide listeners and cloned/replaced close controls. */
+  const delegatedClose = event => {
+    const button = event.target instanceof Element
+      ? event.target.closest('#showcaseModal .modal-close-btn')
+      : null;
+    if (!button || !pausedTour()) return;
+    closePausedShowcase(event);
+  };
+
+  window.addEventListener('pointerup', delegatedClose, true);
+  window.addEventListener('click', delegatedClose, true);
+  window.addEventListener('keydown', event => {
+    if (event.key !== 'Escape' || !pausedTour() || !modal.classList.contains('active')) return;
+    closePausedShowcase(event);
+  }, true);
+
+  /* Maintain the no-duplicate-control invariant even if an earlier controller
+     changes classes after a pause, resume attempt, rotation or popup change. */
+  const sync = () => {
+    const duplicate = document.getElementById('guideResumeFloating');
+    if (duplicate) duplicate.remove();
+    if (!pausedTour()) return;
+    guide.style.pointerEvents = 'none';
+    panel.style.pointerEvents = guide.classList.contains('is-open') ? 'auto' : 'none';
+    toggle.style.pointerEvents = 'auto';
+  };
+  new MutationObserver(sync).observe(guide, {
+    attributes: true,
+    attributeFilter: ['class'],
+    childList: true,
+    subtree: true
+  });
+  addEventListener('resize', sync, { passive: true });
+  addEventListener('orientationchange', sync, { passive: true });
+  sync();
+})();
+</script>
+
 </body>
 </html>
