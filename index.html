@@ -18294,6 +18294,17 @@ html.network-constrained .portfolio-guide-panel {
   let expressionTimer = 0;
   let autoTourRunId = 0;
   let autoTourRunning = false;
+  let autoTourPaused = false;
+  let autoTourPauseSnapshot = null;
+  let autoTourWritingPauseCopy = false;
+  let autoTourLastCopy = null;
+  let autoTourLastExpression = 'neutral';
+  let autoTourPhase = 'idle';
+  let autoTourExpectedSlide = 0;
+  let autoTourExpectedProcessIndex = -1;
+  let lastTrustedPointerAt = 0;
+  let lastTrustedPointerTarget = null;
+  let interactionExplainTimer = 0;
   let awaitingLateModelNotice = false;
   let autoTourFocusTarget = null;
   const autoTourTotalSteps = 7;
@@ -18308,6 +18319,9 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function setExpression(name = 'neutral') {
+    if (autoTourRunning && !autoTourPaused && !autoTourWritingPauseCopy) {
+      autoTourLastExpression = name;
+    }
     const point = expressions[name] || expressions.neutral;
     const x = point[0] * 25;
     const y = point[1] * 50;
@@ -18350,6 +18364,9 @@ html.network-constrained .portfolio-guide-panel {
     kicker.textContent = nextKicker;
     title.textContent = nextTitle;
     message.textContent = nextMessage;
+    if (autoTourRunning && !autoTourPaused && !autoTourWritingPauseCopy) {
+      autoTourLastCopy = { kicker: nextKicker, title: nextTitle, message: nextMessage };
+    }
 
     // Keep mobile copy changes soft but inexpensive. Only the words fade/settle;
     // the fixed guide shell, progress bar and page layout stay completely still.
@@ -18547,24 +18564,56 @@ html.network-constrained .portfolio-guide-panel {
     mobileTourScrollPromise = Promise.resolve(true);
   }
 
-  function autoTourDelay(ms, runId) {
-    const duration = reducedMotion ? Math.min(ms, 90) : ms;
-    return new Promise(resolve => window.setTimeout(() => resolve(autoTourRunning && runId === autoTourRunId), duration));
-  }
-
-  function waitForAutoTourCondition(predicate, runId, timeout = 15000) {
+  function waitForAutoTourResume(runId) {
+    if (!autoTourPaused) return Promise.resolve(autoTourIsCurrent(runId));
     return new Promise(resolve => {
-      const started = performance.now();
       const check = () => {
-        if (!autoTourRunning || runId !== autoTourRunId) { resolve(false); return; }
-        let matched = false;
-        try { matched = Boolean(predicate()); } catch (_) {}
-        if (matched) { resolve(true); return; }
-        if (performance.now() - started >= timeout) { resolve(false); return; }
-        window.setTimeout(check, reducedMotion ? 20 : 80);
+        if (!autoTourIsCurrent(runId)) { resolve(false); return; }
+        if (!autoTourPaused) { resolve(true); return; }
+        window.setTimeout(check, reducedMotion ? 20 : 70);
       };
       check();
     });
+  }
+
+  async function autoTourDelay(ms, runId) {
+    let remaining = reducedMotion ? Math.min(ms, 90) : Math.max(0, ms);
+    let lastClock = performance.now();
+
+    while (autoTourIsCurrent(runId)) {
+      if (autoTourPaused) {
+        if (!await waitForAutoTourResume(runId)) return false;
+        lastClock = performance.now();
+        continue;
+      }
+      if (remaining <= 0) return true;
+      const slice = Math.min(remaining, reducedMotion ? 20 : 80);
+      await new Promise(resolve => window.setTimeout(resolve, slice));
+      const now = performance.now();
+      if (!autoTourPaused) remaining -= Math.max(0, now - lastClock);
+      lastClock = now;
+    }
+    return false;
+  }
+
+  async function waitForAutoTourCondition(predicate, runId, timeout = 15000) {
+    let activeElapsed = 0;
+    let lastClock = performance.now();
+    while (autoTourIsCurrent(runId) && activeElapsed < timeout) {
+      if (autoTourPaused) {
+        if (!await waitForAutoTourResume(runId)) return false;
+        lastClock = performance.now();
+        continue;
+      }
+      let matched = false;
+      try { matched = Boolean(predicate()); } catch (_) {}
+      if (matched) return true;
+      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 20 : 80));
+      const now = performance.now();
+      if (!autoTourPaused) activeElapsed += Math.max(0, now - lastClock);
+      lastClock = now;
+    }
+    return false;
   }
 
 
@@ -18587,13 +18636,18 @@ html.network-constrained .portfolio-guide-panel {
 
   async function waitForAutoTourScroll(target, runId, timeout = 3200) {
     if (!target) return false;
-    const started = performance.now();
+    let activeElapsed = 0;
+    let lastClock = performance.now();
     let lastY = window.scrollY;
     let lastTop = target.getBoundingClientRect().top;
     let stableFrames = 0;
 
-    while (autoTourIsCurrent(runId) && performance.now() - started < timeout) {
+    while (autoTourIsCurrent(runId) && activeElapsed < timeout) {
+      if (autoTourPaused) return false;
       await new Promise(resolve => requestAnimationFrame(resolve));
+      const now = performance.now();
+      activeElapsed += Math.max(0, now - lastClock);
+      lastClock = now;
       const rect = target.getBoundingClientRect();
       const viewportHeight = window.visualViewport?.height || window.innerHeight || 1;
       const visible = rect.bottom > 0 && rect.top < viewportHeight;
@@ -18603,26 +18657,34 @@ html.network-constrained .portfolio-guide-panel {
       lastY = window.scrollY;
       lastTop = rect.top;
     }
-    return autoTourIsCurrent(runId);
+    return autoTourIsCurrent(runId) && !autoTourPaused;
   }
 
   async function focusAutoTourTargetAndWait(target, runId, block = 'center') {
     if (!target || !autoTourIsCurrent(runId)) return false;
-    focusAutoTourTarget(target, block);
 
-    if (window.matchMedia('(max-width: 768px)').matches) {
-      const completed = await mobileTourScrollPromise;
+    while (autoTourIsCurrent(runId)) {
+      if (autoTourPaused && !await waitForAutoTourResume(runId)) return false;
+      focusAutoTourTarget(target, block);
+
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        const completed = await mobileTourScrollPromise;
+        if (autoTourPaused) continue;
+        if (!completed || !autoTourIsCurrent(runId)) return false;
+        await nextAutoTourPaint();
+        await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : 170));
+        if (autoTourPaused) continue;
+        return autoTourIsCurrent(runId);
+      }
+
+      const completed = await waitForAutoTourScroll(target, runId);
+      if (autoTourPaused) continue;
       if (!completed || !autoTourIsCurrent(runId)) return false;
       await nextAutoTourPaint();
-      // A short visual settle makes the transition read as one continuous move
-      // instead of a scroll immediately followed by another animation.
-      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : 170));
+      if (autoTourPaused) continue;
       return autoTourIsCurrent(runId);
     }
-
-    await waitForAutoTourScroll(target, runId);
-    await nextAutoTourPaint();
-    return autoTourIsCurrent(runId);
+    return false;
   }
 
   function setAutoTourWaiting(stepNumber, nextTitle, nextMessage, open = true) {
@@ -18646,16 +18708,23 @@ html.network-constrained .portfolio-guide-panel {
       maximumWait = 120000
     } = options;
 
-    const started = performance.now();
+    let activeElapsed = 0;
+    let lastClock = performance.now();
     let noticeShown = false;
     let lastUpdate = 0;
 
-    while (autoTourIsCurrent(runId) && performance.now() - started < maximumWait) {
+    while (autoTourIsCurrent(runId) && activeElapsed < maximumWait) {
+      if (autoTourPaused) {
+        if (!await waitForAutoTourResume(runId)) return false;
+        lastClock = performance.now();
+        continue;
+      }
+
       let matched = false;
       try { matched = Boolean(predicate()); } catch (_) {}
       if (matched) return true;
 
-      const elapsed = performance.now() - started;
+      const elapsed = activeElapsed;
       const keepMobileTourCopyVisible = autoTourRunning && window.matchMedia('(max-width: 768px)').matches;
       if (!noticeShown && elapsed >= noticeDelay) {
         noticeShown = true;
@@ -18667,6 +18736,9 @@ html.network-constrained .portfolio-guide-panel {
       }
 
       await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 24 : 90));
+      const now = performance.now();
+      if (!autoTourPaused) activeElapsed += Math.max(0, now - lastClock);
+      lastClock = now;
     }
     return false;
   }
@@ -18830,20 +18902,28 @@ html.network-constrained .portfolio-guide-panel {
     }
 
     let playedMs = 0;
+    let activeWallTime = 0;
     let lastClock = performance.now();
     let lastMediaTime = Number(video.currentTime || 0);
     let stalledSince = 0;
     let waitingCopyShown = false;
     const maximumWallTime = Math.max(45000, minimumPlaybackMs * 8);
-    const started = performance.now();
 
-    while (autoTourIsCurrent(runId) && playedMs < minimumPlaybackMs && performance.now() - started < maximumWallTime) {
+    while (autoTourIsCurrent(runId) && playedMs < minimumPlaybackMs && activeWallTime < maximumWallTime) {
+      if (autoTourPaused) {
+        if (!await waitForAutoTourResume(runId)) return false;
+        lastClock = performance.now();
+        lastMediaTime = Number(video.currentTime || 0);
+        continue;
+      }
+
       if (video.paused || video.readyState < 3) {
         try { await video.play(); } catch (_) {}
       }
 
       await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 24 : 110));
       const now = performance.now();
+      if (!autoTourPaused) activeWallTime += Math.max(0, now - lastClock);
       const currentMediaTime = Number(video.currentTime || 0);
       const looped = currentMediaTime + 0.15 < lastMediaTime;
       const advanced = looped || currentMediaTime > lastMediaTime + 0.012;
@@ -18942,6 +19022,8 @@ html.network-constrained .portfolio-guide-panel {
 
       for (let index = 0; index < triggers.length; index += 1) {
         if (!autoTourIsCurrent(runId)) return false;
+        if (autoTourPaused && !await waitForAutoTourResume(runId)) return false;
+        autoTourExpectedProcessIndex = index;
         const trigger = triggers[index];
         const item = items[index];
         const label = trigger.querySelector('strong')?.textContent?.trim() || `Stage ${index + 1}`;
@@ -19009,11 +19091,373 @@ html.network-constrained .portfolio-guide-panel {
       }
 
       if (!await closeCurrent()) return false;
+      autoTourExpectedProcessIndex = -1;
       clearAutoTourFocus();
       return autoTourIsCurrent(runId);
     } finally {
       document.body.classList.remove('avatar-tour-process-active');
     }
+  }
+
+
+  function captureAutoTourPauseSnapshot() {
+    return {
+      copy: autoTourLastCopy || {
+        kicker: kicker.textContent,
+        title: title.textContent,
+        message: message.textContent
+      },
+      expression: autoTourLastExpression || 'focused',
+      progressWidth: progressFill.style.width,
+      progressCount: progressCount.textContent,
+      glassesVisible: root.classList.contains('has-slot-glasses'),
+      glassesContext: currentSlotContext
+    };
+  }
+
+  function interactionText(target) {
+    const element = target instanceof Element ? target : document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+    if (!element) {
+      return {
+        title: 'Exploring the portfolio',
+        message: 'You have taken control of the page. I will stay here while you explore, then continue from the same guided-tour point when you resume.',
+        expression: 'curious'
+      };
+    }
+
+    const card = element.closest('.slot-card');
+    if (card) {
+      const project = card.querySelector('.slot-title')?.textContent?.trim() || 'this project';
+      const category = card.querySelector('.slot-label')?.textContent?.trim() || 'featured work';
+      return {
+        title: `You selected ${project}`,
+        message: `This is ${category}. Explore its custom popup, project details, and left-lens gallery at your own pace; the guided route is waiting exactly where you left it.`,
+        expression: 'impressed',
+        card
+      };
+    }
+
+    const processTrigger = element.closest('.brand-orbit-trigger, .brand-orbit-item');
+    if (processTrigger) {
+      const item = processTrigger.closest('.brand-orbit-item') || processTrigger;
+      const processTitle = item.querySelector('.brand-orbit-window strong, strong')?.textContent?.trim() || 'this creative-process stage';
+      const processSummary = item.querySelector('.brand-orbit-window > span')?.textContent?.trim() || 'This stage explains how the work moved from insight to execution.';
+      return {
+        title: `You opened ${processTitle}`,
+        message: `${processSummary} Read or compare this stage freely; I will resume the planned sequence only when you press Resume Tour.`,
+        expression: 'thinking'
+      };
+    }
+
+    if (element.closest('#brandStrategyExplore')) {
+      return {
+        title: 'You opened the creative framework',
+        message: 'The five expandable stages cover research, positioning, creative direction, production, and optimisation. Explore any stage now; the tour is paused.',
+        expression: 'thinking'
+      };
+    }
+
+    const carouselArea = element.closest('#lensSliderWrapper, .lens-display-left, .lens-nav-btn, #modalLensPrevBtn, #modalLensNextBtn');
+    if (carouselArea) {
+      const count = Math.max(1, typeof totalLensSlides === 'number' ? totalLensSlides : slider?.children?.length || 1);
+      const index = Math.max(0, Math.min(count - 1, typeof activeLensSlide === 'number' ? activeLensSlide : 0));
+      return {
+        title: `${currentSlotTitle} · view ${index + 1} of ${count}`,
+        message: 'You are controlling the left-lens carousel yourself. Use the arrows or swipe through the views; I will continue the guided sequence from its saved position when you resume.',
+        expression: 'explaining',
+        showGlasses: true
+      };
+    }
+
+    if (element.closest('.modal-close-btn')) {
+      return {
+        title: `You closed ${currentSlotTitle}`,
+        message: 'The project popup is closing because you chose to leave it. The tour is paused and will restore the correct guided-tour project state when you resume.',
+        expression: 'goodbye'
+      };
+    }
+
+    if (element.closest('#showcaseModal.active, .modal-action-btn, .modal-spec-block, .lens-info-right')) {
+      return {
+        title: `Exploring ${currentSlotTitle}`,
+        message: 'You are examining this project’s format, gallery, process, and purpose. Take your time; the automated route will not move until you resume it.',
+        expression: 'explaining',
+        showGlasses: true
+      };
+    }
+
+    if (element.closest('#stage3d, #luxuryGlassesModel, .hero-model-viewer, .glasses-3d-stage')) {
+      return {
+        title: 'You are exploring the 3D eyewear model',
+        message: 'Drag to rotate the model and inspect it from different angles. I have paused the route so the page will not move while you interact with it.',
+        expression: 'impressed'
+      };
+    }
+
+    const contactControl = element.closest('#contact-section a, #contact-section button, #contact-section input, #contact-section textarea, #contact-section select, #contactForm');
+    if (contactControl) {
+      const label = contactControl.getAttribute?.('aria-label') || contactControl.textContent?.trim() || contactControl.getAttribute?.('placeholder') || 'the contact details';
+      return {
+        title: 'You are using the contact section',
+        message: `You selected ${label.replace(/\s+/g, ' ').slice(0, 80)}. Complete the action at your own pace; the guided route will remain paused until you resume.`,
+        expression: 'encouraging'
+      };
+    }
+
+    const navigation = element.closest('a[href^="#"], .nav-item, .menu-link, .tab-link, .scroll-explore, .action-pill-btn, .hamburger-btn, .close-menu-btn');
+    if (navigation) {
+      const href = navigation.getAttribute('href') || '';
+      const destination = href.startsWith('#') ? document.querySelector(href) : null;
+      const heading = destination?.querySelector('h1, h2, .section-label')?.textContent?.trim()
+        || navigation.textContent?.trim()
+        || 'another part of the portfolio';
+      return {
+        title: `You chose ${heading.replace(/\s+/g, ' ').slice(0, 80)}`,
+        message: 'Explore this section freely. I have stopped the automatic movement and will return to the saved tour sequence when you press Resume Tour.',
+        expression: 'curious'
+      };
+    }
+
+    const section = element.closest('.portfolio-section');
+    if (section) {
+      const sectionName = section.querySelector('h1, h2, .section-label')?.textContent?.trim().replace(/\s+/g, ' ') || 'this section';
+      const tip = sectionTips[section.id];
+      return {
+        title: `You are exploring ${sectionName.slice(0, 80)}`,
+        message: tip?.text || 'Take in this content at your own pace. The guided route is paused until you choose to resume it.',
+        expression: tip?.expression || 'curious'
+      };
+    }
+
+    const readableLabel = element.closest('button, a, [role="button"]')?.textContent?.trim().replace(/\s+/g, ' ');
+    return {
+      title: readableLabel ? `You selected ${readableLabel.slice(0, 80)}` : 'Exploring the portfolio',
+      message: 'I have paused the automatic route so you can interact without the page moving ahead. Press Resume Tour whenever you are ready.',
+      expression: 'curious'
+    };
+  }
+
+  function renderPausedInteraction(target) {
+    if (!autoTourRunning || !autoTourPaused) return;
+    const detail = interactionText(target);
+    autoTourWritingPauseCopy = true;
+    try {
+      root.classList.add('is-tour', 'auto-tour-running', 'auto-tour-paused', 'is-open');
+      root.classList.remove('is-hidden-for-transition', 'is-menu-hidden');
+      document.body.classList.add('avatar-tour-active', 'avatar-tour-paused');
+      setExpression(detail.expression || 'curious');
+      if (detail.card) {
+        const inline = detail.card.getAttribute('onclick') || '';
+        const contextMatch = inline.match(/,\s*'([^']+)'\s*\)\s*$/);
+        if (contextMatch?.[1]) setGlasses(contextMatch[1], true);
+      } else if (detail.showGlasses) {
+        setGlasses(currentSlotContext, true);
+      } else {
+        setGlasses(null, false);
+      }
+      setCopy('Tour paused · You are in control', detail.title, detail.message);
+      setActions([
+        { label: 'Resume tour', kind: 'primary', onClick: resumeAutomatedTour },
+        { label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(false) }
+      ]);
+      openPanel();
+    } finally {
+      autoTourWritingPauseCopy = false;
+    }
+  }
+
+  function pauseAutomatedTourForInteraction(target) {
+    if (!autoTourRunning) return;
+    if (target instanceof Element && root.contains(target)) return;
+
+    if (!autoTourPaused) {
+      autoTourPauseSnapshot = captureAutoTourPauseSnapshot();
+      autoTourPaused = true;
+      root.classList.add('auto-tour-paused');
+      document.body.classList.add('avatar-tour-paused');
+      // Stop the current mobile glide on its next frame. The same target is
+      // refocused after Resume Tour, so the async route is paused rather than lost.
+      mobileTourScrollToken += 1;
+    }
+
+    clearTimeout(interactionExplainTimer);
+    interactionExplainTimer = window.setTimeout(() => renderPausedInteraction(target), reducedMotion ? 0 : 90);
+  }
+
+  async function waitOutsideTour(predicate, timeout = 18000) {
+    const started = performance.now();
+    while (autoTourRunning && performance.now() - started < timeout) {
+      let matched = false;
+      try { matched = Boolean(predicate()); } catch (_) {}
+      if (matched) return true;
+      await new Promise(resolve => window.setTimeout(resolve, 80));
+    }
+    return false;
+  }
+
+  async function closeManualShowcaseForResume() {
+    if (!modal?.classList.contains('active')) return true;
+    modal.dataset.tourClosing = 'true';
+    modal.querySelector('.modal-close-btn')?.click();
+    return waitOutsideTour(() => !modal.classList.contains('active') && !document.body.classList.contains('showcase-lock'), 16000);
+  }
+
+  async function ensureTourProjectForResume() {
+    const thirdCard = grid?.querySelectorAll('.slot-card')?.[2] || null;
+    const needsTourProject = autoTourPhase === 'popup-opening' || autoTourPhase === 'carousel';
+    const transitionRunning = () => Boolean(
+      document.body.classList.contains('showcase-lock')
+      || document.getElementById('kinetic3dStage')?.classList.contains('is-running')
+      || document.getElementById('kinetic3dStage')?.classList.contains('mobile-kinetic-running')
+    );
+
+    // A manual card can still be travelling through the card-to-case animation
+    // when Resume Tour is pressed. Let that authored transition finish before
+    // closing or replacing it, otherwise two showcase sequences can overlap.
+    if (transitionRunning() && !modal?.classList.contains('active')) {
+      await waitOutsideTour(() => modal?.classList.contains('active') || !transitionRunning(), 30000);
+    }
+
+    if (!needsTourProject) {
+      if (modal?.classList.contains('active')) await closeManualShowcaseForResume();
+      else if (transitionRunning()) await waitOutsideTour(() => !transitionRunning(), 30000);
+      return true;
+    }
+
+    if (modal?.classList.contains('active') && currentSlotContext !== 'doffy') {
+      if (!await closeManualShowcaseForResume()) return false;
+    }
+    if (!modal?.classList.contains('active')) {
+      if (transitionRunning()) {
+        const settled = await waitOutsideTour(() => !transitionRunning() || modal?.classList.contains('active'), 30000);
+        if (!settled) return false;
+        if (modal?.classList.contains('active') && currentSlotContext !== 'doffy') {
+          if (!await closeManualShowcaseForResume()) return false;
+        }
+      }
+      if (!modal?.classList.contains('active')) thirdCard?.click();
+      const opened = await waitOutsideTour(() => modal?.classList.contains('active') && modal.classList.contains('carousel-ready'), 90000);
+      if (!opened) return false;
+    }
+
+    if (autoTourPhase === 'carousel') {
+      const count = Math.max(1, typeof totalLensSlides === 'number' ? totalLensSlides : slider?.children?.length || 1);
+      const expected = Math.max(0, Math.min(count - 1, autoTourExpectedSlide));
+      let guard = 0;
+      while (autoTourRunning && typeof activeLensSlide === 'number' && activeLensSlide !== expected && guard < count + 2) {
+        const direction = expected > activeLensSlide ? 1 : -1;
+        try { moveLensSlider(direction); } catch (_) {}
+        await waitOutsideTour(() => !slider?.classList.contains('is-sliding'), 2400);
+        guard += 1;
+      }
+    }
+    return true;
+  }
+
+  async function restoreProcessStageForResume() {
+    if (autoTourPhase !== 'process') return true;
+    const visual = document.getElementById('brandStrategyVisual');
+    const triggers = Array.from(visual?.querySelectorAll('.brand-orbit-trigger') || []);
+    const items = triggers.map(trigger => trigger.closest('.brand-orbit-item'));
+    items.forEach((item, index) => {
+      const shouldOpen = index === autoTourExpectedProcessIndex && autoTourExpectedProcessIndex >= 0;
+      item?.classList.toggle('is-open', shouldOpen);
+      triggers[index]?.setAttribute('aria-expanded', shouldOpen ? 'true' : 'false');
+    });
+    await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 30 : 560));
+    return true;
+  }
+
+  async function resumeAutomatedTour() {
+    if (!autoTourRunning || !autoTourPaused) return;
+    const runId = autoTourRunId;
+    autoTourWritingPauseCopy = true;
+    try {
+      setExpression('focused');
+      setCopy('Guided tour', 'Returning to the saved route', 'I am restoring the correct project, carousel view, or process stage before the automatic sequence continues.');
+      setActions([{ label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(true) }]);
+      openPanel();
+    } finally {
+      autoTourWritingPauseCopy = false;
+    }
+
+    const menu = document.getElementById('fullScreenMenu');
+    if (menu?.classList.contains('active')) {
+      menu.querySelector('.close-menu-btn')?.click();
+      await waitOutsideTour(() => !menu.classList.contains('active'), 5000);
+    }
+
+    const projectReady = await ensureTourProjectForResume();
+    const processReady = projectReady && await restoreProcessStageForResume();
+    if (!autoTourRunning || runId !== autoTourRunId) return;
+
+    if (!projectReady || !processReady) {
+      autoTourWritingPauseCopy = true;
+      try {
+        setExpression('concerned');
+        setCopy('Guided tour paused', 'I could not restore this step yet', 'The current content is still settling. You can try Resume Tour again or end the tour and continue exploring freely.');
+        setActions([
+          { label: 'Resume tour', kind: 'primary', onClick: resumeAutomatedTour },
+          { label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(false) }
+        ]);
+        openPanel();
+      } finally {
+        autoTourWritingPauseCopy = false;
+      }
+      return;
+    }
+
+    const snapshot = autoTourPauseSnapshot;
+    autoTourPaused = false;
+    autoTourPauseSnapshot = null;
+    root.classList.remove('auto-tour-paused');
+    document.body.classList.remove('avatar-tour-paused');
+
+    autoTourWritingPauseCopy = true;
+    try {
+      if (snapshot?.glassesVisible) setGlasses(snapshot.glassesContext, true);
+      else setGlasses(null, false);
+      setExpression(snapshot?.expression || 'focused');
+      if (snapshot?.copy) setCopy(snapshot.copy.kicker, snapshot.copy.title, snapshot.copy.message);
+      if (snapshot?.progressWidth) progressFill.style.width = snapshot.progressWidth;
+      if (snapshot?.progressCount) progressCount.textContent = snapshot.progressCount;
+      setActions([{ label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(true) }]);
+      openPanel();
+    } finally {
+      autoTourWritingPauseCopy = false;
+    }
+  }
+
+  function meaningfulInteractionTarget(rawTarget) {
+    const element = rawTarget instanceof Element ? rawTarget : null;
+    if (!element || root.contains(element)) return null;
+    return element.closest(
+      '.slot-card, .brand-orbit-trigger, .brand-orbit-item, #brandStrategyExplore, ' +
+      '#lensSliderWrapper, .lens-display-left, .lens-nav-btn, #showcaseModal.active, ' +
+      '#stage3d, #luxuryGlassesModel, .hero-model-viewer, .glasses-3d-stage, ' +
+      'a, button, input, textarea, select, summary, [role="button"], [contenteditable="true"]'
+    );
+  }
+
+  function handleTrustedTourInteraction(event) {
+    if (!event.isTrusted || !autoTourRunning) return;
+    const target = meaningfulInteractionTarget(event.target);
+    if (!target) return;
+    if (event.type === 'click' && lastTrustedPointerTarget && performance.now() - lastTrustedPointerAt < 650) return;
+    if (event.type === 'pointerup') {
+      lastTrustedPointerAt = performance.now();
+      lastTrustedPointerTarget = target;
+    }
+    pauseAutomatedTourForInteraction(target);
+  }
+
+  function handleTrustedTourScroll(event) {
+    if (!event.isTrusted || !autoTourRunning || root.contains(event.target)) return;
+    if (document.documentElement.classList.contains('avatar-tour-programmatic-scroll')) return;
+    const target = event.target instanceof Element
+      ? event.target.closest('.portfolio-section, #showcaseModal.active') || event.target
+      : document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+    pauseAutomatedTourForInteraction(target);
   }
 
   function setAutomatedTourStep(stepNumber, nextTitle, nextMessage, expression = 'explaining') {
@@ -19039,9 +19483,14 @@ html.network-constrained .portfolio-guide-panel {
   function stopAutomatedTour(closeProject = false) {
     autoTourRunId += 1;
     autoTourRunning = false;
+    autoTourPaused = false;
+    autoTourPauseSnapshot = null;
+    autoTourPhase = 'idle';
+    autoTourExpectedSlide = 0;
+    autoTourExpectedProcessIndex = -1;
     awaitingLateModelNotice = false;
-    root.classList.remove('is-tour', 'auto-tour-running');
-    document.body.classList.remove('avatar-tour-active', 'avatar-tour-process-active');
+    root.classList.remove('is-tour', 'auto-tour-running', 'auto-tour-paused');
+    document.body.classList.remove('avatar-tour-active', 'avatar-tour-process-active', 'avatar-tour-paused');
     clearAutoTourFocus();
     savePreference('self');
     if (closeProject) closeTourOpenedShowcase();
@@ -19066,7 +19515,11 @@ html.network-constrained .portfolio-guide-panel {
     if (!ready) return false;
     if (api?.reveal) api.reveal();
     else stage.click();
-    await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 20 : 1550));
+    if (autoTourRunning) {
+      if (!await autoTourDelay(reducedMotion ? 20 : 1550, autoTourRunId)) return false;
+    } else {
+      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 20 : 1550));
+    }
     return Boolean(api?.isVisible?.() || stage.classList.contains('overview-model-visible'));
   }
 
@@ -19088,6 +19541,11 @@ html.network-constrained .portfolio-guide-panel {
 
     const runId = ++autoTourRunId;
     autoTourRunning = true;
+    autoTourPaused = false;
+    autoTourPauseSnapshot = null;
+    autoTourPhase = 'overview';
+    autoTourExpectedSlide = 0;
+    autoTourExpectedProcessIndex = -1;
     awaitingLateModelNotice = false;
     savePreference('self');
     document.body.classList.add('avatar-tour-active');
@@ -19139,6 +19597,7 @@ html.network-constrained .portfolio-guide-panel {
       }
       if (!await autoTourDelay(autoTourPace.overview, runId)) return;
 
+      autoTourPhase = 'featured';
       setAutomatedTourStep(2, 'Featured work', 'These are the main project slots. I will select a random slot for us to explore, then wait until its preview is ready before opening it.', 'explaining');
       if (!await focusAutoTourTargetAndWait(featured, runId, 'start')) return;
 
@@ -19196,11 +19655,14 @@ html.network-constrained .portfolio-guide-panel {
 
       if (!await autoTourDelay(autoTourPace.featured, runId)) return;
 
+      autoTourPhase = 'project-intro';
       setAutomatedTourStep(3, 'Opening the selected slot', mobileTour ? 'I will open Winged Rimless, wait for its custom transition, then begin the opening video.' : 'The selected Winged Rimless project will now transform into its custom eyeglasses popup. I will wait for the transition and its opening video before continuing.', 'curious');
       if (!await focusAutoTourTargetAndWait(thirdCard, runId, mobileTour ? 'start' : 'center')) return;
       if (!await autoTourDelay(autoTourPace.projectIntro, runId)) return;
       closePanel();
       await nextAutoTourPaint();
+      if (autoTourPaused && !await waitForAutoTourResume(runId)) return;
+      autoTourPhase = 'popup-opening';
       thirdCard?.click();
 
       const showcaseOpened = await waitForAutoTourReady(
@@ -19221,6 +19683,8 @@ html.network-constrained .portfolio-guide-panel {
         closeTourOpenedShowcase();
         await waitForAutoTourCondition(() => !modal?.classList.contains('active'), runId, 8000);
       } else {
+        autoTourPhase = 'carousel';
+        autoTourExpectedSlide = 0;
         setAutomatedTourStep(4, 'Exploring the left-lens carousel', 'Each next view will load while the current one stays visible. Once ready, it will slide into place and remain briefly so you can take it in.', 'focused');
         if (!await autoTourDelay(950, runId)) return;
         closePanel();
@@ -19264,6 +19728,8 @@ html.network-constrained .portfolio-guide-panel {
 
         for (let index = 1; index < slideCount; index += 1) {
           if (!autoTourIsCurrent(runId)) return;
+          if (autoTourPaused && !await waitForAutoTourResume(runId)) return;
+          autoTourExpectedSlide = index;
           if (!await waitForTourSlide(slides[index], index + 1, slideCount, runId)) return;
           let moved = false;
           if (mobileTour) {
@@ -19350,6 +19816,8 @@ html.network-constrained .portfolio-guide-panel {
         );
       }
 
+      autoTourPhase = 'process';
+      autoTourExpectedProcessIndex = -1;
       setAutomatedTourStep(5, 'Section 3 · Creative process', 'On the right, five shapes explain the workflow from research to optimisation. I will open them one at a time and pause briefly on each.', 'thinking');
       if (!await focusAutoTourTargetAndWait(brand, runId, 'start')) return;
       await waitForAutoTourReady(
@@ -19377,6 +19845,8 @@ html.network-constrained .portfolio-guide-panel {
         if (!overviewApi?.request) document.getElementById('load3dModelButton')?.click();
       }
 
+      autoTourPhase = 'contact';
+      autoTourExpectedProcessIndex = -1;
       setAutomatedTourStep(6, 'Contact me', 'This final section contains the contact form, email, and LinkedIn details. I will wait until the complete section is ready before finishing the route.', 'encouraging');
       if (!await focusAutoTourTargetAndWait(contact, runId, 'start')) return;
       await waitForAutoTourReady(
@@ -19393,13 +19863,16 @@ html.network-constrained .portfolio-guide-panel {
 
       const modelReady = Boolean(overviewApi?.isReady?.() || stage?.classList.contains('model-loaded'));
       if (modelReady) {
+        autoTourPhase = 'model-final';
         setAutomatedTourStep(7, 'The 3D model is ready', 'The model finished loading during the tour. I will take you back and reveal the interactive viewer now.', 'success');
         if (!await autoTourDelay(1050, runId)) return;
         closePanel();
         await revealOverviewModelFromGuide();
         autoTourRunning = false;
-        root.classList.remove('is-tour', 'auto-tour-running');
-        document.body.classList.remove('avatar-tour-active');
+        autoTourPaused = false;
+        autoTourPhase = 'idle';
+        root.classList.remove('is-tour', 'auto-tour-running', 'auto-tour-paused');
+        document.body.classList.remove('avatar-tour-active', 'avatar-tour-paused');
         clearAutoTourFocus();
         savePreference('self');
         setExpression('success');
@@ -19408,9 +19881,11 @@ html.network-constrained .portfolio-guide-panel {
         progressFill.style.width = '100%';
         progressCount.textContent = `${String(autoTourTotalSteps).padStart(2, '0')} / ${String(autoTourTotalSteps).padStart(2, '0')}`;
         autoTourRunning = false;
+        autoTourPaused = false;
+        autoTourPhase = 'idle';
         awaitingLateModelNotice = true;
-        root.classList.remove('is-tour', 'auto-tour-running');
-        document.body.classList.remove('avatar-tour-active');
+        root.classList.remove('is-tour', 'auto-tour-running', 'auto-tour-paused');
+        document.body.classList.remove('avatar-tour-active', 'avatar-tour-paused');
         clearAutoTourFocus();
         savePreference('self');
         setExpression('encouraging');
@@ -19573,6 +20048,21 @@ html.network-constrained .portfolio-guide-panel {
 
   closeButton?.addEventListener('click', closePanel);
   panel.addEventListener('click', event => event.stopPropagation());
+
+  document.addEventListener('pointerup', handleTrustedTourInteraction, true);
+  document.addEventListener('click', handleTrustedTourInteraction, true);
+  document.addEventListener('keydown', event => {
+    if (!event.isTrusted || !autoTourRunning) return;
+    if (['Enter', ' '].includes(event.key)) {
+      handleTrustedTourInteraction(event);
+      return;
+    }
+    if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(event.key) && modal?.classList.contains('active')) {
+      pauseAutomatedTourForInteraction(modal);
+    }
+  }, true);
+  document.addEventListener('wheel', handleTrustedTourScroll, { capture: true, passive: true });
+  document.addEventListener('touchmove', handleTrustedTourScroll, { capture: true, passive: true });
 
   grid?.addEventListener('click', event => {
     const card = event.target.closest('.slot-card');
@@ -21546,6 +22036,44 @@ html body #showcaseModal.modal-container:not(.active) * {
   queueRestore();
 })();
 </script>
+
+
+<style id="guided-tour-user-interruption-v29">
+/* A user-controlled pause must remain visible above project transitions, menus,
+   and section animations on both desktop and mobile. It does not alter any
+   portfolio animation; it only keeps the guide controls available. */
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused,
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused.is-hidden-for-transition,
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused.is-menu-hidden {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translate3d(0, 0, 0) !important;
+  z-index: 520 !important;
+}
+
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused .portfolio-guide-panel {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused .guide-action.primary {
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  body.avatar-tour-paused .portfolio-guide.auto-tour-paused {
+    contain: none !important;
+    overflow: visible !important;
+  }
+
+  body.avatar-tour-paused .portfolio-guide.auto-tour-paused .portfolio-guide-panel,
+  body.avatar-tour-paused .portfolio-guide.auto-tour-paused.in-showcase .portfolio-guide-panel {
+    display: block !important;
+  }
+}
+</style>
 
 </body>
 </html>
