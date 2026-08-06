@@ -11191,6 +11191,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
         let portfolioThumbnailLoadsInFlight = 0;
 
         function drainPortfolioThumbnailQueue() {
+            if (document.documentElement.classList.contains('mobile-tour-resource-lock')) return;
             while (portfolioThumbnailLoadsInFlight < portfolioThumbnailConcurrency && portfolioThumbnailQueue.length) {
                 const image = portfolioThumbnailQueue.shift();
                 if (!image || !image.dataset.src) {
@@ -11209,6 +11210,8 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
             }
         }
 
+        document.addEventListener('portfolio-mobile-resource-resume', drainPortfolioThumbnailQueue);
+
         function queuePortfolioThumbnail(image) {
             if (!image || !image.dataset.src || image.dataset.thumbnailQueued === 'true') return;
             image.dataset.thumbnailQueued = 'true';
@@ -11219,7 +11222,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
         // The first desktop row (or the first mobile row) is requested immediately.
         // These are the cards a visitor can reach first, so their imagery wins network
         // priority over decorative or below-the-fold media.
-        const urgentThumbnailCount = compactShowcaseMedia.matches ? 1 : 4;
+        const urgentThumbnailCount = compactShowcaseMedia.matches ? 0 : 4;
         portfolioThumbs.slice(0, urgentThumbnailCount).forEach(image => hydratePortfolioThumbnail(image, 'high'));
         const deferredPortfolioThumbs = portfolioThumbs.slice(urgentThumbnailCount);
 
@@ -13411,8 +13414,9 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
         if ('IntersectionObserver' in window && featuredPreloadTarget) {
             const showcasePosterObserver = new IntersectionObserver((entries, observer) => {
                 if (!entries.some(entry => entry.isIntersecting)) return;
-                startShowcasePosterQueue();
                 observer.disconnect();
+                if (compactShowcaseMedia.matches) return;
+                startShowcasePosterQueue();
             }, { rootMargin: '420px 0px', threshold: 0.01 });
             showcasePosterObserver.observe(featuredPreloadTarget);
         } else {
@@ -14235,8 +14239,11 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
     // Warm only the small viewer library during idle time; the large GLB still
     // waits for intent so it cannot slow the rest of the portfolio.
     const warmViewerLibrary = () => loadModelViewerLibraryLast().catch(() => {});
-    if ('requestIdleCallback' in window) requestIdleCallback(warmViewerLibrary, { timeout: 2600 });
-    else addEventListener('load', () => setTimeout(warmViewerLibrary, 900), { once: true });
+    const deferViewerWarmOnPhone = window.matchMedia('(max-width: 768px)').matches;
+    if (!deferViewerWarmOnPhone) {
+        if ('requestIdleCallback' in window) requestIdleCallback(warmViewerLibrary, { timeout: 2600 });
+        else addEventListener('load', () => setTimeout(warmViewerLibrary, 900), { once: true });
+    }
 
     addEventListener('beforeunload', () => {
         if (localObjectUrl) URL.revokeObjectURL(localObjectUrl);
@@ -18469,48 +18476,47 @@ html.network-constrained .portfolio-guide-panel {
       cancelAnimationFrame(mobileTourScrollFrame);
       const endY = mobileTourScrollDestination(target, block);
       const startY = window.scrollY;
-      if (Math.abs(endY - startY) < 2 || reducedMotion) {
+      const distance = endY - startY;
+      if (Math.abs(distance) < 2 || reducedMotion) {
         window.scrollTo(0, endY);
         resolve(autoTourIsCurrent(runId));
         return;
       }
 
-      // Let the browser's compositor perform the phone scroll. The previous
-      // JavaScript-per-frame scroll competed with video decoding and the process
-      // card expansion, which made even fast phones appear choppy.
+      // One predictable glide is smoother than stacked native scroll requests on
+      // mobile browsers. Background thumbnail/model work is suspended while this
+      // runs, so this lightweight compositor-friendly loop has the main thread.
       document.documentElement.classList.add('avatar-tour-programmatic-scroll');
-      let lastY = startY;
-      let stableFrames = 0;
+      const duration = Math.max(520, Math.min(920, 470 + Math.abs(distance) * 0.34));
       const started = performance.now();
-
-      try { window.scrollTo({ top: endY, behavior: 'smooth' }); }
-      catch (_) { window.scrollTo(0, endY); }
+      let completed = false;
 
       const finish = result => {
+        if (completed) return;
+        completed = true;
         document.documentElement.classList.remove('avatar-tour-programmatic-scroll');
+        if (result) window.scrollTo(0, endY);
         resolve(result);
       };
 
-      const check = () => {
+      const ease = value => value < 0.5
+        ? 4 * value * value * value
+        : 1 - Math.pow(-2 * value + 2, 3) / 2;
+
+      const step = now => {
         if (!autoTourIsCurrent(runId) || token !== mobileTourScrollToken) {
           finish(false);
           return;
         }
-
-        const currentY = window.scrollY;
-        const nearTarget = Math.abs(currentY - endY) < 1.5;
-        const stable = Math.abs(currentY - lastY) < 0.45;
-        stableFrames = nearTarget && stable ? stableFrames + 1 : 0;
-        lastY = currentY;
-
-        if (stableFrames >= 4 || performance.now() - started > 2600) {
-          window.scrollTo(0, endY);
-          finish(true);
+        const progress = Math.min(1, (now - started) / duration);
+        window.scrollTo(0, startY + distance * ease(progress));
+        if (progress >= 1) {
+          requestAnimationFrame(() => finish(true));
           return;
         }
-        mobileTourScrollFrame = requestAnimationFrame(check);
+        mobileTourScrollFrame = requestAnimationFrame(step);
       };
-      mobileTourScrollFrame = requestAnimationFrame(check);
+      mobileTourScrollFrame = requestAnimationFrame(step);
     });
   }
 
@@ -18610,7 +18616,7 @@ html.network-constrained .portfolio-guide-panel {
       await nextAutoTourPaint();
       // A short visual settle makes the transition read as one continuous move
       // instead of a scroll immediately followed by another animation.
-      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : 260));
+      await new Promise(resolve => window.setTimeout(resolve, reducedMotion ? 0 : 170));
       return autoTourIsCurrent(runId);
     }
 
@@ -18905,15 +18911,15 @@ html.network-constrained .portfolio-guide-panel {
           if (finished) return;
           finished = true;
           trigger.removeEventListener('transitionend', onEnd);
-          window.clearTimeout(timer);
+          clearTimeout(timer);
           requestAnimationFrame(() => requestAnimationFrame(() => resolve(autoTourIsCurrent(runId))));
         };
         const onEnd = event => {
           if (event.target !== trigger) return;
-          if (!['min-height', 'height', 'width', 'padding-top', 'padding-bottom'].includes(event.propertyName)) return;
+          if (!['min-height', 'height', 'width', 'padding-top', 'padding-bottom', 'transform'].includes(event.propertyName)) return;
           if ((trigger.getAttribute('aria-expanded') === 'true') === expectedOpen) done();
         };
-        const timer = window.setTimeout(done, phoneLayout ? 560 : 520);
+        const timer = setTimeout(done, phoneLayout ? 680 : 520);
         trigger.addEventListener('transitionend', onEnd);
       });
     };
@@ -18932,7 +18938,7 @@ html.network-constrained .portfolio-guide-panel {
 
     try {
       if (!await focusAutoTourTargetAndWait(visual, runId, phoneLayout ? 'start' : 'center')) return false;
-      if (phoneLayout && !await autoTourDelay(260, runId)) return false;
+      if (phoneLayout && !await autoTourDelay(240, runId)) return false;
 
       for (let index = 0; index < triggers.length; index += 1) {
         if (!autoTourIsCurrent(runId)) return false;
@@ -18940,16 +18946,27 @@ html.network-constrained .portfolio-guide-panel {
         const item = items[index];
         const label = trigger.querySelector('strong')?.textContent?.trim() || `Stage ${index + 1}`;
 
-        // Collapse and settle the previous card before moving to the next one.
-        // This prevents two height animations and a scroll from fighting in the
-        // same frame, the main source of Section 3's mobile stutter.
         if (!await closeCurrent()) return false;
-
         items.forEach((otherItem, otherIndex) => {
           if (!otherItem || otherIndex === index) return;
           otherItem.classList.remove('is-open');
           triggers[otherIndex]?.setAttribute('aria-expanded', 'false');
         });
+
+        if (phoneLayout) {
+          setExpression(index === triggers.length - 1 ? 'success' : 'explaining');
+          setCopy(
+            'Guided tour · 05',
+            `${label} · ${index + 1} of ${triggers.length}`,
+            'I am positioning this stage first, then I will open it and leave it still long enough to read.'
+          );
+          openPanel();
+          // Position the compact trigger before its height changes. This avoids a
+          // layout shift and a scroll fighting in the same frames.
+          if (!await focusAutoTourTargetAndWait(trigger, runId, 'center')) return false;
+          if (!await autoTourDelay(120, runId)) return false;
+        }
+
         item?.classList.add('is-open');
         trigger.setAttribute('aria-expanded', 'true');
         currentItem = item;
@@ -18964,21 +18981,19 @@ html.network-constrained .portfolio-guide-panel {
             title: `Opening ${label}`,
             message: 'This process stage is settling before the tour continues.',
             openPanelWhileWaiting: false,
-            noticeDelay: 900,
+            noticeDelay: 950,
             maximumWait: 8000
           }
         )) return false;
 
         if (phoneLayout) {
-          // One compositor-driven glide per stage, and only when the expanded
-          // item is outside the usable area above the guide.
+          // Usually no movement is needed because the trigger was positioned first.
+          // If expansion extends below the safe area, make one small corrective glide.
           if (!await focusAutoTourTargetAndWait(item || trigger, runId, 'end')) return false;
-
-          setExpression(index === triggers.length - 1 ? 'success' : 'explaining');
           setCopy(
             'Guided tour · 05',
             `${label} · ${index + 1} of ${triggers.length}`,
-            'This stage is open. Take a moment to read it before I continue.'
+            'This stage is fully open and stable. Take a moment to read it before I continue.'
           );
           openPanel();
         } else {
@@ -18989,7 +19004,7 @@ html.network-constrained .portfolio-guide-panel {
           showNudge(`${label} · ${index + 1} of ${triggers.length}`, 40, autoTourPace.shape + 650);
         }
 
-        const readingTime = phoneLayout ? 1950 : autoTourPace.shape;
+        const readingTime = phoneLayout ? 2250 : autoTourPace.shape;
         if (!await autoTourDelay(readingTime, runId)) return false;
       }
 
@@ -20886,6 +20901,92 @@ html body #showcaseModal.modal-container:not(.active) * {
   }
 }
 </style>
+
+
+<style id="mobile-loading-and-tour-smoothness-v26">
+@media (max-width: 768px) {
+  /* Keep startup focused on the overview. Lower sections keep their exact layout
+     and animations when reached, but do not consume paint work beforehand. */
+  .portfolio-section:not(#overview-section) {
+    content-visibility: auto;
+    contain-intrinsic-size: 920px;
+  }
+  #portfolioGrid .slot-card {
+    contain: layout paint style;
+  }
+
+  /* The guide keeps the same appearance and controls, while replacing live blur
+     with an opaque equivalent so scrolling does not continuously re-sample the
+     whole page behind it. */
+  body.avatar-tour-active .portfolio-guide-panel,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running .portfolio-guide-panel,
+  body.avatar-tour-active .portfolio-guide.auto-tour-running.in-showcase .portfolio-guide-panel {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    background: rgba(16, 12, 27, .975) !important;
+    box-shadow: 0 9px 24px rgba(8, 5, 18, .27) !important;
+    will-change: auto !important;
+  }
+  body.avatar-tour-active .portfolio-guide-toggle,
+  body.avatar-tour-active .guide-avatar-shell {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* Decorative work pauses only while the automated route owns the screen. The
+     authored project, carousel and process animations remain active. */
+  html.mobile-tour-resource-lock .ambient-mesh,
+  html.mobile-tour-resource-lock .scroll-explore,
+  html.mobile-tour-resource-lock .featured-view-progress,
+  html.mobile-tour-resource-lock .brand-case-glow {
+    animation-play-state: paused !important;
+  }
+  html.mobile-tour-resource-lock .ambient-mesh {
+    will-change: auto !important;
+  }
+
+  html.avatar-tour-programmatic-scroll {
+    scroll-behavior: auto !important;
+  }
+  html.avatar-tour-programmatic-scroll body {
+    overscroll-behavior-y: none;
+  }
+
+  body.avatar-tour-process-active #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window {
+    visibility: hidden;
+  }
+}
+</style>
+<script id="mobile-loading-and-tour-resource-coordinator-v26">
+(() => {
+  const phone = window.matchMedia('(max-width: 768px)');
+  const root = document.documentElement;
+  const body = document.body;
+  if (!body) return;
+  let locked = false;
+
+  const sync = () => {
+    const shouldLock = phone.matches && body.classList.contains('avatar-tour-active');
+    if (shouldLock === locked) return;
+    locked = shouldLock;
+    root.classList.toggle('mobile-tour-resource-lock', shouldLock);
+
+    if (shouldLock) {
+      document.querySelectorAll('video').forEach(video => {
+        if (video.closest('#showcaseModal.active')) return;
+        try { video.pause(); } catch (_) {}
+      });
+    } else {
+      document.dispatchEvent(new Event('portfolio-mobile-resource-resume'));
+    }
+  };
+
+  new MutationObserver(sync).observe(body, { attributes: true, attributeFilter: ['class'] });
+  phone.addEventListener?.('change', sync);
+  addEventListener('pageshow', sync, { once: true });
+  sync();
+})();
+</script>
 
 </body>
 </html>
