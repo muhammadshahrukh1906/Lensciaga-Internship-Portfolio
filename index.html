@@ -10043,6 +10043,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
     }
 }
 </style>
+
 </head>
 <body>
 <!-- Smooth, scalable cat-eye silhouettes used by slot 12. -->
@@ -17881,32 +17882,8 @@ ${message}`;
   100% { transform: scale(1.05) translateY(0); }
 }
 
-.guide-avatar-glasses {
-  position: absolute;
-  left: 25%;
-  top: 28%;
-  width: 51%;
-  height: 28%;
-  z-index: 3;
-  opacity: 0;
-  transform: translateY(2px) scale(.92);
-  transform-origin: center;
-  filter: drop-shadow(0 2px 2px rgba(0,0,0,.24));
-  transition: opacity .25s ease, transform .35s cubic-bezier(.22,1,.36,1);
-  pointer-events: none;
-}
 
-.portfolio-guide.has-slot-glasses .guide-avatar-glasses {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-}
 
-.guide-avatar-glasses svg {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
 
 .guide-nudge {
   position: absolute;
@@ -18001,12 +17978,6 @@ ${message}`;
   transform: scale(1.07);
 }
 
-.guide-panel-mini-avatar .guide-avatar-glasses {
-  left: 25%;
-  top: 28%;
-  width: 51%;
-  height: 28%;
-}
 
 .guide-panel-title {
   display: grid;
@@ -18188,7 +18159,6 @@ html.network-constrained .portfolio-guide-panel {
   .portfolio-guide-panel,
   .portfolio-guide-toggle,
   .guide-avatar-face,
-  .guide-avatar-glasses,
   .guide-progress-fill,
   .guide-action {
     animation: none !important;
@@ -18202,7 +18172,6 @@ html.network-constrained .portfolio-guide-panel {
 <div class="guide-panel-head">
 <div aria-hidden="true" class="guide-panel-mini-avatar">
 <span class="guide-avatar-face"></span>
-<span class="guide-avatar-glasses"></span>
 </div>
 <div class="guide-panel-title">
 <span class="guide-panel-kicker" id="guideKicker">Portfolio guide</span>
@@ -18219,7 +18188,6 @@ html.network-constrained .portfolio-guide-panel {
 <button aria-controls="portfolioGuidePanel" aria-expanded="false" aria-label="Open portfolio guide" class="portfolio-guide-toggle" id="portfolioGuideToggle" type="button">
 <span aria-hidden="true" class="guide-avatar-shell">
 <span class="guide-avatar-face"></span>
-<span class="guide-avatar-glasses"></span>
 </span>
 <span class="guide-nudge" id="guideNudge">Need a hand?</span>
 </button>
@@ -18273,14 +18241,14 @@ html.network-constrained .portfolio-guide-panel {
 
   const sectionTips = {
     'overview-section': { expression: 'happy', kicker: 'Overview', title: 'Begin with the big picture', text: 'This section introduces the portfolio, the interactive eyewear concept and the collection of work you can explore.' },
-    'featured-section': { expression: 'explaining', kicker: 'Featured work', title: 'Choose a project', text: 'Open any slot to see its concept, execution and purpose; I will wear the matching glasses and help with the carousel.' },
+    'featured-section': { expression: 'explaining', kicker: 'Featured work', title: 'Choose a project', text: 'Open any slot to see its concept, execution and purpose, then use the left-lens carousel to explore the work.' },
     'brand-section': { expression: 'thinking', kicker: 'Content strategy', title: 'Follow the creative process', text: 'Tap each stage to see how product insight became positioning, visual direction, production, and final content.' },
     'contact-section': { expression: 'encouraging', kicker: 'Contact', title: 'Start a conversation', text: 'Use the form, email or LinkedIn link whenever you are ready to discuss the work or a possible collaboration.' }
   };
 
   const tourSteps = [
     { target: 'overview-section', expression: 'happy', kicker: 'Guided tour · 01', title: 'Welcome to my work', text: 'I will show you the portfolio\'s key projects, the thinking behind them, and the interactions worth trying.' },
-    { target: 'featured-section', expression: 'explaining', kicker: 'Guided tour · 02', title: 'Open a project slot', text: 'Each main slot transforms into a glasses-shaped popup; I will match the selected frame and help you navigate its content.' },
+    { target: 'featured-section', expression: 'explaining', kicker: 'Guided tour · 02', title: 'Open a project slot', text: 'Each main slot transforms into a glasses-shaped popup with project details and a left-lens carousel.' },
     { target: 'brand-section', expression: 'thinking', kicker: 'Guided tour · 03', title: 'See the process behind it', text: 'Beyond the visuals, this section shows how research, positioning, and execution shaped the content.' },
     { target: 'contact-section', expression: 'goodbye', kicker: 'Guided tour · 04', title: 'Let\'s stay connected', text: 'You have reached the contact section. Continue exploring freely or use the details here to start a conversation.' }
   ];
@@ -18344,30 +18312,11 @@ html.network-constrained .portfolio-guide-panel {
     });
   }
 
-  function glassesSVG(context) {
-    const common = 'fill="none" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"';
-    const templates = {
-      default: `<svg viewBox="0 0 120 48" aria-hidden="true"><g ${common} stroke="#16141b" stroke-width="4.8"><rect x="7" y="10" width="43" height="27" rx="10"/><rect x="70" y="10" width="43" height="27" rx="10"/><path d="M50 20c7-6 13-6 20 0M7 17 0 13M113 17l7-4"/></g><path d="M13 15c9-5 22-5 31 0" stroke="#8247ff" stroke-width="2" fill="none" opacity=".9"/></svg>`,
-      tinted: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke="#7d5b1d" stroke-width="3.8" ${common}><path fill="rgba(92,65,156,.66)" d="M5 9h48l-3 27H17C10 36 7 31 7 24Z"/><path fill="rgba(92,65,156,.66)" d="M115 9H67l3 27h33c7 0 10-5 10-12Z"/><path d="M53 17c5-4 9-4 14 0M5 12 0 9M115 12l5-3"/></g></svg>`,
-      doffy: `<svg viewBox="0 0 120 48" aria-hidden="true"><g fill="rgba(75,126,173,.24)" stroke="#223d58" stroke-width="3.2" ${common}><path d="M2 8c14 8 29 8 47 7l5 7-8 2-3 8-7-2-4 7-6-4-5 3-3-7-7 1-1-8-6-4Z"/><path d="M118 8c-14 8-29 8-47 7l-5 7 8 2 3 8 7-2 4 7 6-4 5 3 3-7 7 1 1-8 6-4Z"/><path d="M50 20c7-5 13-5 20 0"/></g></svg>`,
-      butty: `<svg viewBox="0 0 120 48" aria-hidden="true"><g fill="rgba(120,120,38,.20)" stroke="#8b7d24" stroke-width="3.4" ${common}><path d="M4 7c20 2 37 12 50 23-8 1-10 7-16 11l-8-6-7 5-5-8-9 2 3-10-8-7Z"/><path d="M116 7c-20 2-37 12-50 23 8 1 10 7 16 11l8-6 7 5 5-8 9 2-3-10 8-7Z"/><path d="M53 24c5-4 9-4 14 0"/></g></svg>`,
-      clip: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke="#25252a" stroke-width="4" ${common}><circle cx="31" cy="24" r="17" fill="rgba(20,20,24,.16)"/><circle cx="89" cy="24" r="17" fill="rgba(20,20,24,.16)"/><path d="M48 21c7-5 17-5 24 0M14 7h34M72 7h34M4 16l10 1M116 16l-10 1"/></g></svg>`,
-      pink: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke="#d94e78" stroke-width="4" ${common}><rect x="7" y="9" width="43" height="29" rx="13" fill="rgba(255,112,158,.22)"/><rect x="70" y="9" width="43" height="29" rx="13" fill="rgba(255,112,158,.22)"/><path d="M50 20c7-5 13-5 20 0M7 16 0 12M113 16l7-4"/></g></svg>`,
-      gold: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke="#c9982c" stroke-width="2.7" ${common}><path d="M8 11h42l-2 25H19C11 36 8 31 8 24Z" fill="rgba(245,222,157,.10)"/><path d="M112 11H70l2 25h29c8 0 11-5 11-12Z" fill="rgba(245,222,157,.10)"/><path d="M50 18c6-3 14-3 20 0M8 15 1 12M112 15l7-3"/></g><circle cx="53" cy="22" r="1.8" fill="#e8c461"/><circle cx="67" cy="22" r="1.8" fill="#e8c461"/></svg>`,
-      circle: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke="#315d86" stroke-width="3.6" ${common}><circle cx="31" cy="24" r="18" fill="rgba(82,143,199,.12)"/><circle cx="89" cy="24" r="18" fill="rgba(82,143,199,.12)"/><path d="M49 20c6-4 16-4 22 0M13 15 2 11M107 15l11-4"/></g></svg>`,
-      multi: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke-width="3.8" ${common}><rect x="7" y="10" width="43" height="27" rx="9" fill="rgba(130,71,255,.18)" stroke="#8247ff"/><rect x="70" y="10" width="43" height="27" rx="9" fill="rgba(229,184,67,.16)" stroke="#c99a2f"/><path d="M50 20c7-5 13-5 20 0" stroke="#222"/><path d="M7 17 0 13M113 17l7-4" stroke="#222"/></g></svg>`,
-      hand: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke="#17171b" stroke-width="4" ${common}><path d="M5 9h48l-4 27H19c-8 0-11-5-11-13Z" fill="rgba(15,15,20,.48)"/><path d="M115 9H67l4 27h30c8 0 11-5 11-13Z" fill="rgba(15,15,20,.48)"/><path d="M53 18c5-4 9-4 14 0M5 12 0 9M115 12l5-3"/></g></svg>`,
-      aura: `<svg viewBox="0 0 120 48" aria-hidden="true"><defs><linearGradient id="ag" x1="0" x2="1"><stop stop-color="#7d65ff"/><stop offset="1" stop-color="#43c7d9"/></linearGradient></defs><g stroke="url(#ag)" stroke-width="3.5" ${common}><path d="M8 10h42l-1 27H20c-8 0-12-5-12-14Z" fill="rgba(140,121,255,.12)"/><path d="M112 10H70l1 27h29c8 0 12-5 12-14Z" fill="rgba(67,199,217,.12)"/><path d="M50 20c7-5 13-5 20 0M8 15 1 11M112 15l7-4"/></g></svg>`,
-      cat: `<svg viewBox="0 0 120 48" aria-hidden="true"><g stroke="#241926" stroke-width="4" ${common}><path d="M4 7c18 0 35 3 49 10l-4 19H18C10 36 7 30 7 22Z" fill="rgba(209,83,168,.16)"/><path d="M116 7c-18 0-35 3-49 10l4 19h31c8 0 11-6 11-14Z" fill="rgba(209,83,168,.16)"/><path d="M53 19c5-4 9-4 14 0M4 10 0 5M116 10l4-5"/></g></svg>`
-    };
-    return templates[context] || templates.default;
-  }
-
-  function setGlasses(context, visible = true) {
-    if (autoTourRunning && autoTourPaused && !autoTourWritingPauseCopy) return;
+  function setGlasses(context) {
+    // Matching-frame overlays have been removed from every avatar.
+    // The slot context still updates so project-specific expressions and lines work.
     currentSlotContext = context || currentSlotContext || 'default';
-    root.querySelectorAll('.guide-avatar-glasses').forEach(node => { node.innerHTML = visible ? glassesSVG(currentSlotContext) : ''; });
-    root.classList.toggle('has-slot-glasses', Boolean(visible));
+    root.classList.remove('has-slot-glasses');
   }
 
   function setCopy(nextKicker, nextTitle, nextMessage) {
@@ -19139,6 +19088,9 @@ html.network-constrained .portfolio-guide-panel {
       expectedSlide: autoTourExpectedSlide,
       expectedProcessIndex: autoTourExpectedProcessIndex,
       scrollY: window.scrollY,
+      focusTarget: autoTourFocusTarget instanceof Element && autoTourFocusTarget.isConnected
+        ? autoTourFocusTarget
+        : null,
       copy: autoTourLastCopy || {
         kicker: kicker.textContent,
         title: title.textContent,
@@ -19146,97 +19098,262 @@ html.network-constrained .portfolio-guide-panel {
       },
       expression: autoTourLastExpression || 'focused',
       progressWidth: progressFill.style.width,
-      progressCount: progressCount.textContent,
-      glassesVisible: root.classList.contains('has-slot-glasses'),
-      glassesContext: currentSlotContext
+      progressCount: progressCount.textContent
     };
   }
 
+  function elementHasMeaningfulViewportPresence(element) {
+    if (!(element instanceof Element) || !element.isConnected || root.contains(element)) return false;
+    const rect = element.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return false;
+    if (rect.bottom <= 0 || rect.right <= 0 || rect.top >= window.innerHeight || rect.left >= window.innerWidth) return false;
+    const style = window.getComputedStyle(element);
+    return style.display !== 'none' && style.visibility !== 'hidden';
+  }
+
+  function resolvePausedViewportTarget() {
+    // A live popup owns the context even when the visitor scrolls inside its detail panel.
+    if (modal?.classList.contains('active')) {
+      const count = Math.max(1, typeof totalLensSlides === 'number' ? totalLensSlides : slider?.children?.length || 1);
+      const index = Math.max(0, Math.min(count - 1, typeof activeLensSlide === 'number' ? activeLensSlide : 0));
+      const activeSlide = slider?.children?.[index] || null;
+      return activeSlide || slider || modal;
+    }
+
+    if (fullScreenMenu?.classList.contains('active')) return fullScreenMenu;
+
+    // Sample several guide-safe points. This is more reliable than event.target for
+    // document/window scroll events and works with both desktop and mobile layouts.
+    const samplePoints = window.innerWidth <= 768
+      ? [
+          [window.innerWidth * 0.50, window.innerHeight * 0.36],
+          [window.innerWidth * 0.50, window.innerHeight * 0.58],
+          [window.innerWidth * 0.28, window.innerHeight * 0.48]
+        ]
+      : [
+          [window.innerWidth * 0.46, window.innerHeight * 0.42],
+          [window.innerWidth * 0.62, window.innerHeight * 0.40],
+          [window.innerWidth * 0.36, window.innerHeight * 0.58]
+        ];
+
+    for (const [x, y] of samplePoints) {
+      const stack = typeof document.elementsFromPoint === 'function'
+        ? document.elementsFromPoint(x, y)
+        : [document.elementFromPoint(x, y)].filter(Boolean);
+      for (const candidate of stack) {
+        if (!(candidate instanceof Element) || root.contains(candidate)) continue;
+        const section = candidate.closest('.portfolio-section');
+        if (section && elementHasMeaningfulViewportPresence(section)) return section;
+      }
+    }
+
+    // Fall back to the section occupying the largest share of the viewport. This
+    // prevents a hidden/off-screen project element from keeping stale narration.
+    const viewportHeight = Math.max(1, window.innerHeight);
+    const viewportWidth = Math.max(1, window.innerWidth);
+    let bestSection = null;
+    let bestScore = -Infinity;
+    document.querySelectorAll('.portfolio-section').forEach(section => {
+      const rect = section.getBoundingClientRect();
+      const visibleHeight = Math.max(0, Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0));
+      const visibleWidth = Math.max(0, Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0));
+      if (visibleHeight <= 0 || visibleWidth <= 0) return;
+      const visibleArea = visibleHeight * visibleWidth;
+      const sectionCenter = rect.top + rect.height / 2;
+      const centerDistance = Math.abs(sectionCenter - viewportHeight / 2);
+      const score = visibleArea - centerDistance * viewportWidth * 0.18;
+      if (score > bestScore) {
+        bestScore = score;
+        bestSection = section;
+      }
+    });
+    return bestSection || document.body;
+  }
+
   function interactionText(target) {
-    const element = target instanceof Element ? target : document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+    const requestedElement = target instanceof Element ? target : null;
+    const element = elementHasMeaningfulViewportPresence(requestedElement)
+      ? requestedElement
+      : resolvePausedViewportTarget();
+
+    const activeProfile = () => slotProfiles[currentSlotContext] || slotProfiles.default;
+    const cardContext = card => {
+      const inline = card?.getAttribute('onclick') || '';
+      const contextMatch = inline.match(/,\s*'([^']+)'\s*\)\s*$/);
+      return contextMatch?.[1] || currentSlotContext || 'default';
+    };
+    const profileForCard = card => slotProfiles[cardContext(card)] || slotProfiles.default;
+    const oneLine = (value, fallback = 'Explore this at your own pace.', limit = 150) => {
+      const clean = String(value || '').replace(/\s+/g, ' ').trim();
+      if (!clean) return fallback;
+      const sentence = clean.match(/^.*?[.!?](?:\s|$)/)?.[0]?.trim() || clean;
+      if (sentence.length <= limit) return sentence;
+      return `${sentence.slice(0, Math.max(1, limit - 1)).trimEnd()}…`;
+    };
+
     if (!element) {
       return {
         title: 'Exploring the portfolio',
-        message: 'You have taken control of the page. I will stay here while you explore, then continue from the same guided-tour point when you resume.',
+        message: 'Take your time—I will wait here.',
         expression: 'curious'
+      };
+    }
+
+    const projectSource = element.closest('#modalTargetLink, #mobileTargetLink, .modal-action-btn, .mobile-showcase-link');
+    if (projectSource) {
+      const profile = activeProfile();
+      let platform = 'published project';
+      try {
+        const host = new URL(projectSource.href, location.href).hostname.toLowerCase();
+        if (host.includes('instagram')) platform = 'Instagram post';
+        else if (host.includes('tiktok')) platform = 'TikTok post';
+      } catch (_) {}
+      return {
+        title: `Opening ${profile.name}`,
+        message: `This opens the ${platform} in a new tab.`,
+        expression: 'encouraging'
       };
     }
 
     const card = element.closest('.slot-card');
     if (card) {
-      const project = card.querySelector('.slot-title')?.textContent?.trim() || 'this project';
-      const category = card.querySelector('.slot-label')?.textContent?.trim() || 'featured work';
+      const profile = profileForCard(card);
       return {
-        title: `You selected ${project}`,
-        message: `This is ${category}. Explore its custom popup, project details, and left-lens gallery at your own pace; the guided route is waiting exactly where you left it.`,
-        expression: 'impressed',
-        card
+        title: `You selected ${profile.name}`,
+        message: oneLine(profile.tip),
+        expression: profile.expression || 'impressed'
       };
     }
 
     const processTrigger = element.closest('.brand-orbit-trigger, .brand-orbit-item');
     if (processTrigger) {
       const item = processTrigger.closest('.brand-orbit-item') || processTrigger;
-      const processTitle = item.querySelector('.brand-orbit-window strong, strong')?.textContent?.trim() || 'this creative-process stage';
-      const processSummary = item.querySelector('.brand-orbit-window > span')?.textContent?.trim() || 'This stage explains how the work moved from insight to execution.';
+      const processTitle = item.querySelector('.brand-orbit-window strong, strong')?.textContent?.trim() || 'Creative-process stage';
+      const processSummary = item.querySelector('.brand-orbit-window > span')?.textContent?.trim();
+      const processDetail = item.querySelector('.brand-orbit-window small')?.textContent?.trim();
       return {
-        title: `You opened ${processTitle}`,
-        message: `${processSummary} Read or compare this stage freely; I will resume the planned sequence only when you press Resume Tour.`,
+        title: `${processTitle} stage`,
+        message: oneLine(processDetail || processSummary, 'This stage connects the idea to its execution.'),
         expression: 'thinking'
       };
     }
 
     if (element.closest('#brandStrategyExplore')) {
       return {
-        title: 'You opened the creative framework',
-        message: 'The five expandable stages cover research, positioning, creative direction, production, and optimisation. Explore any stage now; the tour is paused.',
+        title: 'Creative framework opened',
+        message: 'Choose a stage to follow the work from research to execution.',
+        expression: 'thinking'
+      };
+    }
+
+    // Section 3 always owns its narration while the visitor is interacting there.
+    const strategySection = element.closest('#brand-section');
+    if (strategySection) {
+      const pillar = element.closest('.brand-strategy-pillar');
+      if (pillar) {
+        const pillarTitle = pillar.querySelector('strong')?.textContent?.trim() || 'Creative principle';
+        const pillarText = pillar.querySelector('span')?.textContent?.trim();
+        return {
+          title: pillarTitle,
+          message: oneLine(pillarText, 'This principle guides the creative decisions.'),
+          expression: 'thinking'
+        };
+      }
+      if (element.closest('.brand-strategy-quote')) {
+        return {
+          title: 'Consistency builds memory',
+          message: 'The process connects product design with a consistent brand identity.',
+          expression: 'impressed'
+        };
+      }
+      if (element.closest('#brandStrategyVisual, .brand-case-art, .brand-orbit-rings, .brand-orbit-items')) {
+        return {
+          title: 'Creative process',
+          message: 'Select a stage to see how the work moves from research to optimisation.',
+          expression: 'thinking'
+        };
+      }
+      return {
+        title: 'Content strategy and creative process',
+        message: 'Explore how insight, positioning, production and refinement shape the final content.',
         expression: 'thinking'
       };
     }
 
     const carouselArea = element.closest('#lensSliderWrapper, .lens-display-left, .lens-nav-btn, #modalLensPrevBtn, #modalLensNextBtn');
     if (carouselArea) {
+      const profile = activeProfile();
       const count = Math.max(1, typeof totalLensSlides === 'number' ? totalLensSlides : slider?.children?.length || 1);
       const index = Math.max(0, Math.min(count - 1, typeof activeLensSlide === 'number' ? activeLensSlide : 0));
+      const activeSlide = slider?.children?.[index] || null;
+      const media = activeSlide?.querySelector?.('img, video');
+      const mediaLabel = media?.getAttribute?.('alt') || media?.getAttribute?.('aria-label') || '';
+      const viewLine = mediaLabel
+        ? `This view shows ${mediaLabel.replace(/[.]+$/, '').replace(/^a\s+/i, '').toLowerCase()}.`
+        : index === 0
+          ? 'This opening view establishes the project direction.'
+          : index >= count - 1
+            ? 'This final view completes the gallery.'
+            : 'This view adds another angle to the product story.';
       return {
-        title: `${currentSlotTitle} · view ${index + 1} of ${count}`,
-        message: 'You are controlling the left-lens carousel yourself. Use the arrows or swipe through the views; I will continue the guided sequence from its saved position when you resume.',
-        expression: 'explaining',
-        showGlasses: true
+        title: `${profile.name} · View ${index + 1} of ${count}`,
+        message: oneLine(viewLine),
+        expression: index >= count - 1 ? 'success' : (profile.expression || 'explaining')
+      };
+    }
+
+    const detailBlock = element.closest('.modal-spec-block, .project-snapshot, .mobile-showcase-copy, .mobile-showcase-facts, .lens-scroll-area, .lens-info-right, #mobileShowcaseDetails');
+    if (detailBlock) {
+      const profile = activeProfile();
+      const heading = element.closest('.modal-spec-block')?.querySelector('h4')?.textContent?.trim()
+        || element.closest('.mobile-showcase-copy > div')?.querySelector('span')?.textContent?.trim()
+        || element.closest('.project-fact, .mobile-showcase-facts > div')?.querySelector('span, .project-fact-label')?.textContent?.trim()
+        || 'Project details';
+      const detailText = element.closest('.modal-spec-block')?.querySelector('p')?.textContent?.trim()
+        || element.closest('.mobile-showcase-copy > div')?.querySelector('p')?.textContent?.trim()
+        || element.closest('.project-fact, .mobile-showcase-facts > div')?.querySelector('strong, .project-fact-value')?.textContent?.trim()
+        || '';
+      return {
+        title: `${profile.name} · ${heading}`,
+        message: oneLine(detailText, 'This explains the decision behind the project.'),
+        expression: 'explaining'
       };
     }
 
     if (element.closest('.modal-close-btn')) {
       return {
-        title: `You closed ${currentSlotTitle}`,
-        message: 'The project popup is closing because you chose to leave it. The tour is paused and will restore the correct guided-tour project state when you resume.',
+        title: `Closed ${currentSlotTitle}`,
+        message: 'You are back at the featured projects.',
         expression: 'goodbye'
       };
     }
 
-    if (element.closest('#showcaseModal.active, .modal-action-btn, .modal-spec-block, .lens-info-right')) {
+    if (element.closest('#showcaseModal.active')) {
+      const profile = activeProfile();
       return {
-        title: `Exploring ${currentSlotTitle}`,
-        message: 'You are examining this project’s format, gallery, process, and purpose. Take your time; the automated route will not move until you resume it.',
-        expression: 'explaining',
-        showGlasses: true
+        title: `Exploring ${profile.name}`,
+        message: oneLine(profile.tip),
+        expression: profile.expression || 'explaining'
       };
     }
 
     if (element.closest('#stage3d, #luxuryGlassesModel, .hero-model-viewer, .glasses-3d-stage')) {
       return {
-        title: 'You are exploring the 3D eyewear model',
-        message: 'Drag to rotate the model and inspect it from different angles. I have paused the route so the page will not move while you interact with it.',
+        title: '3D model in your control',
+        message: 'Drag to rotate and inspect the frame.',
         expression: 'impressed'
       };
     }
 
     const contactControl = element.closest('#contact-section a, #contact-section button, #contact-section input, #contact-section textarea, #contact-section select, #contactForm');
     if (contactControl) {
-      const label = contactControl.getAttribute?.('aria-label') || contactControl.textContent?.trim() || contactControl.getAttribute?.('placeholder') || 'the contact details';
+      const label = contactControl.getAttribute?.('aria-label')
+        || contactControl.textContent?.trim()
+        || contactControl.getAttribute?.('placeholder')
+        || 'contact option';
       return {
-        title: 'You are using the contact section',
-        message: `You selected ${label.replace(/\s+/g, ' ').slice(0, 80)}. Complete the action at your own pace; the guided route will remain paused until you resume.`,
+        title: 'Contact action selected',
+        message: oneLine(`You selected ${label.replace(/\s+/g, ' ').slice(0, 80)}.`),
         expression: 'encouraging'
       };
     }
@@ -19250,10 +19367,10 @@ html.network-constrained .portfolio-guide-panel {
       }
       const heading = destination?.querySelector('h1, h2, .section-label')?.textContent?.trim()
         || navigation.textContent?.trim()
-        || 'another part of the portfolio';
+        || 'another section';
       return {
-        title: `You chose ${heading.replace(/\s+/g, ' ').slice(0, 80)}`,
-        message: 'Explore this section freely. I have stopped the automatic movement and will return to the saved tour sequence when you press Resume Tour.',
+        title: `Going to ${heading.replace(/\s+/g, ' ').slice(0, 80)}`,
+        message: 'Explore this section at your own pace.',
         expression: 'curious'
       };
     }
@@ -19263,8 +19380,8 @@ html.network-constrained .portfolio-guide-panel {
       const sectionName = section.querySelector('h1, h2, .section-label')?.textContent?.trim().replace(/\s+/g, ' ') || 'this section';
       const tip = sectionTips[section.id];
       return {
-        title: `You are exploring ${sectionName.slice(0, 80)}`,
-        message: tip?.text || 'Take in this content at your own pace. The guided route is paused until you choose to resume it.',
+        title: `Exploring ${sectionName.slice(0, 80)}`,
+        message: oneLine(tip?.text),
         expression: tip?.expression || 'curious'
       };
     }
@@ -19272,7 +19389,7 @@ html.network-constrained .portfolio-guide-panel {
     const readableLabel = element.closest('button, a, [role="button"]')?.textContent?.trim().replace(/\s+/g, ' ');
     return {
       title: readableLabel ? `You selected ${readableLabel.slice(0, 80)}` : 'Exploring the portfolio',
-      message: 'I have paused the automatic route so you can interact without the page moving ahead. Press Resume Tour whenever you are ready.',
+      message: readableLabel ? 'Continue with this control.' : 'Take your time—I will wait here.',
       expression: 'curious'
     };
   }
@@ -19303,14 +19420,18 @@ html.network-constrained .portfolio-guide-panel {
 
   function renderPausedInteraction(target) {
     if (!autoTourRunning || !autoTourPaused) return;
+    const liveTarget = elementHasMeaningfulViewportPresence(target)
+      ? target
+      : resolvePausedViewportTarget();
+    if (liveTarget) autoTourPauseTarget = liveTarget;
     let detail;
     try {
-      detail = interactionText(target);
+      detail = interactionText(liveTarget);
     } catch (error) {
       console.warn('Guided-tour interaction narration fallback:', error);
       detail = {
         title: 'You are exploring the portfolio',
-        message: 'I have paused the automatic route so you can interact freely. Press Resume Tour whenever you are ready to continue from the saved point.',
+        message: 'Take your time—I will wait here.',
         expression: 'curious'
       };
     }
@@ -19320,25 +19441,35 @@ html.network-constrained .portfolio-guide-panel {
       root.classList.remove('is-hidden-for-transition', 'is-menu-hidden');
       document.body.classList.add('avatar-tour-active', 'avatar-tour-paused');
       setExpression(detail.expression || 'curious');
-      if (detail.card) {
-        const inline = detail.card.getAttribute('onclick') || '';
-        const contextMatch = inline.match(/,\s*'([^']+)'\s*\)\s*$/);
-        if (contextMatch?.[1]) setGlasses(contextMatch[1], true);
-      } else if (detail.showGlasses) {
-        setGlasses(currentSlotContext, true);
-      } else {
-        setGlasses(null, false);
-      }
-      setCopy('Tour paused · You are in control', detail.title, detail.message);
+      setGlasses(null, false);
+      setCopy('Tour paused', detail.title, detail.message);
       setActions([
         { label: 'Resume tour', kind: 'primary', onClick: resumeAutomatedTour },
         { label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(false) }
       ]);
-      showPersistentResume();
       openPanel();
+      // The panel already contains Resume Tour and End Tour.
+      hidePersistentResume();
     } finally {
       autoTourWritingPauseCopy = false;
     }
+  }
+
+  function refreshPausedContextFromViewport(delay = 150) {
+    if (
+      !autoTourRunning
+      || !autoTourPaused
+      || autoTourWritingPauseCopy
+      || autoTourResumeInProgress
+      || document.documentElement.classList.contains('avatar-tour-resume-scroll')
+    ) return;
+    clearTimeout(interactionExplainTimer);
+    interactionExplainTimer = window.setTimeout(() => {
+      if (!autoTourRunning || !autoTourPaused || autoTourWritingPauseCopy) return;
+      const liveTarget = resolvePausedViewportTarget();
+      if (liveTarget) autoTourPauseTarget = liveTarget;
+      renderPausedInteraction(liveTarget || autoTourPauseTarget);
+    }, reducedMotion ? 0 : Math.max(0, delay));
   }
 
   function pauseAutomatedTourForInteraction(target) {
@@ -19467,13 +19598,127 @@ html.network-constrained .portfolio-guide-panel {
     return true;
   }
 
+
+  function resolveSavedTourTarget(snapshot) {
+    const phase = snapshot?.phase || autoTourPhase;
+    const overview = document.getElementById('overview-section');
+    const stage = document.getElementById('stage3d') || overview;
+    const featured = document.getElementById('featured-section');
+    const brand = document.getElementById('brand-section');
+    const contact = document.getElementById('contact-section');
+    const thirdCard = grid?.querySelectorAll('.slot-card')?.[2] || null;
+
+    if (phase === 'overview' || phase === 'model-final') return stage || overview;
+    if (phase === 'featured') return featured || thirdCard;
+    if (phase === 'project-intro') return thirdCard || featured;
+    if (phase === 'popup-opening' || phase === 'carousel') {
+      return modal?.classList.contains('active') ? modal : (thirdCard || featured);
+    }
+    if (phase === 'process') {
+      const visual = document.getElementById('brandStrategyVisual');
+      const triggers = Array.from(visual?.querySelectorAll('.brand-orbit-trigger') || []);
+      const expected = Number.isFinite(autoTourExpectedProcessIndex)
+        ? autoTourExpectedProcessIndex
+        : Number(snapshot?.expectedProcessIndex);
+      if (expected >= 0 && triggers[expected]) {
+        return triggers[expected].closest('.brand-orbit-item') || triggers[expected];
+      }
+      return visual || brand;
+    }
+    if (phase === 'contact') return contact;
+
+    const saved = snapshot?.focusTarget;
+    if (saved instanceof Element && saved.isConnected) return saved;
+    return autoTourFocusTarget instanceof Element && autoTourFocusTarget.isConnected
+      ? autoTourFocusTarget
+      : overview;
+  }
+
+  function resumeTargetBlock(phase) {
+    if (phase === 'featured' || phase === 'project-intro' || phase === 'process' || phase === 'contact') return 'start';
+    return 'center';
+  }
+
+  function resumeTargetIsVisible(target) {
+    if (!(target instanceof Element) || !target.isConnected) return false;
+    const style = window.getComputedStyle(target);
+    if (style.display === 'none' || style.visibility === 'hidden') return false;
+    const rect = target.getBoundingClientRect();
+    const viewportHeight = window.visualViewport?.height || window.innerHeight || 1;
+    const viewportWidth = window.visualViewport?.width || window.innerWidth || 1;
+    const visibleHeight = Math.max(0, Math.min(rect.bottom, viewportHeight) - Math.max(rect.top, 0));
+    const visibleWidth = Math.max(0, Math.min(rect.right, viewportWidth) - Math.max(rect.left, 0));
+    const minimumHeight = Math.min(rect.height, Math.min(Math.max(24, rect.height * 0.28), viewportHeight * 0.55));
+    const minimumWidth = Math.min(rect.width, Math.min(Math.max(24, rect.width * 0.28), viewportWidth * 0.55));
+    return visibleHeight >= minimumHeight && visibleWidth >= minimumWidth;
+  }
+
+  async function returnToSavedTourTarget(snapshot, runId) {
+    const target = resolveSavedTourTarget(snapshot);
+    if (!target || !autoTourRunning || runId !== autoTourRunId) return false;
+
+    const phase = snapshot?.phase || autoTourPhase;
+    const block = resumeTargetBlock(phase);
+    document.documentElement.classList.add('avatar-tour-resume-scroll');
+    try {
+      // Fixed showcase popups are already the authored destination. Do not ask
+      // scrollIntoView to move the document behind them.
+      const fixedPopupTarget = target === modal && modal?.classList.contains('active');
+      if (fixedPopupTarget) {
+        clearAutoTourFocus();
+        autoTourFocusTarget = modal;
+        modal.classList.add('avatar-tour-focus', 'avatar-tour-prepared');
+        await nextAutoTourPaint();
+        return resumeTargetIsVisible(modal);
+      }
+
+      focusAutoTourTarget(target, block);
+
+      if (window.matchMedia('(max-width: 768px)').matches) {
+        const completed = await mobileTourScrollPromise;
+        if (!completed || !autoTourRunning || runId !== autoTourRunId) return false;
+      }
+
+      let stableFrames = 0;
+      let lastTop = target.getBoundingClientRect().top;
+      let lastScrollY = window.scrollY;
+      const started = performance.now();
+      const timeout = window.matchMedia('(max-width: 768px)').matches ? 6500 : 5200;
+
+      while (autoTourRunning && runId === autoTourRunId && performance.now() - started < timeout) {
+        await new Promise(resolve => requestAnimationFrame(resolve));
+        const rect = target.getBoundingClientRect();
+        const stable = Math.abs(rect.top - lastTop) < 0.85 && Math.abs(window.scrollY - lastScrollY) < 0.85;
+        stableFrames = resumeTargetIsVisible(target) && stable ? stableFrames + 1 : 0;
+        if (stableFrames >= 5) {
+          await nextAutoTourPaint();
+          return true;
+        }
+        lastTop = rect.top;
+        lastScrollY = window.scrollY;
+      }
+      return resumeTargetIsVisible(target);
+    } finally {
+      document.documentElement.classList.remove('avatar-tour-resume-scroll');
+    }
+  }
+
   async function resumeAutomatedTour() {
     if (!autoTourRunning || !autoTourPaused || autoTourResumeInProgress) return;
     const runId = autoTourRunId;
     const resumeSerial = autoTourPauseSerial;
     const snapshot = autoTourPauseSnapshot;
     autoTourResumeInProgress = true;
-    markPersistentResumeBusy();
+
+    // Keep the guide quiet while the page is returning to the saved target. The
+    // original narration is restored only after that target is visibly in place.
+    hidePersistentResume();
+    autoTourWritingPauseCopy = true;
+    try {
+      closePanel();
+    } finally {
+      autoTourWritingPauseCopy = false;
+    }
 
     // Restore the route coordinates captured at the moment of interruption. This
     // closes the small race where a synchronous transition could update the phase
@@ -19486,16 +19731,6 @@ html.network-constrained .portfolio-guide-panel {
         : autoTourExpectedProcessIndex;
     }
 
-    autoTourWritingPauseCopy = true;
-    try {
-      setExpression('focused');
-      setCopy('Guided tour', 'Returning to the saved route', 'I am restoring the correct project, carousel view, or process stage before the automatic sequence continues.');
-      setActions([{ label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(true) }]);
-      openPanel();
-    } finally {
-      autoTourWritingPauseCopy = false;
-    }
-
     const menu = document.getElementById('fullScreenMenu');
     if (menu?.classList.contains('active')) {
       menu.querySelector('.close-menu-btn')?.click();
@@ -19504,6 +19739,10 @@ html.network-constrained .portfolio-guide-panel {
 
     const projectReady = await ensureTourProjectForResume();
     const processReady = projectReady && await restoreProcessStageForResume();
+    const targetReady = projectReady && processReady
+      ? await returnToSavedTourTarget(snapshot, runId)
+      : false;
+
     if (!autoTourRunning || runId !== autoTourRunId) {
       autoTourResumeInProgress = false;
       return;
@@ -19513,16 +19752,15 @@ html.network-constrained .portfolio-guide-panel {
     // tour paused and explain the newer target rather than unexpectedly taking over.
     if (resumeSerial !== autoTourPauseSerial) {
       autoTourResumeInProgress = false;
-      showPersistentResume();
       renderPausedInteraction(autoTourPauseTarget);
       return;
     }
 
-    if (!projectReady || !processReady) {
+    if (!projectReady || !processReady || !targetReady) {
       autoTourWritingPauseCopy = true;
       try {
         setExpression('concerned');
-        setCopy('Guided tour paused', 'I could not restore this step yet', 'The current content is still settling. You can try Resume Tour again or end the tour and continue exploring freely.');
+        setCopy('Guided tour paused', 'I could not return to this step yet', 'Press Resume Tour to try again.');
         setActions([
           { label: 'Resume tour', kind: 'primary', onClick: resumeAutomatedTour },
           { label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(false) }
@@ -19532,19 +19770,11 @@ html.network-constrained .portfolio-guide-panel {
         autoTourWritingPauseCopy = false;
       }
       autoTourResumeInProgress = false;
-      showPersistentResume();
       return;
     }
 
-    autoTourPaused = false;
-    hidePersistentResume();
-    autoTourPauseSnapshot = null;
-    autoTourPauseTarget = null;
-    autoTourResumeInProgress = false;
-    root.classList.remove('auto-tour-paused');
-    document.body.classList.remove('avatar-tour-paused');
-    hidePersistentResume();
-
+    // Restore the exact narration while the tour is still paused. Once the copy,
+    // progress and target are synchronized, release the waiting tour coroutine.
     autoTourWritingPauseCopy = true;
     try {
       if (snapshot?.glassesVisible) setGlasses(snapshot.glassesContext, true);
@@ -19558,6 +19788,14 @@ html.network-constrained .portfolio-guide-panel {
     } finally {
       autoTourWritingPauseCopy = false;
     }
+
+    autoTourPauseSnapshot = null;
+    autoTourPauseTarget = null;
+    autoTourResumeInProgress = false;
+    root.classList.remove('auto-tour-paused');
+    document.body.classList.remove('avatar-tour-paused');
+    hidePersistentResume();
+    autoTourPaused = false;
   }
 
   function meaningfulInteractionTarget(rawTarget) {
@@ -19569,7 +19807,10 @@ html.network-constrained .portfolio-guide-panel {
     // contextual narration.
     return element.closest(
       '.slot-card, .brand-orbit-trigger, .brand-orbit-item, #brandStrategyExplore, ' +
-      '#lensSliderWrapper, .lens-display-left, .lens-nav-btn, #showcaseModal.active, ' +
+      '#lensSliderWrapper, .lens-display-left, .lens-nav-btn, #modalLensPrevBtn, #modalLensNextBtn, ' +
+      '#modalTargetLink, #mobileTargetLink, .modal-action-btn, .mobile-showcase-link, ' +
+      '.modal-spec-block, .project-snapshot, .project-fact, .mobile-showcase-copy, .mobile-showcase-facts, ' +
+      '.lens-scroll-area, .lens-info-right, #mobileShowcaseDetails, #showcaseModal.active, ' +
       '#stage3d, #luxuryGlassesModel, .hero-model-viewer, .glasses-3d-stage, ' +
       'video, img, a, button, input, textarea, select, summary, [role="button"], [contenteditable="true"]'
     ) || element.closest('.portfolio-section, .fullscreen-menu') || element;
@@ -19599,10 +19840,19 @@ html.network-constrained .portfolio-guide-panel {
   function handleTrustedTourScroll(event) {
     if (!event.isTrusted || !autoTourRunning || root.contains(event.target)) return;
     if (document.documentElement.classList.contains('avatar-tour-programmatic-scroll')) return;
-    const target = event.target instanceof Element
-      ? event.target.closest('.portfolio-section, #showcaseModal.active') || event.target
+    const rawTarget = event.target instanceof Element
+      ? event.target
       : document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+    const target = meaningfulInteractionTarget(rawTarget)
+      || rawTarget?.closest?.('.portfolio-section, #showcaseModal.active')
+      || rawTarget;
     pauseAutomatedTourForInteraction(target);
+    if (autoTourPaused) {
+      autoTourPauseTarget = target || autoTourPauseTarget;
+      // Wait for the physical scroll to settle, then narrate what is actually in
+      // view rather than the element that happened to receive the first wheel/touch event.
+      refreshPausedContextFromViewport(220);
+    }
   }
 
   function setAutomatedTourStep(stepNumber, nextTitle, nextMessage, expression = 'explaining') {
@@ -20303,6 +20553,14 @@ html.network-constrained .portfolio-guide-panel {
   }, true);
   window.addEventListener('wheel', handleTrustedTourScroll, { capture: true, passive: true });
   window.addEventListener('touchmove', handleTrustedTourScroll, { capture: true, passive: true });
+  window.addEventListener('scroll', () => {
+    if (!autoTourRunning || !autoTourPaused || autoTourWritingPauseCopy) return;
+    if (document.documentElement.classList.contains('avatar-tour-programmatic-scroll')) return;
+    refreshPausedContextFromViewport(170);
+  }, true);
+  window.addEventListener('scrollend', () => refreshPausedContextFromViewport(0), true);
+  window.addEventListener('resize', () => refreshPausedContextFromViewport(90), { passive: true });
+  window.addEventListener('orientationchange', () => refreshPausedContextFromViewport(140), { passive: true });
 
   grid?.addEventListener('click', event => {
     const card = event.target.closest('.slot-card');
@@ -20336,6 +20594,11 @@ html.network-constrained .portfolio-guide-panel {
       const visible = entries.filter(entry => entry.isIntersecting).sort((a,b) => b.intersectionRatio - a.intersectionRatio)[0];
       if (!visible) return;
       currentSection = visible.target.id;
+      if (autoTourRunning && autoTourPaused && !autoTourWritingPauseCopy && !autoTourResumeInProgress && !modal?.classList.contains('active')) {
+        autoTourPauseTarget = visible.target;
+        refreshPausedContextFromViewport(80);
+        return;
+      }
       if (!showcaseReady && !root.classList.contains('is-open')) {
         setExpression(sectionTips[currentSection]?.expression || 'neutral');
       }
@@ -20343,16 +20606,33 @@ html.network-constrained .portfolio-guide-panel {
     observedSections.forEach(section => sectionObserver.observe(section));
   }
 
+  let pausedViewportSectionId = '';
+  window.setInterval(() => {
+    if (!autoTourRunning || !autoTourPaused || autoTourWritingPauseCopy || autoTourResumeInProgress || modal?.classList.contains('active')) return;
+    const liveTarget = resolvePausedViewportTarget();
+    const section = liveTarget?.closest?.('.portfolio-section');
+    const nextId = section?.id || '';
+    if (!nextId || nextId === pausedViewportSectionId) return;
+    pausedViewportSectionId = nextId;
+    autoTourPauseTarget = section;
+    renderPausedInteraction(section);
+  }, 420);
+
   // Keep the interruption UI authoritative even if a legacy observer attempts to
   // write project-assistant copy after a manual click. This observer changes only
   // the guide controls; it does not alter portfolio content or animations.
   const pausedGuideWatchdog = new MutationObserver(() => {
-    if (!autoTourRunning || !autoTourPaused || autoTourWritingPauseCopy) return;
+    if (!autoTourRunning || !autoTourPaused || autoTourWritingPauseCopy || autoTourResumeInProgress) return;
     const hasResume = Array.from(actions.querySelectorAll('.guide-action')).some(button => /resume tour/i.test(button.textContent || ''));
-    if (!root.classList.contains('is-open') || !hasResume) {
+    const panelOpen = root.classList.contains('is-open');
+    // Repair missing paused actions only while the panel is intentionally open.
+    // When the visitor closes it, leave it closed and expose the floating fallback.
+    if (panelOpen && !hasResume) {
       renderPausedInteraction(autoTourPauseTarget);
     }
-    if (floatingResume && (floatingResume.hidden || !floatingResume.classList.contains('is-visible'))) {
+    if (panelOpen) {
+      hidePersistentResume();
+    } else if (floatingResume && (floatingResume.hidden || !floatingResume.classList.contains('is-visible'))) {
       showPersistentResume();
     }
   });
@@ -22690,7 +22970,8 @@ body.avatar-tour-paused #portfolioGuide #guideActions {
   function pauseFromTrustedEvent(event) {
     if (!event.isTrusted || isGuideControl(event.target)) return;
     const state = tourState();
-    if (!state?.running || state.paused) return;
+    if (!state?.running) return;
+    // Refresh paused narration when the visitor moves to another control.
     state.pauseForTest?.(meaningfulTarget(event.target));
   }
 
@@ -23075,5 +23356,426 @@ body.avatar-tour-paused #portfolioGuide #guideActions {
 })();
 </script>
 
+
+
+<!-- FINAL PROJECT LINKS + CAROUSEL + TOUR INPUT AUTHORITY V34 -->
+<style id="portfolio-final-source-and-carousel-authority-v34">
+/* The source CTA is explicitly visible whenever a verified URL is assigned. */
+@media (min-width: 769px) {
+  #showcaseModal.active #modalTargetLink[data-source-ready="true"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+
+  /* One final desktop slide plane, above all earlier mobile-specific layers. */
+  #showcaseModal .lens-display-left {
+    overflow: hidden !important;
+  }
+  #showcaseModal #lensSliderWrapper {
+    position: relative !important;
+    inset: auto !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    overflow: visible !important;
+    transition: transform .56s cubic-bezier(.16, 1, .3, 1) !important;
+    will-change: transform;
+  }
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide {
+    position: relative !important;
+    inset: auto !important;
+    display: block !important;
+    flex: 0 0 100% !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    height: 100% !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 768px) {
+  #showcaseModal.active #mobileTargetLink[data-source-ready="true"] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+}
+
+/* The guide can remain visible, but never sits above the lens controls. */
+#showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn.is-positioned,
+#showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent;
+  z-index: 30000 !important;
+}
+</style>
+<script id="portfolio-final-source-and-carousel-controller-v34">
+(() => {
+  'use strict';
+
+  const modal = document.getElementById('showcaseModal');
+  const wrapper = document.getElementById('lensSliderWrapper');
+  const grid = document.getElementById('portfolioGrid');
+  if (!modal || !wrapper || !grid) return;
+
+  const desktop = window.matchMedia('(min-width: 769px)');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const originalOpenShowcase = typeof window.openShowcase === 'function'
+    ? window.openShowcase.bind(window)
+    : null;
+  const previousSetIndex = typeof window.setLensSlideIndex === 'function'
+    ? window.setLensSlideIndex.bind(window)
+    : null;
+
+  const sourceBySlot = Object.freeze({
+    3: 'https://www.instagram.com/reel/DTkVEkoCP0U/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+    7: 'https://www.instagram.com/p/DTS2J77CMyr/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+    8: 'https://www.instagram.com/reel/DYO27Z9MG2J/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+    9: 'https://vt.tiktok.com/ZSC42Wemc/',
+    10: 'https://vt.tiktok.com/ZSC42E1wh/',
+    11: 'https://www.instagram.com/p/DW_YedMiKY8/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==',
+    12: 'https://www.instagram.com/p/DW_ZPVzCGBk/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA=='
+  });
+
+  const cards = () => Array.from(grid.querySelectorAll('.slot-card'));
+  let activeSource = '';
+  let sourceRequestToken = 0;
+  let settleTimer = 0;
+  let lastPointerNavigationAt = 0;
+  let lastRequestedIndex = 0;
+  let reconcileToken = 0;
+
+  function isSafeSource(value) {
+    if (typeof value !== 'string') return false;
+    const trimmed = value.trim();
+    return /^(https:\/\/)(www\.)?(instagram\.com|vt\.tiktok\.com)\//i.test(trimmed);
+  }
+
+  function assignCardSources() {
+    cards().forEach((card, index) => {
+      const slot = index + 1;
+      card.dataset.projectSlot = String(slot);
+      if (sourceBySlot[slot]) card.dataset.projectSource = sourceBySlot[slot];
+    });
+  }
+
+  function applySourceLink(url = activeSource) {
+    if (!isSafeSource(url)) return;
+    activeSource = url.trim();
+    const targets = [
+      document.getElementById('modalTargetLink'),
+      document.getElementById('mobileTargetLink')
+    ].filter(Boolean);
+
+    targets.forEach(link => {
+      link.href = activeSource;
+      link.hidden = false;
+      link.removeAttribute('aria-hidden');
+      link.setAttribute('aria-label', 'View project source in a new tab');
+      link.setAttribute('target', '_blank');
+      link.setAttribute('rel', 'noopener noreferrer');
+      link.dataset.sourceReady = 'true';
+      link.classList.remove('is-unavailable');
+      link.tabIndex = 0;
+      link.textContent = 'View project source';
+    });
+  }
+
+  assignCardSources();
+
+  if (originalOpenShowcase) {
+    const reliableOpenShowcase = function(card, title, desc, procedure, purpose, suppliedSource, contextMode = 'default') {
+      const slot = Number(card?.dataset?.projectSlot || (cards().indexOf(card) + 1));
+      const verifiedSource = sourceBySlot[slot] || card?.dataset?.projectSource || suppliedSource || '';
+      const result = originalOpenShowcase(
+        card, title, desc, procedure, purpose, verifiedSource, contextMode
+      );
+
+      if (isSafeSource(verifiedSource)) {
+        const requestToken = ++sourceRequestToken;
+        activeSource = verifiedSource.trim();
+        applySourceLink(activeSource);
+        [0, 60, 220, 700, 1500].forEach(delay => {
+          window.setTimeout(() => {
+            if (requestToken !== sourceRequestToken) return;
+            if (modal.classList.contains('active') || delay < 100) applySourceLink(activeSource);
+          }, delay);
+        });
+      }
+      return result;
+    };
+
+    window.openShowcase = reliableOpenShowcase;
+    try { openShowcase = reliableOpenShowcase; } catch (_) {}
+  }
+
+  function slides() {
+    return Array.from(wrapper.querySelectorAll(':scope > .lens-slider-slide'));
+  }
+
+  function readIndex() {
+    try { return Number(activeLensSlide) || 0; }
+    catch (_) { return Number(window.activeLensSlide) || 0; }
+  }
+
+  function writeIndex(index, count) {
+    lastRequestedIndex = index;
+    try { activeLensSlide = index; } catch (_) { window.activeLensSlide = index; }
+    try { totalLensSlides = count; } catch (_) { window.totalLensSlides = count; }
+  }
+
+  function hydrate(slide, shouldPlay = false) {
+    if (!slide) return;
+    const image = slide.querySelector(':scope > img');
+    const video = slide.querySelector(':scope > video');
+
+    if (image) {
+      image.loading = 'eager';
+      image.decoding = 'async';
+      image.fetchPriority = 'high';
+      if (image.dataset.src && !image.getAttribute('src')) {
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      }
+    }
+
+    if (video) {
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+      if (video.dataset.src && !video.getAttribute('src')) {
+        video.src = video.dataset.src;
+        delete video.dataset.src;
+        try { video.load(); } catch (_) {}
+      }
+      if (shouldPlay && document.visibilityState === 'visible') video.play().catch(() => {});
+      else video.pause();
+    }
+  }
+
+  function finishNavigation() {
+    wrapper.classList.remove('is-sliding');
+    wrapper.style.removeProperty('transition-duration');
+    try { updateShowcaseSnapshotProgress(); } catch (_) {}
+    try { hydrateLensMediaAroundActiveSlide(); } catch (_) {}
+    try { scheduleLensFitAndTheme(); } catch (_) {}
+    try { scheduleLensNavigationPosition(); } catch (_) {}
+    try { updateLensNavigationState(); } catch (_) {}
+  }
+
+  function setDesktopIndex(requested, direction = 1, instant = false) {
+    const allSlides = slides();
+    const count = allSlides.length;
+    if (!count) return false;
+    const target = ((Number(requested) % count) + count) % count;
+    writeIndex(target, count);
+
+    allSlides.forEach((slide, index) => {
+      slide.classList.remove(
+        'mobile-lens-active', 'mobile-lens-enter-left', 'mobile-lens-enter-right',
+        'mobile-lens-exit-left', 'mobile-lens-exit-right'
+      );
+      slide.style.setProperty('flex', '0 0 100%');
+      slide.style.setProperty('width', '100%');
+      slide.style.setProperty('min-width', '100%');
+      const video = slide.querySelector(':scope > video');
+      if (video && index !== target) video.pause();
+    });
+
+    hydrate(allSlides[target], true);
+    hydrate(allSlides[(target + 1) % count], false);
+    hydrate(allSlides[(target - 1 + count) % count], false);
+
+    wrapper.classList.toggle('is-sliding', !instant);
+    wrapper.style.setProperty(
+      'transition-duration',
+      instant || reduced.matches ? '1ms' : '',
+      'important'
+    );
+    wrapper.style.setProperty(
+      'transform',
+      `translate3d(-${target * 100}%, 0, 0)`,
+      'important'
+    );
+
+    clearTimeout(settleTimer);
+    settleTimer = window.setTimeout(
+      finishNavigation,
+      instant || reduced.matches ? 20 : 620
+    );
+    try { updateShowcaseSnapshotProgress(); } catch (_) {}
+    return true;
+  }
+
+  function setUnifiedIndex(requested, direction = 1, instant = false) {
+    if (desktop.matches) return setDesktopIndex(requested, direction, instant);
+    if (previousSetIndex) {
+      const result = previousSetIndex(requested, direction, instant);
+      lastRequestedIndex = (() => {
+        const count = Math.max(1, slides().length);
+        return ((Number(requested) % count) + count) % count;
+      })();
+      return result;
+    }
+    return false;
+  }
+
+  function moveUnified(direction) {
+    const count = slides().length;
+    if (count <= 1) return false;
+    return setUnifiedIndex(readIndex() + Number(direction || 0), Number(direction || 1), false);
+  }
+
+  window.setLensSlideIndex = setUnifiedIndex;
+  window.moveLensSlider = moveUnified;
+  try { moveLensSlider = moveUnified; } catch (_) {}
+  if (window.portfolioReliabilityController) {
+    window.portfolioReliabilityController.setLensIndex = setUnifiedIndex;
+    window.portfolioReliabilityController.moveLens = moveUnified;
+  }
+
+  function reconcileUserNavigation(index, token) {
+    if (token !== reconcileToken || !modal.classList.contains('active')) return;
+    const count = slides().length;
+    if (count <= 1) return;
+    const current = ((readIndex() % count) + count) % count;
+    if (current !== index || (desktop.matches && !wrapper.style.transform.includes(`${index * 100}`))) {
+      setUnifiedIndex(index, 1, true);
+    }
+  }
+
+  function runNavigation(direction, userInitiated = false) {
+    const count = slides().length;
+    if (count <= 1) return;
+    const target = ((readIndex() + direction) % count + count) % count;
+    const token = ++reconcileToken;
+
+    /* Pause the automated route before accepting manual input. The guide remains
+       visible, but it can no longer restore an earlier slide after this gesture. */
+    if (userInitiated) {
+      try {
+        const guideState = window.portfolioGuidedTourState;
+        if (guideState?.running) {
+          guideState.pauseForTest?.(document.getElementById(
+            direction < 0 ? 'modalLensPrevBtn' : 'modalLensNextBtn'
+          ));
+        }
+      } catch (_) {}
+    }
+
+    setUnifiedIndex(target, direction, false);
+    [90, 260, 700].forEach(delay => {
+      window.setTimeout(() => reconcileUserNavigation(target, token), delay);
+    });
+  }
+
+  function navigationButton(target) {
+    return target instanceof Element
+      ? target.closest('#modalLensPrevBtn, #modalLensNextBtn')
+      : null;
+  }
+
+  function onPointerUp(event) {
+    const button = navigationButton(event.target);
+    if (!button || !modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+    if (button.disabled || slides().length <= 1) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    lastPointerNavigationAt = performance.now();
+    runNavigation(button.id === 'modalLensPrevBtn' ? -1 : 1, event.isTrusted);
+  }
+
+  function onClick(event) {
+    const button = navigationButton(event.target);
+    if (!button || !modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+    if (performance.now() - lastPointerNavigationAt < 700) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      return;
+    }
+    if (button.disabled || slides().length <= 1) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    runNavigation(button.id === 'modalLensPrevBtn' ? -1 : 1, event.isTrusted);
+  }
+
+  function onKeyDown(event) {
+    const button = navigationButton(event.target);
+    if (!button || !['Enter', ' '].includes(event.key)) return;
+    if (!modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    runNavigation(button.id === 'modalLensPrevBtn' ? -1 : 1, event.isTrusted);
+  }
+
+  /* Delegation survives every old controller that cloned or replaced an arrow. */
+  window.addEventListener('pointerup', onPointerUp, true);
+  window.addEventListener('click', onClick, true);
+  window.addEventListener('keydown', onKeyDown, true);
+
+  new MutationObserver(mutations => {
+    if (!mutations.some(mutation => mutation.type === 'childList')) return;
+    requestAnimationFrame(() => {
+      if (desktop.matches) setDesktopIndex(0, 1, true);
+      if (activeSource) applySourceLink(activeSource);
+    });
+  }).observe(wrapper, { childList: true });
+
+  new MutationObserver(() => {
+    if (!modal.classList.contains('active')) return;
+    requestAnimationFrame(() => {
+      if (desktop.matches) setDesktopIndex(readIndex(), 1, true);
+      if (activeSource) applySourceLink(activeSource);
+    });
+  }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+  desktop.addEventListener?.('change', () => {
+    requestAnimationFrame(() => {
+      if (desktop.matches && modal.classList.contains('active')) {
+        setDesktopIndex(readIndex(), 1, true);
+      }
+    });
+  });
+})();
+</script>
+
+
+
+<style id="tour-pause-context-and-overlay-fix-v35">
+#portfolioGuide.is-open #guideResumeFloating,
+#portfolioGuide.auto-tour-paused.is-open #guideResumeFloating,
+body.avatar-tour-paused #portfolioGuide.is-open .guide-resume-floating {
+  display: none !important; visibility: hidden !important; opacity: 0 !important; pointer-events: none !important;
+}
+#portfolioGuide.auto-tour-paused .guide-actions { position: relative !important; z-index: 4 !important; padding-right: 0 !important; }
+#portfolioGuide.auto-tour-paused .guide-actions .guide-action { position: relative !important; z-index: 5 !important; }
+@media (max-width: 768px) {
+  #portfolioGuide.auto-tour-paused .portfolio-guide-panel { padding-bottom: max(14px, env(safe-area-inset-bottom)) !important; }
+  #portfolioGuide.auto-tour-paused .guide-actions { display: grid !important; grid-template-columns: minmax(0,1fr) minmax(0,1fr) !important; gap: 8px !important; }
+  #portfolioGuide.auto-tour-paused .guide-actions .guide-action { width: 100% !important; min-width: 0 !important; }
+}
+</style>
+
+<style id="tour-resume-redirect-fix-v36">
+html.avatar-tour-resume-scroll { scroll-behavior: auto !important; }
+html.avatar-tour-resume-scroll #portfolioGuide:not(.is-open) { pointer-events: none !important; }
+</style>
 </body>
 </html>
