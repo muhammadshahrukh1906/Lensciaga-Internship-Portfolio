@@ -21063,5 +21063,489 @@ html body #showcaseModal.modal-container:not(.active) * {
 })();
 </script>
 
+
+<!-- MOBILE-ONLY DEFINITIVE CAROUSEL + SECTION 3 REPAIR -->
+<style id="mobile-definitive-carousel-process-repair-v28">
+@media (max-width: 768px) {
+  /* A dedicated mobile slide plane. The desktop flex-track remains untouched. */
+  #showcaseModal .lens-display-left {
+    position: relative !important;
+    overflow: hidden !important;
+  }
+
+  #showcaseModal #lensSliderWrapper {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+    transform: none !important;
+    transition: none !important;
+    overflow: hidden !important;
+    will-change: auto !important;
+  }
+
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide {
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    flex: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transform: translate3d(18%, 0, 0) !important;
+    transition:
+      transform .58s cubic-bezier(.22, 1, .36, 1),
+      opacity .34s ease !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+    contain: paint !important;
+    z-index: 1 !important;
+  }
+
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide.mobile-lens-active {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translate3d(0, 0, 0) !important;
+    pointer-events: auto !important;
+    z-index: 3 !important;
+  }
+
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide.mobile-lens-exit-left {
+    opacity: 0 !important;
+    visibility: visible !important;
+    transform: translate3d(-18%, 0, 0) !important;
+    z-index: 2 !important;
+  }
+
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide.mobile-lens-exit-right {
+    opacity: 0 !important;
+    visibility: visible !important;
+    transform: translate3d(18%, 0, 0) !important;
+    z-index: 2 !important;
+  }
+
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide.mobile-lens-enter-left {
+    opacity: 0 !important;
+    visibility: visible !important;
+    transform: translate3d(-18%, 0, 0) !important;
+    z-index: 3 !important;
+  }
+
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide.mobile-lens-enter-right {
+    opacity: 0 !important;
+    visibility: visible !important;
+    transform: translate3d(18%, 0, 0) !important;
+    z-index: 3 !important;
+  }
+
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide > img,
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide > video,
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide > .lens-media-backdrop {
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  /* The mobile arrows remain real controls for every project shape. */
+  #showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    z-index: 10040 !important;
+  }
+
+  /* Section 3: keep every collapsed row readable while one row expands. */
+  body.avatar-tour-process-active #brandStrategyVisual,
+  body.avatar-tour-process-active #brand-section .brand-orbit-item {
+    contain: none !important;
+  }
+
+  #brand-section .brand-orbit-trigger,
+  #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-trigger {
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 64px !important;
+    height: 64px !important;
+    overflow: hidden !important;
+  }
+
+  #brand-section .brand-orbit-window,
+  #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window,
+  body.avatar-tour-process-active #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window {
+    display: block !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    max-height: 48px !important;
+    margin: 0 8px !important;
+    overflow: hidden !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  #brand-section .brand-orbit-window strong,
+  #brand-section .brand-orbit-window > span,
+  #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window strong,
+  #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window > span,
+  body.avatar-tour-process-active #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window strong,
+  body.avatar-tour-process-active #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window > span {
+    display: block !important;
+    width: auto !important;
+    max-width: 100% !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    color: inherit;
+    white-space: normal !important;
+  }
+
+  #brand-section .brand-orbit-window strong {
+    color: #fff !important;
+  }
+
+  #brand-section .brand-orbit-window > span {
+    color: #d8d8dc !important;
+  }
+
+  #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window small {
+    display: block !important;
+    max-height: 0 !important;
+    margin: 0 !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    overflow: hidden !important;
+  }
+
+  #brand-section .brand-orbit-item.is-open .brand-orbit-trigger {
+    height: auto !important;
+    min-height: 112px !important;
+    overflow: visible !important;
+  }
+
+  #brand-section .brand-orbit-item.is-open .brand-orbit-window {
+    max-height: 112px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  #brand-section .brand-orbit-item.is-open .brand-orbit-window small {
+    display: block !important;
+    max-height: 72px !important;
+    margin-top: 6px !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  #showcaseModal #lensSliderWrapper > .lens-slider-slide {
+    transition-duration: 1ms !important;
+  }
+}
+</style>
+<script id="mobile-definitive-carousel-controller-v28">
+(() => {
+  const phone = window.matchMedia('(max-width: 768px)');
+  const modal = document.getElementById('showcaseModal');
+  const wrapper = document.getElementById('lensSliderWrapper');
+  if (!modal || !wrapper) return;
+
+  const SLIDE_MS = 620;
+  const slideClasses = [
+    'mobile-lens-active',
+    'mobile-lens-enter-left',
+    'mobile-lens-enter-right',
+    'mobile-lens-exit-left',
+    'mobile-lens-exit-right'
+  ];
+  let animationToken = 0;
+  let settleTimer = 0;
+
+  const slides = () => Array.from(wrapper.querySelectorAll(':scope > .lens-slider-slide'));
+
+  function hydrateSlide(slide, playVideo = true) {
+    if (!slide) return;
+    const image = slide.querySelector(':scope > img');
+    const video = slide.querySelector(':scope > video');
+
+    if (image) {
+      image.loading = 'eager';
+      image.decoding = 'async';
+      image.fetchPriority = 'high';
+      if (image.dataset.src && !image.getAttribute('src')) {
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      }
+      image.decode?.().catch(() => {});
+    }
+
+    if (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+      video.setAttribute('playsinline', '');
+      video.setAttribute('webkit-playsinline', '');
+      video.setAttribute('fetchpriority', 'high');
+      if (video.dataset.src && !video.getAttribute('src')) {
+        video.src = video.dataset.src;
+        delete video.dataset.src;
+        try { video.load(); } catch (_) {}
+      }
+      if (playVideo && modal.classList.contains('active')) video.play().catch(() => {});
+    }
+  }
+
+  function pauseInactiveVideos(active) {
+    slides().forEach(slide => {
+      if (slide === active) return;
+      const video = slide.querySelector(':scope > video');
+      if (video) {
+        try { video.pause(); } catch (_) {}
+      }
+    });
+  }
+
+  function cleanSlide(slide) {
+    if (!slide) return;
+    slideClasses.forEach(name => slide.classList.remove(name));
+  }
+
+  function updateProgress(index, count) {
+    try {
+      activeLensSlide = index;
+      totalLensSlides = count;
+    } catch (_) {
+      window.activeLensSlide = index;
+      window.totalLensSlides = count;
+    }
+
+    const text = `${String(index + 1).padStart(2, '0')} / ${String(Math.max(1, count)).padStart(2, '0')}`;
+    const desktopProgress = document.getElementById('modalProjectProgress');
+    const mobileProgress = document.getElementById('mobileProjectProgress');
+    if (desktopProgress) desktopProgress.textContent = text;
+    if (mobileProgress) mobileProgress.textContent = text;
+  }
+
+  function finishMovement(token, target, index, count) {
+    if (token !== animationToken) return;
+    slides().forEach(slide => {
+      cleanSlide(slide);
+      if (slide === target) slide.classList.add('mobile-lens-active');
+    });
+    wrapper.classList.remove('is-sliding');
+    updateProgress(index, count);
+    try { hydrateLensMediaAroundActiveSlide(); } catch (_) {}
+    try { scheduleLensFitAndTheme(); } catch (_) {}
+    try { updateLensNavigationState(); } catch (_) {}
+    try { scheduleLensNavigationPosition(); } catch (_) {}
+    wrapper.dispatchEvent(new CustomEvent('mobilelenssettled', { detail: { index, count } }));
+  }
+
+  function setMobileLensIndex(requestedIndex, direction = 1, immediate = false) {
+    const allSlides = slides();
+    const count = allSlides.length;
+    if (!phone.matches || count < 1) return false;
+
+    let current = Number.isFinite(Number(window.activeLensSlide))
+      ? Number(window.activeLensSlide)
+      : (typeof activeLensSlide === 'number' ? activeLensSlide : 0);
+    current = Math.max(0, Math.min(count - 1, current));
+    const targetIndex = ((Number(requestedIndex) % count) + count) % count;
+    const currentSlide = allSlides[current];
+    const targetSlide = allSlides[targetIndex];
+    const actualDirection = targetIndex === current
+      ? direction
+      : (direction || (targetIndex > current ? 1 : -1));
+
+    clearTimeout(settleTimer);
+    animationToken += 1;
+    const token = animationToken;
+
+    hydrateSlide(targetSlide, true);
+    pauseInactiveVideos(targetSlide);
+    updateProgress(targetIndex, count);
+
+    allSlides.forEach(slide => cleanSlide(slide));
+
+    if (!currentSlide || current === targetIndex || immediate || !modal.classList.contains('active')) {
+      targetSlide.classList.add('mobile-lens-active');
+      wrapper.classList.remove('is-sliding');
+      finishMovement(token, targetSlide, targetIndex, count);
+      return true;
+    }
+
+    wrapper.classList.add('is-sliding');
+    currentSlide.classList.add('mobile-lens-active');
+    targetSlide.classList.add(actualDirection > 0 ? 'mobile-lens-enter-right' : 'mobile-lens-enter-left');
+
+    /* Commit the starting state first. This is required by iOS/WebView before
+       changing both slides in the next frame. */
+    void targetSlide.offsetWidth;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (token !== animationToken) return;
+      currentSlide.classList.remove('mobile-lens-active');
+      currentSlide.classList.add(actualDirection > 0 ? 'mobile-lens-exit-left' : 'mobile-lens-exit-right');
+      targetSlide.classList.remove('mobile-lens-enter-right', 'mobile-lens-enter-left');
+      targetSlide.classList.add('mobile-lens-active');
+    }));
+
+    settleTimer = window.setTimeout(
+      () => finishMovement(token, targetSlide, targetIndex, count),
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 30 : SLIDE_MS
+    );
+    return true;
+  }
+
+  function initializeMobileSlides(resetToFirst = false) {
+    if (!phone.matches) return;
+    const allSlides = slides();
+    if (!allSlides.length) return;
+    const index = resetToFirst
+      ? 0
+      : Math.max(0, Math.min(allSlides.length - 1, typeof activeLensSlide === 'number' ? activeLensSlide : 0));
+    setMobileLensIndex(index, 1, true);
+  }
+
+  /* Replace the global movement entry point on phones. The guided tour, avatar
+     next-image action, arrow controls and swipe controls all use this same path. */
+  const originalMove = typeof window.moveLensSlider === 'function'
+    ? window.moveLensSlider.bind(window)
+    : null;
+  const patchedMove = direction => {
+    if (!phone.matches) {
+      if (originalMove) return originalMove(direction);
+      return false;
+    }
+    const count = slides().length;
+    if (count <= 1) return false;
+    const current = typeof activeLensSlide === 'number' ? activeLensSlide : 0;
+    return setMobileLensIndex(current + Number(direction || 0), Number(direction || 1), false);
+  };
+  window.moveLensSlider = patchedMove;
+  try { moveLensSlider = patchedMove; } catch (_) {}
+  window.setMobileLensIndex = setMobileLensIndex;
+
+  /* Remove every accumulated arrow listener by replacing the nodes before any
+     project is opened. openShowcase and positioning functions query the IDs, so
+     they automatically use these clean controls. */
+  function installCleanArrow(id, direction) {
+    const oldButton = document.getElementById(id);
+    if (!oldButton || oldButton.dataset.mobileDefinitiveArrow === 'true') return oldButton;
+    const button = oldButton.cloneNode(true);
+    button.removeAttribute('onclick');
+    button.dataset.mobileDefinitiveArrow = 'true';
+    oldButton.replaceWith(button);
+
+    let pointerHandledAt = 0;
+    const activate = event => {
+      if (!phone.matches || !modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      if (button.disabled) return;
+      pointerHandledAt = performance.now();
+      patchedMove(direction);
+    };
+
+    button.addEventListener('pointerup', activate, { capture: true, passive: false });
+    button.addEventListener('click', event => {
+      if (phone.matches && performance.now() - pointerHandledAt < 700) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        return;
+      }
+      activate(event);
+    }, true);
+    button.addEventListener('touchstart', event => event.stopPropagation(), { capture: true, passive: true });
+    return button;
+  }
+
+  installCleanArrow('modalLensPrevBtn', -1);
+  installCleanArrow('modalLensNextBtn', 1);
+
+  /* Markup is replaced for every slot. Reinitialize the real slides every time,
+     including projects opened manually after the guided tour. */
+  new MutationObserver(mutations => {
+    if (!phone.matches || !mutations.some(mutation => mutation.type === 'childList')) return;
+    requestAnimationFrame(() => initializeMobileSlides(true));
+  }).observe(wrapper, { childList: true });
+
+  new MutationObserver(() => {
+    if (!phone.matches) return;
+    if (modal.classList.contains('active')) {
+      requestAnimationFrame(() => initializeMobileSlides(false));
+    } else {
+      clearTimeout(settleTimer);
+      animationToken += 1;
+      wrapper.classList.remove('is-sliding');
+      slides().forEach(cleanSlide);
+    }
+  }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+  phone.addEventListener?.('change', () => {
+    if (phone.matches) initializeMobileSlides(false);
+    else slides().forEach(cleanSlide);
+  });
+
+  initializeMobileSlides(false);
+})();
+</script>
+<script id="mobile-definitive-process-visibility-v28">
+(() => {
+  const phone = window.matchMedia('(max-width: 768px)');
+  const visual = document.getElementById('brandStrategyVisual');
+  if (!visual) return;
+
+  function restoreProcessRows() {
+    if (!phone.matches) return;
+    visual.querySelectorAll('.brand-orbit-item').forEach(item => {
+      const trigger = item.querySelector('.brand-orbit-trigger');
+      const windowEl = item.querySelector('.brand-orbit-window');
+      const title = windowEl?.querySelector('strong');
+      const summary = windowEl?.querySelector(':scope > span');
+      if (!trigger || !windowEl) return;
+
+      trigger.style.removeProperty('visibility');
+      windowEl.style.setProperty('display', 'block');
+      windowEl.style.setProperty('visibility', 'visible');
+      windowEl.style.setProperty('opacity', '1');
+      if (title) {
+        title.style.setProperty('display', 'block');
+        title.style.setProperty('visibility', 'visible');
+        title.style.setProperty('opacity', '1');
+      }
+      if (summary) {
+        summary.style.setProperty('display', 'block');
+        summary.style.setProperty('visibility', 'visible');
+        summary.style.setProperty('opacity', '1');
+      }
+    });
+  }
+
+  const queueRestore = () => requestAnimationFrame(() => requestAnimationFrame(restoreProcessRows));
+  new MutationObserver(queueRestore).observe(visual, {
+    subtree: true,
+    attributes: true,
+    attributeFilter: ['class', 'aria-expanded', 'style']
+  });
+  phone.addEventListener?.('change', queueRestore);
+  document.addEventListener('click', event => {
+    if (event.target.closest?.('#brandStrategyExplore, #brandStrategyVisual .brand-orbit-trigger')) queueRestore();
+  }, true);
+  queueRestore();
+})();
+</script>
+
 </body>
 </html>
