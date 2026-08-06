@@ -10118,6 +10118,11 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 <a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Brand Strategy')">Content Strategy</a>
 <a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Contact')">Contact</a>
 </div>
+<nav aria-label="External profiles" class="menu-social-links">
+<a href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">in</span>LinkedIn</a>
+<a href="https://lensciaga.com/" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">↗</span>Lensciaga</a>
+<a href="https://www.instagram.com/lensciaga.official?igsh=ajlpM3ZjbmozdW5q" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">◎</span>Instagram</a>
+</nav>
 </div>
 <div class="toast-notification" id="toastBox">
 <span style="font-size: 1.2rem;">⚡</span>
@@ -10137,10 +10142,19 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 </nav>
 <div class="sidebar-footer">
 <div><p class="footer-quote">Every frame tells a story. Every detail builds the brand.</p></div>
-<div class="social-links">
-<a class="social-icon" onclick="triggerToast('Opening LinkedIn profile...')">💼</a>
-<a class="social-icon" onclick="triggerToast('Opening Behance portfolio...')">Bē</a>
-<a class="social-icon" onclick="triggerToast('Opening the Lensciaga website...')">🌐</a>
+<div aria-label="Professional and company links" class="social-links portfolio-social-links">
+<a aria-label="Open Muhammad Shahrukh on LinkedIn" class="social-icon portfolio-social-link" data-label="LinkedIn" href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" rel="noopener noreferrer" target="_blank" title="LinkedIn">
+<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.4 8.2V19M6.4 5.1v.1M10.9 19v-5.6c0-2.4 1.4-3.9 3.6-3.9 2.1 0 3.1 1.4 3.1 3.9V19M10.9 9.8V19"></path></svg>
+<span class="visually-hidden">LinkedIn</span>
+</a>
+<a aria-label="Open the official Lensciaga website" class="social-icon portfolio-social-link" data-label="Lensciaga website" href="https://lensciaga.com/" rel="noopener noreferrer" target="_blank" title="Lensciaga website">
+<svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.8 12h16.4M12 3.5c2.2 2.4 3.3 5.2 3.3 8.5S14.2 18.1 12 20.5M12 3.5C9.8 5.9 8.7 8.7 8.7 12s1.1 6.1 3.3 8.5"></path></svg>
+<span class="visually-hidden">Lensciaga website</span>
+</a>
+<a aria-label="Open Lensciaga on Instagram" class="social-icon portfolio-social-link" data-label="Instagram" href="https://www.instagram.com/lensciaga.official?igsh=ajlpM3ZjbmozdW5q" rel="noopener noreferrer" target="_blank" title="Lensciaga Instagram">
+<svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.7" r=".9" class="social-icon-dot"></circle></svg>
+<span class="visually-hidden">Instagram</span>
+</a>
 </div>
 <div class="copyright">© 2025-Present Muhammad Shahrukh</div>
 </div>
@@ -10863,7 +10877,7 @@ html.performance-lite .brand-orbit-trigger { box-shadow: 0 8px 20px rgba(0,0,0,.
 <button class="brand-strategy-explore" id="brandStrategyExplore" type="button">
 <span>Explore the process</span><span aria-hidden="true">→</span>
 </button>
-<p class="brand-strategy-instruction">Hover, focus or tap each stage to see how the work moves from insight to execution.</p>
+<p class="brand-strategy-instruction">Select Explore the Process to preview each stage in sequence, or open any stage directly.</p>
 </div>
 <div aria-label="Interactive content strategy and creative process" class="brand-strategy-visual" id="brandStrategyVisual">
 <div aria-hidden="true" class="brand-orbit-rings"><span></span><span></span><span></span></div>
@@ -18225,32 +18239,32 @@ html.network-constrained .portfolio-guide-panel {
   };
 
   const slotProfiles = {
-    default: { name: 'Aurelion Noir', expression: 'focused', tip: 'Wow, now that\'s a sleek design. Start with the first view, then swipe the left lens to see how its features and styling are presented.' },
-    tinted: { name: 'Transition Frames', expression: 'impressed', tip: 'Wow, now that is a spectacle you don\'t see often. Swipe through the left lens to follow the transition story from clear everyday wear to a darker outdoor look.' },
-    doffy: { name: 'Winged Rimless', expression: 'curious', tip: 'These winged lenses are built to stand out. Don\'t they look straight out of an anime? I think I know which one. Move through the carousel to explore.' },
-    butty: { name: 'Butterfly Frames', expression: 'excited', tip: 'Now that will get some attention at an event. Use the left-lens arrows to compare its width, curve and face-framing effect.' },
-    clip: { name: 'Clip-On Versatility', expression: 'explaining', tip: 'Now, these look like a convenient pair of glasses. Move through the views to see the base frame, attachment, and finished sunwear style.' },
-    pink: { name: 'Rose Aura', expression: 'happy', tip: 'Wow, these glasses look fit for a princess. Explore more using the button on the left lens.' },
-    gold: { name: 'Aurelius Noir', expression: 'confident', tip: 'Now that looks like something fit for royalty. Examine the smaller bridge, rim details, and finish as you move through the left-lens carousel.' },
-    circle: { name: 'Oval Black', expression: 'thinking', tip: 'So simple, yet so clean and elegant. That is hard to find these days. Explore more using the button on the left lens.' },
-    multi: { name: 'Frame Collection', expression: 'encouraging', tip: 'This project brings several personalities into one collection. Explore it using the button on the left lens.' },
-    hand: { name: 'Product in Hand', expression: 'neutral', tip: 'Hmm, that\'s a unique way to showcase an eyewear brand. The artist must have some skill, right?' },
-    aura: { name: 'Aurelion Classic', expression: 'wink', tip: 'One word: \'Marvellous.\' These glasses could complete almost any look.' },
-    cat: { name: 'Lux Cat-Eye', expression: 'surprised', tip: 'Don\'t leading ladies wear glasses like these in movies? I knew I recognised that design from somewhere.' }
+    default: { name: 'Aurelion Noir', expression: 'focused', tip: 'Wow, now that\'s a sleek design.' },
+    tinted: { name: 'Transition Frames', expression: 'impressed', tip: 'Wow, now that is a spectacle you don\'t see often.' },
+    doffy: { name: 'Winged Rimless', expression: 'curious', tip: 'These winged lenses are built to stand out. Don\'t they look straight out of an anime?' },
+    butty: { name: 'Butterfly Frames', expression: 'excited', tip: 'Now that will get some attention at an event.' },
+    clip: { name: 'Clip-On Versatility', expression: 'explaining', tip: 'Now, these look like a convenient pair of glasses.' },
+    pink: { name: 'Rose Aura', expression: 'happy', tip: 'Wow, these glasses look fit for a princess.' },
+    gold: { name: 'Aurelius Noir', expression: 'confident', tip: 'Now that looks like something fit for royalty.' },
+    circle: { name: 'Oval Black', expression: 'thinking', tip: 'So simple, yet so clean and elegant.' },
+    multi: { name: 'Frame Collection', expression: 'encouraging', tip: 'This project brings several personalities into one collection.' },
+    hand: { name: 'Product in Hand', expression: 'neutral', tip: 'Hmm, that\'s a unique way to showcase an eyewear brand.' },
+    aura: { name: 'Aurelion Classic', expression: 'wink', tip: 'One word: \'Marvellous.\'' },
+    cat: { name: 'Lux Cat-Eye', expression: 'surprised', tip: 'Don\'t leading ladies wear glasses like these in movies?' }
   };
 
   const sectionTips = {
-    'overview-section': { expression: 'happy', kicker: 'Overview', title: 'Begin with the big picture', text: 'This section introduces the portfolio, the interactive eyewear concept and the collection of work you can explore.' },
-    'featured-section': { expression: 'explaining', kicker: 'Featured work', title: 'Choose a project', text: 'Open any slot to see its concept, execution and purpose, then use the left-lens carousel to explore the work.' },
-    'brand-section': { expression: 'thinking', kicker: 'Content strategy', title: 'Follow the creative process', text: 'Tap each stage to see how product insight became positioning, visual direction, production, and final content.' },
-    'contact-section': { expression: 'encouraging', kicker: 'Contact', title: 'Start a conversation', text: 'Use the form, email or LinkedIn link whenever you are ready to discuss the work or a possible collaboration.' }
+    'overview-section': { expression: 'happy', kicker: 'Overview', title: 'Portfolio overview', text: 'This section introduces the portfolio, its interactive eyewear concept, and the work featured throughout it.' },
+    'featured-section': { expression: 'explaining', kicker: 'Featured work', title: 'Featured projects', text: 'Open a project to explore its concept, execution, purpose, and left-lens gallery.' },
+    'brand-section': { expression: 'thinking', kicker: 'Content strategy', title: 'Content strategy and creative process', text: 'The five stages show how research, positioning, creative direction, production, and optimisation shape the final content.' },
+    'contact-section': { expression: 'encouraging', kicker: 'Contact', title: 'Contact and profiles', text: 'Use LinkedIn, the Lensciaga website, Instagram, email, or the contact form to start a conversation.' }
   };
 
   const tourSteps = [
-    { target: 'overview-section', expression: 'happy', kicker: 'Guided tour · 01', title: 'Welcome to my work', text: 'I will show you the portfolio\'s key projects, the thinking behind them, and the interactions worth trying.' },
-    { target: 'featured-section', expression: 'explaining', kicker: 'Guided tour · 02', title: 'Open a project slot', text: 'Each main slot transforms into a glasses-shaped popup with project details and a left-lens carousel.' },
-    { target: 'brand-section', expression: 'thinking', kicker: 'Guided tour · 03', title: 'See the process behind it', text: 'Beyond the visuals, this section shows how research, positioning, and execution shaped the content.' },
-    { target: 'contact-section', expression: 'goodbye', kicker: 'Guided tour · 04', title: 'Let\'s stay connected', text: 'You have reached the contact section. Continue exploring freely or use the details here to start a conversation.' }
+    { target: 'overview-section', expression: sectionTips['overview-section'].expression, kicker: 'Guided tour · 01', title: sectionTips['overview-section'].title, text: sectionTips['overview-section'].text },
+    { target: 'featured-section', expression: sectionTips['featured-section'].expression, kicker: 'Guided tour · 02', title: sectionTips['featured-section'].title, text: sectionTips['featured-section'].text },
+    { target: 'brand-section', expression: sectionTips['brand-section'].expression, kicker: 'Guided tour · 03', title: sectionTips['brand-section'].title, text: sectionTips['brand-section'].text },
+    { target: 'contact-section', expression: sectionTips['contact-section'].expression, kicker: 'Guided tour · 04', title: sectionTips['contact-section'].title, text: sectionTips['contact-section'].text }
   ];
 
   let guideMode = readPreference();
@@ -19219,8 +19233,8 @@ html.network-constrained .portfolio-guide-panel {
     if (card) {
       const profile = profileForCard(card);
       return {
-        title: `You selected ${profile.name}`,
-        message: oneLine(profile.tip),
+        title: profile.name,
+        message: profile.tip,
         expression: profile.expression || 'impressed'
       };
     }
@@ -19240,8 +19254,8 @@ html.network-constrained .portfolio-guide-panel {
 
     if (element.closest('#brandStrategyExplore')) {
       return {
-        title: 'Creative framework opened',
-        message: 'Choose a stage to follow the work from research to execution.',
+        title: 'Creative process',
+        message: 'The five stages open one by one from research to optimisation.',
         expression: 'thinking'
       };
     }
@@ -19274,9 +19288,9 @@ html.network-constrained .portfolio-guide-panel {
         };
       }
       return {
-        title: 'Content strategy and creative process',
-        message: 'Explore how insight, positioning, production and refinement shape the final content.',
-        expression: 'thinking'
+        title: sectionTips['brand-section'].title,
+        message: sectionTips['brand-section'].text,
+        expression: sectionTips['brand-section'].expression
       };
     }
 
@@ -19285,20 +19299,10 @@ html.network-constrained .portfolio-guide-panel {
       const profile = activeProfile();
       const count = Math.max(1, typeof totalLensSlides === 'number' ? totalLensSlides : slider?.children?.length || 1);
       const index = Math.max(0, Math.min(count - 1, typeof activeLensSlide === 'number' ? activeLensSlide : 0));
-      const activeSlide = slider?.children?.[index] || null;
-      const media = activeSlide?.querySelector?.('img, video');
-      const mediaLabel = media?.getAttribute?.('alt') || media?.getAttribute?.('aria-label') || '';
-      const viewLine = mediaLabel
-        ? `This view shows ${mediaLabel.replace(/[.]+$/, '').replace(/^a\s+/i, '').toLowerCase()}.`
-        : index === 0
-          ? 'This opening view establishes the project direction.'
-          : index >= count - 1
-            ? 'This final view completes the gallery.'
-            : 'This view adds another angle to the product story.';
       return {
-        title: `${profile.name} · View ${index + 1} of ${count}`,
-        message: oneLine(viewLine),
-        expression: index >= count - 1 ? 'success' : (profile.expression || 'explaining')
+        title: profile.name,
+        message: profile.tip,
+        expression: profile.expression || 'explaining'
       };
     }
 
@@ -19331,8 +19335,8 @@ html.network-constrained .portfolio-guide-panel {
     if (element.closest('#showcaseModal.active')) {
       const profile = activeProfile();
       return {
-        title: `Exploring ${profile.name}`,
-        message: oneLine(profile.tip),
+        title: profile.name,
+        message: profile.tip,
         expression: profile.expression || 'explaining'
       };
     }
@@ -19365,24 +19369,25 @@ html.network-constrained .portfolio-guide-panel {
       if (href.startsWith('#') && href.length > 1) {
         try { destination = document.querySelector(href); } catch (_) { destination = null; }
       }
-      const heading = destination?.querySelector('h1, h2, .section-label')?.textContent?.trim()
+      const destinationTip = destination ? sectionTips[destination.id] : null;
+      const heading = destinationTip?.title
+        || destination?.querySelector('h1, h2, .section-label')?.textContent?.trim()
         || navigation.textContent?.trim()
-        || 'another section';
+        || 'Portfolio navigation';
       return {
-        title: `Going to ${heading.replace(/\s+/g, ' ').slice(0, 80)}`,
-        message: 'Explore this section at your own pace.',
-        expression: 'curious'
+        title: heading.replace(/\s+/g, ' ').slice(0, 80),
+        message: destinationTip?.text || 'Use this control to move through the portfolio.',
+        expression: destinationTip?.expression || 'curious'
       };
     }
 
     const section = element.closest('.portfolio-section');
     if (section) {
-      const sectionName = section.querySelector('h1, h2, .section-label')?.textContent?.trim().replace(/\s+/g, ' ') || 'this section';
-      const tip = sectionTips[section.id];
+      const tip = sectionTips[section.id] || sectionTips['overview-section'];
       return {
-        title: `Exploring ${sectionName.slice(0, 80)}`,
-        message: oneLine(tip?.text),
-        expression: tip?.expression || 'curious'
+        title: tip.title,
+        message: tip.text,
+        expression: tip.expression || 'curious'
       };
     }
 
@@ -19897,7 +19902,7 @@ html.network-constrained .portfolio-guide-panel {
     closePanel();
     setGlasses(null, false);
     setExpression('neutral');
-    showNudge('Guided tour ended. Explore freely from here.', 120, 3400);
+    showNudge((sectionTips[currentSection] || sectionTips['overview-section']).text, 120, 4200);
   }
 
   async function revealOverviewModelFromGuide() {
@@ -19973,7 +19978,7 @@ html.network-constrained .portfolio-guide-panel {
     try { if (canWarmSelectedVideo) prewarmShowcaseMedia('doffy', 'high', true); } catch (_) {}
 
     try {
-      setAutomatedTourStep(1, 'Meet the interactive eyewear model', 'The tour will wait for every section, project view, and animation to be ready before moving. The 3D model will continue loading in the background.', 'happy');
+      setAutomatedTourStep(1, sectionTips['overview-section'].title, sectionTips['overview-section'].text, sectionTips['overview-section'].expression);
       if (!await focusAutoTourTargetAndWait(stage || overview, runId, 'center')) return;
 
       await waitForAutoTourReady(
@@ -19999,7 +20004,7 @@ html.network-constrained .portfolio-guide-panel {
       if (!await autoTourDelay(autoTourPace.overview, runId)) return;
 
       autoTourPhase = 'featured';
-      setAutomatedTourStep(2, 'Featured work', 'These are the main project slots. I will select a random slot for us to explore, then wait until its preview is ready before opening it.', 'explaining');
+      setAutomatedTourStep(2, sectionTips['featured-section'].title, sectionTips['featured-section'].text, sectionTips['featured-section'].expression);
       if (!await focusAutoTourTargetAndWait(featured, runId, 'start')) return;
 
       const tourCardImage = thirdCard?.querySelector('.slot-card-img');
@@ -20057,7 +20062,7 @@ html.network-constrained .portfolio-guide-panel {
       if (!await autoTourDelay(autoTourPace.featured, runId)) return;
 
       autoTourPhase = 'project-intro';
-      setAutomatedTourStep(3, 'Opening the selected slot', mobileTour ? 'I will open Winged Rimless, wait for its custom transition, then begin the opening video.' : 'The selected Winged Rimless project will now transform into its custom eyeglasses popup. I will wait for the transition and its opening video before continuing.', 'curious');
+      setAutomatedTourStep(3, slotProfiles.doffy.name, slotProfiles.doffy.tip, slotProfiles.doffy.expression);
       if (!await focusAutoTourTargetAndWait(thirdCard, runId, mobileTour ? 'start' : 'center')) return;
       if (!await autoTourDelay(autoTourPace.projectIntro, runId)) return;
       closePanel();
@@ -20086,7 +20091,7 @@ html.network-constrained .portfolio-guide-panel {
       } else {
         autoTourPhase = 'carousel';
         autoTourExpectedSlide = 0;
-        setAutomatedTourStep(4, 'Exploring the left-lens carousel', 'Each next view will load while the current one stays visible. Once ready, it will slide into place and remain briefly so you can take it in.', 'focused');
+        setAutomatedTourStep(4, slotProfiles.doffy.name, slotProfiles.doffy.tip, slotProfiles.doffy.expression);
         if (!await autoTourDelay(950, runId)) return;
         closePanel();
 
@@ -20100,26 +20105,13 @@ html.network-constrained .portfolio-guide-panel {
           const openingViewTime = openingMedia?.tagName === 'VIDEO'
             ? (mobileTour ? 6500 : 3900)
             : (mobileTour ? 3100 : autoTourPace.slide);
+          const openingProfile = slotProfiles[currentSlotContext] || slotProfiles.default;
+          setExpression(openingProfile.expression || 'focused');
           if (mobileTour) {
-            setExpression(openingMedia?.tagName === 'VIDEO' ? 'impressed' : 'focused');
-            setCopy(
-              'Guided tour · 04',
-              openingMedia?.tagName === 'VIDEO'
-                ? `Opening video · view 1 of ${slideCount}`
-                : `Project view 1 of ${slideCount}`,
-              openingMedia?.tagName === 'VIDEO'
-                ? 'The opening reel is now playing. I will leave it on screen long enough for you to take in the first project view.'
-                : 'The first project view is fully loaded and will remain visible briefly before the carousel continues.'
-            );
+            setCopy('Project assistant', openingProfile.name, openingProfile.tip);
             openPanel();
           } else {
-            showNudge(
-              openingMedia?.tagName === 'VIDEO'
-                ? `Opening video · view 1 of ${slideCount}`
-                : `Project view 1 of ${slideCount}`,
-              50,
-              openingViewTime + 550
-            );
+            showNudge(openingProfile.tip, 50, openingViewTime + 550);
           }
           const openingHeld = openingMedia?.tagName === 'VIDEO' && mobileTour
             ? await holdMobileTourVideo(openingMedia, openingViewTime, runId)
@@ -20202,11 +20194,8 @@ html.network-constrained .portfolio-guide-panel {
             autoTourWritingPauseCopy = true;
             try {
               setExpression('concerned');
-              setCopy(
-                'Guided tour paused',
-                `Project view ${index + 1} needs another moment`,
-                'The lens did not finish moving into position. The tour is safely paused here; press Resume Tour to restore this exact view and continue.'
-              );
+              const stalledProfile = slotProfiles[currentSlotContext] || slotProfiles.default;
+              setCopy('Tour paused', stalledProfile.name, stalledProfile.tip);
               setActions([
                 { label: 'Resume tour', kind: 'primary', onClick: resumeAutomatedTour },
                 { label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(false) }
@@ -20220,26 +20209,26 @@ html.network-constrained .portfolio-guide-panel {
           }
           await nextAutoTourPaint();
           if (mobileTour && !await autoTourDelay(260, runId)) return;
+          const carouselProfile = slotProfiles[currentSlotContext] || slotProfiles.default;
+          setExpression(carouselProfile.expression || 'explaining');
           if (mobileTour) {
-            setExpression('explaining');
-            setCopy(
-              'Guided tour · 04',
-              `Project view ${index + 1} of ${slideCount}`,
-              'This carousel view has finished loading and moving into position. I will pause briefly before continuing.'
-            );
+            setCopy('Project assistant', carouselProfile.name, carouselProfile.tip);
             openPanel();
           } else {
-            showNudge(`Project view ${index + 1} of ${slideCount}`, 40, autoTourPace.slide + 550);
+            showNudge(carouselProfile.tip, 40, autoTourPace.slide + 550);
           }
           const carouselViewTime = mobileTour ? 3100 : autoTourPace.slide;
           if (!await autoTourDelay(carouselViewTime, runId)) return;
         }
 
-        setExpression('success');
-        setCopy('Guided tour · 04', 'Left-lens carousel complete', 'Every project view has loaded and been shown. I will close the popup and continue to the interactive creative process.');
-        setActions([{ label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(true) }]);
-        openPanel();
-        if (!await autoTourDelay(mobileTour ? 1750 : 1250, runId)) return;
+        const completedProfile = slotProfiles[currentSlotContext] || slotProfiles.default;
+        setExpression(completedProfile.expression || 'explaining');
+        if (mobileTour) {
+          setCopy('Project assistant', completedProfile.name, completedProfile.tip);
+          setActions([{ label: 'End tour', kind: 'subtle', onClick: () => stopAutomatedTour(true) }]);
+          openPanel();
+        }
+        if (!await autoTourDelay(mobileTour ? 1350 : 950, runId)) return;
         closeTourOpenedShowcase();
         await waitForAutoTourReady(
           () => !modal?.classList.contains('active') && !document.body.classList.contains('showcase-lock'),
@@ -20255,7 +20244,7 @@ html.network-constrained .portfolio-guide-panel {
 
       autoTourPhase = 'process';
       autoTourExpectedProcessIndex = -1;
-      setAutomatedTourStep(5, 'Section 3 · Creative process', 'On the right, five shapes explain the workflow from research to optimisation. I will open them one at a time and pause briefly on each.', 'thinking');
+      setAutomatedTourStep(5, sectionTips['brand-section'].title, sectionTips['brand-section'].text, sectionTips['brand-section'].expression);
       if (!await focusAutoTourTargetAndWait(brand, runId, 'start')) return;
       await waitForAutoTourReady(
         () => {
@@ -20284,7 +20273,7 @@ html.network-constrained .portfolio-guide-panel {
 
       autoTourPhase = 'contact';
       autoTourExpectedProcessIndex = -1;
-      setAutomatedTourStep(6, 'Contact me', 'This final section contains the contact form, email, and LinkedIn details. I will wait until the complete section is ready before finishing the route.', 'encouraging');
+      setAutomatedTourStep(6, sectionTips['contact-section'].title, sectionTips['contact-section'].text, sectionTips['contact-section'].expression);
       if (!await focusAutoTourTargetAndWait(contact, runId, 'start')) return;
       await waitForAutoTourReady(
         () => Boolean(contact?.querySelector('#contactForm') && contact.querySelector('#contactEmailLink')),
@@ -20301,7 +20290,7 @@ html.network-constrained .portfolio-guide-panel {
       const modelReady = Boolean(overviewApi?.isReady?.() || stage?.classList.contains('model-loaded'));
       if (modelReady) {
         autoTourPhase = 'model-final';
-        setAutomatedTourStep(7, 'The 3D model is ready', 'The model finished loading during the tour. I will take you back and reveal the interactive viewer now.', 'success');
+        setAutomatedTourStep(7, 'Interactive 3D model', 'Drag the model to rotate and inspect the frame.', 'success');
         if (!await autoTourDelay(1050, runId)) return;
         closePanel();
         await revealOverviewModelFromGuide();
@@ -20314,7 +20303,7 @@ html.network-constrained .portfolio-guide-panel {
         clearAutoTourFocus();
         savePreference('self');
         setExpression('success');
-        showNudge('Tour complete — drag the 3D model to explore it.', 120, 5200);
+        showNudge('Drag the model to rotate and inspect the frame.', 120, 5200);
       } else {
         progressFill.style.width = '100%';
         progressCount.textContent = `${String(autoTourTotalSteps).padStart(2, '0')} / ${String(autoTourTotalSteps).padStart(2, '0')}`;
@@ -20379,7 +20368,7 @@ html.network-constrained .portfolio-guide-panel {
     if (tourIndex < tourSteps.length - 1) {
       buttons.push({ label: 'Next', kind: 'primary', onClick: () => showTourStep(tourIndex + 1, true) });
     } else {
-      buttons.push({ label: 'Finish tour', kind: 'primary', onClick: () => { savePreference('self'); root.classList.remove('is-tour'); setExpression('success'); closePanel(); showNudge('Tour complete. Keep exploring!', 180, 3600); } });
+      buttons.push({ label: 'Finish tour', kind: 'primary', onClick: () => { savePreference('self'); root.classList.remove('is-tour'); setExpression('success'); closePanel(); showNudge((sectionTips[currentSection] || sectionTips['overview-section']).text, 180, 4200); } });
     }
     buttons.push({ label: 'Exit', kind: 'subtle', onClick: () => { savePreference('self'); root.classList.remove('is-tour'); closePanel(); } });
     setActions(buttons);
@@ -20429,13 +20418,8 @@ html.network-constrained .portfolio-guide-panel {
     const count = Math.max(1, typeof totalLensSlides === 'number' ? totalLensSlides : slider?.children?.length || 1);
     const index = Math.min(count - 1, Math.max(0, typeof activeLensSlide === 'number' ? activeLensSlide : 0));
     if (root.classList.contains('is-open')) showSlotHelp(true);
-    if (index >= count - 1) {
-      setExpression('success');
-      setCopy('Project assistant', `${profile.name} · final view`, 'You have reached the final view. Return to the projects or continue examining the details in this popup.');
-    } else {
-      setExpression(index === 0 ? profile.expression : 'explaining');
-      setCopy('Project assistant', `${profile.name} · ${String(index + 1).padStart(2, '0')} / ${String(count).padStart(2, '0')}`, profile.tip);
-    }
+    setExpression(profile.expression || 'explaining');
+    setCopy('Project assistant', profile.name, profile.tip);
   }
 
   function captureSlot(card) {
@@ -20469,7 +20453,7 @@ html.network-constrained .portfolio-guide-panel {
       window.setTimeout(() => {
         if (autoTourRunning) return;
         showSlotHelp(guideMode === 'tour');
-        if (guideMode !== 'tour') showNudge(`Matched ${currentSlotTitle} — tap for tips.`, 150, 4200);
+        if (guideMode !== 'tour') showNudge((slotProfiles[currentSlotContext] || slotProfiles.default).tip, 150, 4200);
       }, 180);
     }
     if (!active && wasModalActive) {
@@ -20660,7 +20644,7 @@ html.network-constrained .portfolio-guide-panel {
         if (!autoTourRunning && !guideMode) showChoice();
       }, 850);
     } else {
-      showNudge(guideMode === 'tour' ? 'Continue your guided tour.' : 'Need help? Ask me.', 900, 4200);
+      showNudge((sectionTips[currentSection] || sectionTips['overview-section']).text, 900, 4200);
     }
   }
 
@@ -23777,5 +23761,474 @@ body.avatar-tour-paused #portfolioGuide.is-open .guide-resume-floating {
 html.avatar-tour-resume-scroll { scroll-behavior: auto !important; }
 html.avatar-tour-resume-scroll #portfolioGuide:not(.is-open) { pointer-events: none !important; }
 </style>
+
+
+<!-- STABLE FINAL FIX: process expansion and unobstructed paused-tour actions -->
+<style id="stable-process-guide-fix-v39">
+#guideResumeFloating,
+#portfolioGuide #guideResumeFloating,
+body.avatar-tour-paused #guideResumeFloating {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#portfolioGuide #guideActions {
+  position: relative !important;
+  z-index: 30 !important;
+  display: flex !important;
+  align-items: stretch !important;
+  gap: 10px !important;
+  padding-right: 0 !important;
+}
+#portfolioGuide #guideActions .guide-action {
+  position: relative !important;
+  z-index: 31 !important;
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+/* Matching-frame avatar layers stay permanently retired. */
+#portfolioGuide .guide-avatar-glasses,
+#portfolioGuide .guide-avatar-frame,
+#portfolioGuide .guide-matched-frame,
+#portfolioGuide [data-guide-glasses],
+#portfolioGuide [data-matched-frame] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#brandStrategyVisual.all-process-stages-open .brand-orbit-item.is-open {
+  z-index: 60 !important;
+}
+
+@media (max-width: 768px) {
+  #portfolioGuide #guideActions {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    gap: 8px !important;
+  }
+  #portfolioGuide #guideActions .guide-action {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-inline: 8px !important;
+    font-size: .58rem !important;
+    white-space: nowrap !important;
+  }
+}
+</style>
+<style id="sequential-process-preview-final-v24">
+/* The main process button previews exactly one stage at a time. */
+#brandStrategyExplore.is-sequencing {
+  pointer-events: none;
+  opacity: .72;
+}
+#brand-section .brand-orbit-item.sequence-current {
+  z-index: 40 !important;
+}
+@media (max-width: 768px) {
+  #brand-section .brand-orbit-item.sequence-current {
+    scroll-margin-top: calc(18px + env(safe-area-inset-top, 0px));
+  }
+}
+</style>
+<script id="sequential-process-preview-final-v24">
+(() => {
+  const install = () => {
+    const visual = document.getElementById('brandStrategyVisual');
+    const authoredButton = document.getElementById('brandStrategyExplore');
+    if (!visual || !authoredButton) return;
+
+    /* Replacing only this button removes the accumulated Explore handlers while
+       preserving the stable individual-stage controller. */
+    const button = authoredButton.cloneNode(true);
+    authoredButton.replaceWith(button);
+
+    const items = Array.from(visual.querySelectorAll('.brand-orbit-item'));
+    const triggers = items.map(item => item.querySelector('.brand-orbit-trigger'));
+    const originalLabel = button.querySelector('span')?.textContent?.trim() || 'Explore the process';
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let runId = 0;
+    let running = false;
+    let timer = 0;
+
+    const wait = milliseconds => new Promise(resolve => {
+      timer = window.setTimeout(resolve, milliseconds);
+    });
+
+    const setButtonState = active => {
+      running = active;
+      button.classList.toggle('is-sequencing', active);
+      button.setAttribute('aria-busy', String(active));
+      const label = button.querySelector('span');
+      if (label) label.textContent = active ? 'Showing the process' : originalLabel;
+    };
+
+    const closeItem = item => {
+      if (!item) return;
+      item.classList.remove('is-open', 'sequence-current');
+      item.querySelector('.brand-orbit-trigger')?.setAttribute('aria-expanded', 'false');
+    };
+
+    const closeAll = except => {
+      items.forEach(item => {
+        if (item !== except) closeItem(item);
+      });
+    };
+
+    const openItem = index => {
+      const item = items[index];
+      const trigger = triggers[index];
+      if (!item || !trigger) return null;
+      closeAll(item);
+      item.classList.add('is-open', 'sequence-current');
+      trigger.setAttribute('aria-expanded', 'true');
+      return { item, trigger };
+    };
+
+    const cancelSequence = ({ keepCurrent = true } = {}) => {
+      if (!running) return;
+      runId += 1;
+      window.clearTimeout(timer);
+      setButtonState(false);
+      if (!keepCurrent) closeAll(null);
+    };
+
+    const bringIntoView = async (item, token) => {
+      if (!item || token !== runId) return false;
+      const phone = window.matchMedia('(max-width: 768px)').matches;
+      if (!phone) {
+        const section = document.getElementById('brand-section');
+        const rect = section?.getBoundingClientRect();
+        if (rect && (rect.top < -20 || rect.bottom > window.innerHeight + 20)) {
+          section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+          await wait(reduceMotion ? 20 : 420);
+        }
+        return token === runId;
+      }
+
+      item.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+      await wait(reduceMotion ? 20 : 390);
+      return token === runId;
+    };
+
+    const playSequence = async () => {
+      cancelSequence({ keepCurrent: false });
+      const token = ++runId;
+      setButtonState(true);
+
+      for (let index = 0; index < items.length; index += 1) {
+        if (token !== runId) return;
+        const opened = openItem(index);
+        if (!opened) continue;
+        if (!await bringIntoView(opened.item, token)) return;
+        opened.trigger.focus({ preventScroll: true });
+
+        /* Give each stage enough time to be read before moving to the next one. */
+        await wait(reduceMotion ? 620 : (window.matchMedia('(max-width: 768px)').matches ? 1750 : 1550));
+        if (token !== runId) return;
+      }
+
+      if (token !== runId) return;
+      /* Keep the final stage open for inspection instead of collapsing abruptly. */
+      items.forEach((item, index) => item.classList.toggle('sequence-current', index === items.length - 1));
+      setButtonState(false);
+    };
+
+    button.addEventListener('click', event => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      if (running) return;
+      playSequence().catch(error => {
+        console.error('Sequential process preview failed:', error);
+        cancelSequence({ keepCurrent: true });
+      });
+    }, true);
+
+    /* A deliberate stage interaction hands control back to the visitor. */
+    visual.addEventListener('pointerdown', event => {
+      if (!event.isTrusted || !event.target.closest('.brand-orbit-trigger')) return;
+      cancelSequence({ keepCurrent: true });
+    }, true);
+    visual.addEventListener('keydown', event => {
+      if (!event.isTrusted || !event.target.closest('.brand-orbit-trigger')) return;
+      if (!['Enter', ' ', 'Escape'].includes(event.key)) return;
+      cancelSequence({ keepCurrent: true });
+    }, true);
+
+    window.addEventListener('pagehide', () => cancelSequence({ keepCurrent: true }), { once: true });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => window.setTimeout(install, 0), { once: true });
+  } else {
+    window.setTimeout(install, 0);
+  }
+})();
+</script>
+
+
+<style id="portfolio-real-social-links-v25">
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+.portfolio-social-links {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.portfolio-social-link {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  border: 1px solid rgba(0, 0, 0, .11) !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, .52) !important;
+  color: currentColor !important;
+  opacity: .82 !important;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, .04) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+.portfolio-social-link svg {
+  width: 18px !important;
+  height: 18px !important;
+  fill: none !important;
+  stroke: currentColor !important;
+  stroke-width: 1.8 !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+}
+.portfolio-social-link .social-icon-dot { fill: currentColor !important; stroke: none !important; }
+.portfolio-social-link::after {
+  content: attr(data-label);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  transform: translate(-50%, 5px);
+  padding: 6px 8px;
+  border-radius: 7px;
+  background: #111116;
+  color: #fff;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .3px;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, visibility 0s linear .2s;
+}
+.portfolio-social-link:hover,
+.portfolio-social-link:focus-visible {
+  opacity: 1 !important;
+  transform: translateY(-2px) !important;
+  border-color: rgba(130, 71, 255, .44) !important;
+  box-shadow: 0 10px 24px rgba(130, 71, 255, .13) !important;
+  outline: none !important;
+}
+.portfolio-social-link:hover::after,
+.portfolio-social-link:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition-delay: 0s;
+}
+body.featured-focus .portfolio-social-link {
+  background: rgba(255, 255, 255, .08) !important;
+  border-color: rgba(255, 255, 255, .16) !important;
+  color: #fff !important;
+}
+.menu-social-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 34px;
+  padding: 0 22px;
+}
+.menu-social-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 999px;
+  color: #fff;
+  text-decoration: none;
+  font-size: .66rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, .06);
+  transition: transform .25s ease, background-color .25s ease, border-color .25s ease;
+}
+.menu-social-links a span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .12);
+  font-size: .7rem;
+  text-transform: none;
+}
+.menu-social-links a:hover,
+.menu-social-links a:focus-visible {
+  transform: translateY(-2px);
+  background: rgba(130, 71, 255, .25);
+  border-color: rgba(196, 161, 255, .68);
+  outline: none;
+}
+@media (max-width: 768px) {
+  .menu-social-links {
+    width: min(92vw, 430px);
+    margin-top: 24px;
+    gap: 8px;
+  }
+  .menu-social-links a {
+    flex: 1 1 calc(50% - 8px);
+    justify-content: center;
+    min-width: 132px;
+    padding-inline: 12px;
+  }
+}
+@media (max-width: 430px) {
+  .menu-social-links a {
+    flex-basis: 100%;
+  }
+}
+</style>
+
+
+
+<style id="carousel-avatar-unified-specific-lines-v27">
+/* Slot-specific carousel nudges need enough room for one authored sentence. */
+#portfolioGuide.show-nudge:not(.is-open) #guideNudge {
+  width: min(280px, calc(100vw - 128px)) !important;
+  max-width: min(280px, calc(100vw - 128px)) !important;
+}
+@media (max-width: 768px) {
+  #portfolioGuide.show-nudge:not(.is-open) #guideNudge {
+    width: min(220px, calc(100vw - 102px)) !important;
+    max-width: min(220px, calc(100vw - 102px)) !important;
+  }
+}
+</style>
+<script id="carousel-avatar-unified-specific-lines-v27">
+(() => {
+  'use strict';
+
+  const modal = document.getElementById('showcaseModal');
+  const slider = document.getElementById('lensSliderWrapper');
+  const guide = document.getElementById('portfolioGuide');
+  const nudge = document.getElementById('guideNudge');
+  const title = document.getElementById('guideTitle');
+  const message = document.getElementById('guideMessage');
+  if (!modal || !slider || !guide || !nudge || !title || !message) return;
+
+  const profiles = Object.freeze({
+    default: ['Aurelion Noir', "Wow, now that's a sleek design."],
+    tinted: ['Transition Frames', "Wow, now that is a spectacle you don't see often."],
+    doffy: ['Winged Rimless', "These winged lenses are built to stand out. Don't they look straight out of an anime?"],
+    butty: ['Butterfly Frames', 'Now that will get some attention at an event.'],
+    clip: ['Clip-On Versatility', 'Now, these look like a convenient pair of glasses.'],
+    pink: ['Rose Aura', 'Wow, these glasses look fit for a princess.'],
+    gold: ['Aurelius Noir', 'Now that looks like something fit for royalty.'],
+    circle: ['Oval Black', 'So simple, yet so clean and elegant.'],
+    multi: ['Frame Collection', 'This project brings several personalities into one collection.'],
+    hand: ['Product in Hand', "Hmm, that's a unique way to showcase an eyewear brand."],
+    aura: ['Aurelion Classic', "One word: 'Marvellous.'"],
+    cat: ['Lux Cat-Eye', "Don't leading ladies wear glasses like these in movies?"]
+  });
+
+  let previousIndex = -1;
+  let updateTimer = 0;
+  let retryTimer = 0;
+  let hideTimer = 0;
+
+  function currentContext() {
+    try { return String(currentShowcaseContext || currentSlotContext || 'default'); }
+    catch (_) { return String(window.currentShowcaseContext || window.currentSlotContext || 'default'); }
+  }
+
+  function currentIndex() {
+    try { return Math.max(0, Number(activeLensSlide) || 0); }
+    catch (_) {
+      const transform = slider.style.transform || getComputedStyle(slider).transform || '';
+      const count = Math.max(1, slider.children.length);
+      const match = transform.match(/translate3d\(-([\d.]+)%/i);
+      return match ? Math.min(count - 1, Math.round(Number(match[1]) / 100)) : 0;
+    }
+  }
+
+  function updateManualGuidance(force = false) {
+    if (!modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+    const state = window.portfolioGuidedTourState;
+    /* The guided-tour controller now writes its own slot-specific copy. This
+       fallback is only for independent/manual carousel exploration. */
+    if (state?.running) return;
+
+    const count = Math.max(1, slider.children.length);
+    const index = Math.min(count - 1, currentIndex());
+    if (!force && index === previousIndex) return;
+    previousIndex = index;
+
+    const [name, line] = profiles[currentContext()] || profiles.default;
+    if (guide.classList.contains('is-open')) {
+      title.textContent = name;
+      message.textContent = line;
+      return;
+    }
+
+    nudge.textContent = line;
+    guide.classList.remove('show-nudge');
+    requestAnimationFrame(() => guide.classList.add('show-nudge'));
+    window.clearTimeout(hideTimer);
+    hideTimer = window.setTimeout(() => guide.classList.remove('show-nudge'), 4700);
+  }
+
+  new MutationObserver(() => {
+    window.clearTimeout(updateTimer);
+    window.clearTimeout(retryTimer);
+    updateTimer = window.setTimeout(() => updateManualGuidance(false), 100);
+    /* The popup-ready controller may still publish its initial 'Matched …' nudge
+       just after the first slide movement. Re-assert the authored slot line once
+       the movement and all late legacy callbacks have settled. */
+    retryTimer = window.setTimeout(() => updateManualGuidance(true), 760);
+  }).observe(slider, {
+    attributes: true,
+    attributeFilter: ['style', 'class'],
+    childList: true
+  });
+
+  new MutationObserver(() => {
+    if (!modal.classList.contains('active')) previousIndex = -1;
+  }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+})();
+</script>
+
 </body>
 </html>
