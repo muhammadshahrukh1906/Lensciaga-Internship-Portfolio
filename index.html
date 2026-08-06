@@ -18305,6 +18305,9 @@ html.network-constrained .portfolio-guide-panel {
   let lastTrustedPointerAt = 0;
   let lastTrustedPointerTarget = null;
   let interactionExplainTimer = 0;
+  let autoTourPauseSerial = 0;
+  let autoTourResumeInProgress = false;
+  let autoTourPauseTarget = null;
   let awaitingLateModelNotice = false;
   let autoTourFocusTarget = null;
   const autoTourTotalSteps = 7;
@@ -18319,6 +18322,10 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function setExpression(name = 'neutral') {
+    // While the visitor is exploring manually, only the interruption narrator may
+    // change the avatar. This prevents popup/carousel observers from replacing the
+    // paused explanation or making the Resume Tour control appear to vanish.
+    if (autoTourRunning && autoTourPaused && !autoTourWritingPauseCopy) return;
     if (autoTourRunning && !autoTourPaused && !autoTourWritingPauseCopy) {
       autoTourLastExpression = name;
     }
@@ -18355,12 +18362,14 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function setGlasses(context, visible = true) {
+    if (autoTourRunning && autoTourPaused && !autoTourWritingPauseCopy) return;
     currentSlotContext = context || currentSlotContext || 'default';
     root.querySelectorAll('.guide-avatar-glasses').forEach(node => { node.innerHTML = visible ? glassesSVG(currentSlotContext) : ''; });
     root.classList.toggle('has-slot-glasses', Boolean(visible));
   }
 
   function setCopy(nextKicker, nextTitle, nextMessage) {
+    if (autoTourRunning && autoTourPaused && !autoTourWritingPauseCopy) return;
     kicker.textContent = nextKicker;
     title.textContent = nextTitle;
     message.textContent = nextMessage;
@@ -18393,6 +18402,7 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function setActions(buttons) {
+    if (autoTourRunning && autoTourPaused && !autoTourWritingPauseCopy) return;
     actions.replaceChildren();
     buttons.forEach(button => {
       const element = document.createElement('button');
@@ -18413,6 +18423,12 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function closePanel(force = false) {
+    // A manual interruption owns the guide until Resume Tour or End Tour is used.
+    // Project transitions, menus, and carousel observers may not hide it.
+    if (!force && autoTourRunning && autoTourPaused) {
+      openPanel();
+      return;
+    }
     // Keep the spoken guidance visible throughout the automated phone tour.
     // Calls that previously hid the panel during scrolling, popup construction,
     // carousel playback, or shape expansion now retain the compact mobile panel.
@@ -18427,6 +18443,7 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function showNudge(text = 'Need help? Ask me.', delay = 0, duration = 3800) {
+    if (autoTourRunning && autoTourPaused) return;
     const nudge = document.getElementById('guideNudge');
     if (nudge) nudge.textContent = text;
     clearTimeout(nudgeTimer);
@@ -18688,7 +18705,7 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function setAutoTourWaiting(stepNumber, nextTitle, nextMessage, open = true) {
-    if (!autoTourRunning) return;
+    if (!autoTourRunning || (autoTourPaused && !autoTourWritingPauseCopy)) return;
     root.classList.add('is-tour', 'auto-tour-running');
     setExpression('focused');
     setCopy(`Guided tour · ${String(stepNumber).padStart(2, '0')}`, nextTitle, nextMessage);
@@ -19102,6 +19119,10 @@ html.network-constrained .portfolio-guide-panel {
 
   function captureAutoTourPauseSnapshot() {
     return {
+      phase: autoTourPhase,
+      expectedSlide: autoTourExpectedSlide,
+      expectedProcessIndex: autoTourExpectedProcessIndex,
+      scrollY: window.scrollY,
       copy: autoTourLastCopy || {
         kicker: kicker.textContent,
         title: title.textContent,
@@ -19270,18 +19291,35 @@ html.network-constrained .portfolio-guide-panel {
     if (!autoTourRunning) return;
     if (target instanceof Element && root.contains(target)) return;
 
+    const resolvedTarget = target instanceof Element
+      ? target
+      : document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
+
     if (!autoTourPaused) {
       autoTourPauseSnapshot = captureAutoTourPauseSnapshot();
       autoTourPaused = true;
+      autoTourPauseSerial += 1;
+      autoTourResumeInProgress = false;
       root.classList.add('auto-tour-paused');
       document.body.classList.add('avatar-tour-paused');
-      // Stop the current mobile glide on its next frame. The same target is
-      // refocused after Resume Tour, so the async route is paused rather than lost.
+
+      // Stop the current guide-owned movement immediately. The visitor's own click,
+      // swipe, scroll, or control activation is still allowed to complete normally.
       mobileTourScrollToken += 1;
+      cancelAnimationFrame(mobileTourScrollFrame);
+      document.documentElement.classList.remove('avatar-tour-programmatic-scroll');
     }
 
+    autoTourPauseTarget = resolvedTarget || autoTourPauseTarget;
+
+    // Show Resume Tour on the initial press, then refresh the description after the
+    // clicked control has completed its own state change (new slide, open shape, etc.).
+    renderPausedInteraction(autoTourPauseTarget);
     clearTimeout(interactionExplainTimer);
-    interactionExplainTimer = window.setTimeout(() => renderPausedInteraction(target), reducedMotion ? 0 : 90);
+    interactionExplainTimer = window.setTimeout(
+      () => renderPausedInteraction(autoTourPauseTarget),
+      reducedMotion ? 0 : 150
+    );
   }
 
   async function waitOutsideTour(predicate, timeout = 18000) {
@@ -19369,8 +19407,23 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   async function resumeAutomatedTour() {
-    if (!autoTourRunning || !autoTourPaused) return;
+    if (!autoTourRunning || !autoTourPaused || autoTourResumeInProgress) return;
     const runId = autoTourRunId;
+    const resumeSerial = autoTourPauseSerial;
+    const snapshot = autoTourPauseSnapshot;
+    autoTourResumeInProgress = true;
+
+    // Restore the route coordinates captured at the moment of interruption. This
+    // closes the small race where a synchronous transition could update the phase
+    // between the visitor's press and the pause UI being painted.
+    if (snapshot) {
+      autoTourPhase = snapshot.phase || autoTourPhase;
+      autoTourExpectedSlide = Number.isFinite(snapshot.expectedSlide) ? snapshot.expectedSlide : autoTourExpectedSlide;
+      autoTourExpectedProcessIndex = Number.isFinite(snapshot.expectedProcessIndex)
+        ? snapshot.expectedProcessIndex
+        : autoTourExpectedProcessIndex;
+    }
+
     autoTourWritingPauseCopy = true;
     try {
       setExpression('focused');
@@ -19389,7 +19442,18 @@ html.network-constrained .portfolio-guide-panel {
 
     const projectReady = await ensureTourProjectForResume();
     const processReady = projectReady && await restoreProcessStageForResume();
-    if (!autoTourRunning || runId !== autoTourRunId) return;
+    if (!autoTourRunning || runId !== autoTourRunId) {
+      autoTourResumeInProgress = false;
+      return;
+    }
+
+    // If the visitor interacted again while the route was being restored, keep the
+    // tour paused and explain the newer target rather than unexpectedly taking over.
+    if (resumeSerial !== autoTourPauseSerial) {
+      autoTourResumeInProgress = false;
+      renderPausedInteraction(autoTourPauseTarget);
+      return;
+    }
 
     if (!projectReady || !processReady) {
       autoTourWritingPauseCopy = true;
@@ -19404,12 +19468,14 @@ html.network-constrained .portfolio-guide-panel {
       } finally {
         autoTourWritingPauseCopy = false;
       }
+      autoTourResumeInProgress = false;
       return;
     }
 
-    const snapshot = autoTourPauseSnapshot;
     autoTourPaused = false;
     autoTourPauseSnapshot = null;
+    autoTourPauseTarget = null;
+    autoTourResumeInProgress = false;
     root.classList.remove('auto-tour-paused');
     document.body.classList.remove('avatar-tour-paused');
 
@@ -19431,23 +19497,34 @@ html.network-constrained .portfolio-guide-panel {
   function meaningfulInteractionTarget(rawTarget) {
     const element = rawTarget instanceof Element ? rawTarget : null;
     if (!element || root.contains(element)) return null;
+
+    // Prefer the actual control/content unit, but fall back to the section itself so
+    // clicks on images, text, videos, or whitespace still pause and receive useful
+    // contextual narration.
     return element.closest(
       '.slot-card, .brand-orbit-trigger, .brand-orbit-item, #brandStrategyExplore, ' +
       '#lensSliderWrapper, .lens-display-left, .lens-nav-btn, #showcaseModal.active, ' +
       '#stage3d, #luxuryGlassesModel, .hero-model-viewer, .glasses-3d-stage, ' +
-      'a, button, input, textarea, select, summary, [role="button"], [contenteditable="true"]'
-    );
+      'video, img, a, button, input, textarea, select, summary, [role="button"], [contenteditable="true"]'
+    ) || element.closest('.portfolio-section, .fullscreen-menu') || element;
   }
 
   function handleTrustedTourInteraction(event) {
     if (!event.isTrusted || !autoTourRunning) return;
     const target = meaningfulInteractionTarget(event.target);
     if (!target) return;
-    if (event.type === 'click' && lastTrustedPointerTarget && performance.now() - lastTrustedPointerAt < 650) return;
-    if (event.type === 'pointerup') {
+
+    // Pause on the initial press, before the portfolio's own click handler runs.
+    // Later pointer/click events refresh the spoken line after the selected content
+    // has opened or changed, but they do not restart the automatic route.
+    if (event.type === 'pointerdown' || event.type === 'mousedown' || event.type === 'touchstart') {
       lastTrustedPointerAt = performance.now();
       lastTrustedPointerTarget = target;
+      pauseAutomatedTourForInteraction(target);
+      return;
     }
+
+    autoTourPauseTarget = target;
     pauseAutomatedTourForInteraction(target);
   }
 
@@ -19461,6 +19538,7 @@ html.network-constrained .portfolio-guide-panel {
   }
 
   function setAutomatedTourStep(stepNumber, nextTitle, nextMessage, expression = 'explaining') {
+    if (autoTourPaused && !autoTourWritingPauseCopy) return;
     root.classList.add('is-tour', 'auto-tour-running');
     setGlasses(null, false);
     setExpression(expression);
@@ -19484,6 +19562,9 @@ html.network-constrained .portfolio-guide-panel {
     autoTourRunId += 1;
     autoTourRunning = false;
     autoTourPaused = false;
+    autoTourResumeInProgress = false;
+    autoTourPauseTarget = null;
+    clearTimeout(interactionExplainTimer);
     autoTourPauseSnapshot = null;
     autoTourPhase = 'idle';
     autoTourExpectedSlide = 0;
@@ -19982,6 +20063,10 @@ html.network-constrained .portfolio-guide-panel {
 
   function updateSlideReaction() {
     if (!showcaseReady) return;
+    if (autoTourRunning && autoTourPaused && !autoTourWritingPauseCopy) {
+      renderPausedInteraction(autoTourPauseTarget || slider);
+      return;
+    }
     const profile = slotProfiles[currentSlotContext] || slotProfiles.default;
     const count = Math.max(1, typeof totalLensSlides === 'number' ? totalLensSlides : slider?.children?.length || 1);
     const index = Math.min(count - 1, Math.max(0, typeof activeLensSlide === 'number' ? activeLensSlide : 0));
@@ -20001,10 +20086,15 @@ html.network-constrained .portfolio-guide-panel {
     const inline = card.getAttribute('onclick') || '';
     const contextMatch = inline.match(/,\s*'([^']+)'\s*\)\s*$/);
     currentSlotContext = contextMatch?.[1] || 'default';
-    root.classList.add('is-hidden-for-transition');
-    root.classList.remove('in-showcase');
     showcaseReady = false;
-    closePanel();
+
+    // During a manual interruption the avatar remains visible and narrates the
+    // selected project while the original card-to-case animation runs underneath.
+    if (!(autoTourRunning && autoTourPaused)) {
+      root.classList.add('is-hidden-for-transition');
+      root.classList.remove('in-showcase');
+      closePanel();
+    }
   }
 
   function syncModalState() {
@@ -20049,16 +20139,25 @@ html.network-constrained .portfolio-guide-panel {
   closeButton?.addEventListener('click', closePanel);
   panel.addEventListener('click', event => event.stopPropagation());
 
-  document.addEventListener('pointerup', handleTrustedTourInteraction, true);
+  if ('PointerEvent' in window) {
+    document.addEventListener('pointerdown', handleTrustedTourInteraction, true);
+    document.addEventListener('pointerup', handleTrustedTourInteraction, true);
+  } else {
+    document.addEventListener('mousedown', handleTrustedTourInteraction, true);
+    document.addEventListener('touchstart', handleTrustedTourInteraction, { capture: true, passive: true });
+  }
   document.addEventListener('click', handleTrustedTourInteraction, true);
   document.addEventListener('keydown', event => {
     if (!event.isTrusted || !autoTourRunning) return;
-    if (['Enter', ' '].includes(event.key)) {
+    if (['Enter', ' ', 'Tab', 'PageDown', 'PageUp', 'Home', 'End'].includes(event.key)) {
       handleTrustedTourInteraction(event);
       return;
     }
-    if (['Escape', 'ArrowLeft', 'ArrowRight'].includes(event.key) && modal?.classList.contains('active')) {
-      pauseAutomatedTourForInteraction(modal);
+    if (['Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(event.key)) {
+      const target = modal?.classList.contains('active')
+        ? modal
+        : document.activeElement instanceof Element ? document.activeElement : null;
+      pauseAutomatedTourForInteraction(target);
     }
   }, true);
   document.addEventListener('wheel', handleTrustedTourScroll, { capture: true, passive: true });
@@ -20078,7 +20177,7 @@ html.network-constrained .portfolio-guide-panel {
     const syncMenuState = () => {
       const menuOpen = fullScreenMenu.classList.contains('active');
       root.classList.toggle('is-menu-hidden', menuOpen);
-      if (menuOpen) closePanel();
+      if (menuOpen && !(autoTourRunning && autoTourPaused)) closePanel();
     };
     new MutationObserver(syncMenuState).observe(fullScreenMenu, { attributes: true, attributeFilter: ['class'] });
     syncMenuState();
@@ -20102,6 +20201,26 @@ html.network-constrained .portfolio-guide-panel {
     }, { rootMargin: '-28% 0px -50% 0px', threshold: [0.05, 0.2, 0.45] });
     observedSections.forEach(section => sectionObserver.observe(section));
   }
+
+  // Keep the interruption UI authoritative even if a legacy observer attempts to
+  // write project-assistant copy after a manual click. This observer changes only
+  // the guide controls; it does not alter portfolio content or animations.
+  const pausedGuideWatchdog = new MutationObserver(() => {
+    if (!autoTourRunning || !autoTourPaused || autoTourWritingPauseCopy) return;
+    const hasResume = Array.from(actions.querySelectorAll('.guide-action')).some(button => /resume tour/i.test(button.textContent || ''));
+    if (!root.classList.contains('is-open') || !hasResume) {
+      renderPausedInteraction(autoTourPauseTarget);
+    }
+  });
+  pausedGuideWatchdog.observe(root, { attributes: true, attributeFilter: ['class'], childList: true, subtree: true });
+
+  window.portfolioGuidedTourState = {
+    get running() { return autoTourRunning; },
+    get paused() { return autoTourPaused; },
+    get phase() { return autoTourPhase; },
+    get expectedSlide() { return autoTourExpectedSlide; },
+    get expectedProcessIndex() { return autoTourExpectedProcessIndex; }
+  };
 
   function initializeGuide() {
     root.style.setProperty('--guide-sprite', `url("${avatarSprite}")`);
@@ -22071,6 +22190,39 @@ body.avatar-tour-paused .portfolio-guide.auto-tour-paused .guide-action.primary 
   body.avatar-tour-paused .portfolio-guide.auto-tour-paused .portfolio-guide-panel,
   body.avatar-tour-paused .portfolio-guide.auto-tour-paused.in-showcase .portfolio-guide-panel {
     display: block !important;
+  }
+}
+</style>
+
+
+<style id="guided-tour-interruption-authority-v30">
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused .portfolio-guide-panel {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused #guideActions {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+body.avatar-tour-paused .portfolio-guide.auto-tour-paused #guideActions .guide-action {
+  pointer-events: auto !important;
+}
+@media (max-width: 768px) {
+  body.avatar-tour-paused .portfolio-guide.auto-tour-paused #guideActions {
+    flex-wrap: nowrap;
+  }
+  body.avatar-tour-paused .portfolio-guide.auto-tour-paused #guideActions .guide-action {
+    min-height: 34px;
   }
 }
 </style>
