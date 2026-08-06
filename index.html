@@ -20255,11 +20255,29 @@ html.network-constrained .portfolio-guide-panel {
   // Window-level capture runs before project/card/process controllers, including
   // mobile controllers that replace nodes or stop propagation. Genuine user input
   // always pauses first; programmatic tour clicks remain ignored by isTrusted.
+  // One initial-press listener pauses the route before portfolio controls run.
+  // The click listener below only refreshes the contextual narration after the
+  // selected card, carousel view, or process shape has changed state.
   window.addEventListener('pointerdown', handleTrustedTourInteraction, { capture: true, passive: true });
-  window.addEventListener('pointerup', handleTrustedTourInteraction, { capture: true, passive: true });
-  window.addEventListener('mousedown', handleTrustedTourInteraction, { capture: true, passive: true });
-  window.addEventListener('touchstart', handleTrustedTourInteraction, { capture: true, passive: true });
-  window.addEventListener('click', handleTrustedTourInteraction, true);
+  if (!('PointerEvent' in window)) {
+    window.addEventListener('mousedown', handleTrustedTourInteraction, { capture: true, passive: true });
+    window.addEventListener('touchstart', handleTrustedTourInteraction, { capture: true, passive: true });
+  }
+  window.addEventListener('click', event => {
+    if (!event.isTrusted || !autoTourRunning || root.contains(event.target)) return;
+    const target = meaningfulInteractionTarget(event.target);
+    if (!target) return;
+    if (!autoTourPaused) {
+      pauseAutomatedTourForInteraction(target);
+      return;
+    }
+    autoTourPauseTarget = target;
+    clearTimeout(interactionExplainTimer);
+    interactionExplainTimer = window.setTimeout(
+      () => renderPausedInteraction(target),
+      reducedMotion ? 0 : 110
+    );
+  }, true);
   window.addEventListener('input', handleTrustedTourInteraction, true);
   window.addEventListener('change', handleTrustedTourInteraction, true);
   window.addEventListener('submit', handleTrustedTourInteraction, true);
@@ -20348,7 +20366,9 @@ html.network-constrained .portfolio-guide-panel {
     get expectedProcessIndex() { return autoTourExpectedProcessIndex; },
     get pauseSerial() { return autoTourPauseSerial; },
     pauseForTest(target = document.body) { pauseAutomatedTourForInteraction(target); },
-    resumeForTest() { return resumeAutomatedTour(); }
+    resumeForTest() { return resumeAutomatedTour(); },
+    startForTest() { return startAutomatedTour(); },
+    stopForTest(closeProject = false) { return stopAutomatedTour(closeProject); }
   };
 
   function initializeGuide() {
@@ -22403,5 +22423,360 @@ body.avatar-tour-paused #guideActions .guide-action { pointer-events: auto !impo
   }
 }
 </style>
+
+<style id="portfolio-authoritative-reliability-v31">
+/* Final authority layer: reliable guide controls and carousel input on every viewport. */
+#portfolioGuide,
+#portfolioGuide .portfolio-guide-panel,
+#portfolioGuide #guideActions,
+#portfolioGuide #guideActions .guide-action,
+#portfolioGuide #guideResumeFloating {
+  isolation: isolate;
+}
+#portfolioGuide #guideActions,
+#portfolioGuide #guideActions .guide-action,
+#portfolioGuide #guideResumeFloating {
+  position: relative;
+  z-index: 4;
+  pointer-events: auto !important;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+body.avatar-tour-paused #portfolioGuide {
+  z-index: 12000 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  contain: none !important;
+}
+body.avatar-tour-paused #portfolioGuide .portfolio-guide-panel,
+body.avatar-tour-paused #portfolioGuide #guideActions {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+#showcaseModal.active.carousel-ready > .lens-nav-btn.visible-btn {
+  pointer-events: auto !important;
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent;
+}
+</style>
+<script id="portfolio-authoritative-reliability-controller-v31">
+(() => {
+  const modal = document.getElementById('showcaseModal');
+  const wrapper = document.getElementById('lensSliderWrapper');
+  const lens = document.getElementById('leftLensAnchor');
+  const guide = document.getElementById('portfolioGuide');
+  const guideActions = document.getElementById('guideActions');
+  const floatingResume = document.getElementById('guideResumeFloating');
+  if (!modal || !wrapper) return;
+
+  const phone = window.matchMedia('(max-width: 768px)');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let settleTimer = 0;
+  let animationToken = 0;
+  let lastArrowPointerAt = 0;
+  let lastResumeAt = 0;
+  let touchStart = null;
+
+  const getSlides = () => Array.from(wrapper.querySelectorAll(':scope > .lens-slider-slide'));
+  const cleanMobileClass = slide => slide.classList.remove(
+    'mobile-lens-active', 'mobile-lens-enter-left', 'mobile-lens-enter-right',
+    'mobile-lens-exit-left', 'mobile-lens-exit-right'
+  );
+
+  function writeGlobalIndex(index, count) {
+    try { activeLensSlide = index; } catch (_) { window.activeLensSlide = index; }
+    try { totalLensSlides = count; } catch (_) { window.totalLensSlides = count; }
+    try { updateShowcaseSnapshotProgress(); } catch (_) {}
+    try { hydrateLensMediaAroundActiveSlide(); } catch (_) {}
+  }
+
+  function finishLensMovement(token) {
+    if (token !== animationToken) return;
+    wrapper.classList.remove('is-sliding');
+    try { scheduleLensFitAndTheme(); } catch (_) {}
+    try { scheduleLensNavigationPosition(); } catch (_) {}
+    try { updateLensNavigationState(); } catch (_) {}
+  }
+
+  function setLensIndex(requestedIndex, direction = 1, instant = false) {
+    const slides = getSlides();
+    const count = slides.length;
+    if (!count) return false;
+
+    const currentRaw = (() => { try { return Number(activeLensSlide) || 0; } catch (_) { return 0; } })();
+    const current = ((currentRaw % count) + count) % count;
+    const target = ((Number(requestedIndex) % count) + count) % count;
+    const actualDirection = direction || (target >= current ? 1 : -1);
+    const token = ++animationToken;
+    clearTimeout(settleTimer);
+
+    writeGlobalIndex(target, count);
+
+    if (!phone.matches) {
+      slides.forEach(cleanMobileClass);
+      wrapper.classList.toggle('is-sliding', !instant);
+      wrapper.style.transform = `translate3d(-${target * 100}%, 0, 0)`;
+      if (instant) {
+        finishLensMovement(token);
+        return true;
+      }
+      settleTimer = window.setTimeout(
+        () => finishLensMovement(token),
+        reduced.matches ? 25 : 680
+      );
+      return true;
+    }
+
+    /* Phones use the existing class-based lens animation, which avoids the
+       dropped transform paints that affected embedded mobile browsers. */
+    wrapper.style.transform = 'none';
+    if (instant || current === target) {
+      slides.forEach((slide, index) => {
+        cleanMobileClass(slide);
+        if (index === target) slide.classList.add('mobile-lens-active');
+      });
+      finishLensMovement(token);
+      return true;
+    }
+
+    const currentSlide = slides[current];
+    const targetSlide = slides[target];
+    slides.forEach((slide, index) => {
+      cleanMobileClass(slide);
+      if (index === current) slide.classList.add('mobile-lens-active');
+    });
+    targetSlide.classList.add(actualDirection > 0 ? 'mobile-lens-enter-right' : 'mobile-lens-enter-left');
+    wrapper.classList.add('is-sliding');
+
+    void targetSlide.offsetWidth;
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (token !== animationToken) return;
+      currentSlide.classList.remove('mobile-lens-active');
+      currentSlide.classList.add(actualDirection > 0 ? 'mobile-lens-exit-left' : 'mobile-lens-exit-right');
+      targetSlide.classList.remove('mobile-lens-enter-right', 'mobile-lens-enter-left');
+      targetSlide.classList.add('mobile-lens-active');
+    }));
+
+    settleTimer = window.setTimeout(
+      () => {
+        if (token !== animationToken) return;
+        slides.forEach((slide, index) => {
+          cleanMobileClass(slide);
+          if (index === target) slide.classList.add('mobile-lens-active');
+        });
+        finishLensMovement(token);
+      },
+      reduced.matches ? 35 : 620
+    );
+    return true;
+  }
+
+  function move(direction) {
+    const slides = getSlides();
+    if (slides.length <= 1) return false;
+    const current = (() => { try { return Number(activeLensSlide) || 0; } catch (_) { return 0; } })();
+    return setLensIndex(current + Number(direction || 0), Number(direction || 1), false);
+  }
+
+  /* This is the single movement entry point used by desktop arrows, mobile
+     arrows, swipe gestures, the avatar guide, and manual project exploration. */
+  window.moveLensSlider = move;
+  window.setLensSlideIndex = setLensIndex;
+  try { moveLensSlider = move; } catch (_) {}
+
+  function installArrow(id, direction) {
+    const existing = document.getElementById(id);
+    if (!existing) return null;
+    const button = existing.cloneNode(true);
+    button.removeAttribute('onclick');
+    button.dataset.authoritativeLensArrow = 'true';
+    existing.replaceWith(button);
+
+    const activate = event => {
+      if (!modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+      if (button.disabled || getSlides().length <= 1) return;
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      event?.stopImmediatePropagation?.();
+      lastArrowPointerAt = performance.now();
+      move(direction);
+    };
+
+    button.addEventListener('pointerup', activate, { capture: true, passive: false });
+    button.addEventListener('click', event => {
+      if (performance.now() - lastArrowPointerAt < 650) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        return;
+      }
+      activate(event);
+    }, true);
+    button.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      activate(event);
+    }, true);
+    button.addEventListener('pointerdown', event => event.stopPropagation(), true);
+    button.addEventListener('touchstart', event => event.stopPropagation(), { capture: true, passive: true });
+    return button;
+  }
+
+  installArrow('modalLensPrevBtn', -1);
+  installArrow('modalLensNextBtn', 1);
+
+  if (lens) {
+    lens.addEventListener('pointerdown', event => {
+      if (!event.isPrimary || event.button !== 0 || event.target.closest('.lens-nav-btn')) return;
+      touchStart = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    }, { capture: true, passive: true });
+    lens.addEventListener('pointerup', event => {
+      if (!touchStart || touchStart.id !== event.pointerId) return;
+      const dx = event.clientX - touchStart.x;
+      const dy = event.clientY - touchStart.y;
+      touchStart = null;
+      if (Math.abs(dx) < 38 || Math.abs(dx) <= Math.abs(dy) * 1.08) return;
+      event.preventDefault();
+      move(dx < 0 ? 1 : -1);
+    }, { capture: true, passive: false });
+    lens.addEventListener('pointercancel', () => { touchStart = null; }, { capture: true, passive: true });
+  }
+
+  function normalizeLens(reset = false) {
+    const slides = getSlides();
+    if (!slides.length) return;
+    const current = reset ? 0 : (() => {
+      try { return Math.max(0, Math.min(slides.length - 1, Number(activeLensSlide) || 0)); }
+      catch (_) { return 0; }
+    })();
+    slides.forEach(slide => {
+      slide.style.setProperty('min-width', '100%');
+      slide.style.setProperty('width', '100%');
+      if (!phone.matches) slide.style.setProperty('flex', '0 0 100%');
+    });
+    setLensIndex(current, 1, true);
+  }
+
+  new MutationObserver(mutations => {
+    if (mutations.some(m => m.type === 'childList')) requestAnimationFrame(() => normalizeLens(true));
+  }).observe(wrapper, { childList: true });
+  new MutationObserver(() => {
+    if (modal.classList.contains('active')) requestAnimationFrame(() => normalizeLens(false));
+    else {
+      animationToken += 1;
+      clearTimeout(settleTimer);
+      wrapper.classList.remove('is-sliding');
+    }
+  }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+  phone.addEventListener?.('change', () => requestAnimationFrame(() => normalizeLens(false)));
+  normalizeLens(false);
+
+  /* Authoritative user-interruption bridge. The guide's own controller keeps
+     the saved phase and narration; this bridge guarantees that every genuine
+     user gesture reaches it before project/process handlers can consume it. */
+  const tourState = () => window.portfolioGuidedTourState || null;
+  const isGuideControl = target => Boolean(target?.closest?.('#portfolioGuide'));
+  const meaningfulTarget = target => {
+    if (!(target instanceof Element)) return document.body;
+    return target.closest(
+      '.slot-card, .lens-nav-btn, #lensSliderWrapper, .lens-display-left, #showcaseModal.active, ' +
+      '.brand-orbit-trigger, .brand-orbit-item, #brandStrategyExplore, .glasses-3d-stage, ' +
+      '#contact-section a, #contact-section button, #contact-section input, #contact-section textarea, ' +
+      'a, button, input, textarea, select, [role="button"], .portfolio-section'
+    ) || target;
+  };
+
+  function pauseFromTrustedEvent(event) {
+    if (!event.isTrusted || isGuideControl(event.target)) return;
+    const state = tourState();
+    if (!state?.running || state.paused) return;
+    state.pauseForTest?.(meaningfulTarget(event.target));
+  }
+
+  // Fallback bridge only: the guide's own pointerdown handler normally pauses
+  // first. This runs afterward and acts only if another controller consumed it.
+  window.addEventListener('pointerdown', pauseFromTrustedEvent, { capture: true, passive: true });
+  if (!('PointerEvent' in window)) {
+    window.addEventListener('mousedown', pauseFromTrustedEvent, { capture: true, passive: true });
+    window.addEventListener('touchstart', pauseFromTrustedEvent, { capture: true, passive: true });
+  }
+  ['click', 'input', 'change', 'submit'].forEach(type => {
+    window.addEventListener(type, pauseFromTrustedEvent, true);
+  });
+  window.addEventListener('wheel', pauseFromTrustedEvent, { capture: true, passive: true });
+  window.addEventListener('touchmove', pauseFromTrustedEvent, { capture: true, passive: true });
+  window.addEventListener('keydown', event => {
+    if (!event.isTrusted || isGuideControl(event.target)) return;
+    if (!['Enter', ' ', 'Tab', 'Escape', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End'].includes(event.key)) return;
+    pauseFromTrustedEvent(event);
+  }, true);
+
+  function guideControlAction(target) {
+    const button = target?.closest?.('#guideResumeFloating, #guideActions .guide-action');
+    if (!button) return null;
+    const label = (button.textContent || '').trim();
+    if (button.id === 'guideResumeFloating' || /^resume\s+tour/i.test(label)) return { button, action: 'resume' };
+    if (/^start\s+guided\s+tour/i.test(label)) return { button, action: 'start' };
+    return null;
+  }
+
+  function reliableGuideAction(event) {
+    const control = guideControlAction(event.target);
+    if (!control) return;
+    const state = tourState();
+    const allowed = control.action === 'resume'
+      ? Boolean(state?.running && state.paused)
+      : Boolean(state && !state.running);
+    if (!allowed) return;
+    if (performance.now() - lastResumeAt < 500) {
+      event.preventDefault();
+      event.stopPropagation();
+      event.stopImmediatePropagation();
+      return;
+    }
+    lastResumeAt = performance.now();
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+    if (control.action === 'resume') state.resumeForTest?.();
+    else state.startForTest?.();
+  }
+
+  document.addEventListener('pointerup', reliableGuideAction, true);
+  document.addEventListener('click', reliableGuideAction, true);
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    reliableGuideAction(event);
+  }, true);
+
+  const syncPausedGuide = () => {
+    const state = tourState();
+    if (!state?.running || !state.paused) return;
+    document.body.classList.add('avatar-tour-paused');
+    guide?.classList.add('auto-tour-paused', 'is-open');
+    if (floatingResume) {
+      if (floatingResume.hidden) floatingResume.hidden = false;
+      if (!floatingResume.classList.contains('is-visible')) floatingResume.classList.add('is-visible');
+      if (floatingResume.disabled) floatingResume.disabled = false;
+      if (floatingResume.textContent !== 'Resume tour') floatingResume.textContent = 'Resume tour';
+    }
+    guideActions?.querySelectorAll('.guide-action').forEach(button => {
+      if (button.style.pointerEvents !== 'auto') button.style.pointerEvents = 'auto';
+    });
+  };
+  /* The guided-tour controller already owns the paused UI through its own
+     watchdog. A second whole-body observer caused a self-triggering style
+     mutation loop on genuine clicks, freezing both desktop and mobile. */
+
+  window.portfolioReliabilityController = {
+    setLensIndex,
+    moveLens: move,
+    pause(target = document.body) { tourState()?.pauseForTest?.(target); },
+    resume() { return tourState()?.resumeForTest?.(); }
+  };
+})();
+</script>
+
 </body>
 </html>
