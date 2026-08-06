@@ -19265,16 +19265,46 @@ html.network-constrained .portfolio-guide-panel {
         for (let index = 1; index < slideCount; index += 1) {
           if (!autoTourIsCurrent(runId)) return;
           if (!await waitForTourSlide(slides[index], index + 1, slideCount, runId)) return;
-          const nextButton = document.getElementById('modalLensNextBtn');
-          nextButton?.click();
-          let moved = await waitForLensMovement(activeTourSlider, index, runId);
-          // A browser can occasionally drop a synthetic click while the mobile
-          // compositing layer is being rebuilt. Retry once, then pause rather than
-          // silently racing through views the visitor has not actually seen.
-          if (!moved && autoTourIsCurrent(runId)) {
-            await nextAutoTourPaint();
+          let moved = false;
+          if (mobileTour) {
+            // Advance the actual lens track directly on phones. A synthetic click
+            // can be discarded while the floating arrow is briefly disabled or
+            // being repositioned, which allowed the guide copy to advance while
+            // the visible carousel remained on the previous frame.
+            try { moveLensSlider(1); } catch (_) {}
+            moved = await waitForLensMovement(activeTourSlider, index, runId);
+
+            // If a mobile browser dropped the compositor update, restore the same
+            // authored transform absolutely and let its normal transition settle.
+            // This fallback changes neither the carousel order nor its animation.
+            if (!moved && autoTourIsCurrent(runId) && activeTourSlider) {
+              await nextAutoTourPaint();
+              try {
+                activeLensSlide = index;
+                totalLensSlides = slideCount;
+                updateShowcaseSnapshotProgress();
+                activeTourSlider.classList.add('is-sliding');
+                activeTourSlider.style.transform = `translate3d(-${index * 100}%, 0, 0)`;
+                hydrateLensMediaAroundActiveSlide();
+                clearTimeout(lensSlideSettleTimer);
+                lensSlideSettleTimer = window.setTimeout(() => {
+                  activeTourSlider.classList.remove('is-sliding');
+                  scheduleLensFitAndTheme();
+                  scheduleLensNavigationPosition();
+                }, reduceShowcaseMotion ? 0 : 680);
+              } catch (_) {}
+              moved = await waitForLensMovement(activeTourSlider, index, runId);
+            }
+          } else {
+            // Keep the established desktop control path unchanged.
+            const nextButton = document.getElementById('modalLensNextBtn');
             nextButton?.click();
             moved = await waitForLensMovement(activeTourSlider, index, runId);
+            if (!moved && autoTourIsCurrent(runId)) {
+              await nextAutoTourPaint();
+              nextButton?.click();
+              moved = await waitForLensMovement(activeTourSlider, index, runId);
+            }
           }
           if (!moved) {
             setAutoTourWaiting(
@@ -20985,6 +21015,51 @@ html body #showcaseModal.modal-container:not(.active) * {
   phone.addEventListener?.('change', sync);
   addEventListener('pageshow', sync, { once: true });
   sync();
+})();
+</script>
+
+
+<style id="mobile-tour-carousel-and-process-visibility-v27">
+@media (max-width: 768px) {
+  /* The process list must remain readable while one stage is expanded. The
+     previous optimisation hid every collapsed window, leaving black empty rows. */
+  body.avatar-tour-process-active #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body.avatar-tour-process-active #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window strong,
+  body.avatar-tour-process-active #brand-section .brand-orbit-item:not(.is-open) .brand-orbit-window > span {
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  /* Keep the moving lens track on one stable composited plane during the mobile
+     tour so each verified transform is painted before the guide continues. */
+  body.avatar-tour-active #showcaseModal.active.carousel-ready #lensSliderWrapper {
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+</style>
+<script id="mobile-tour-lens-paint-verification-v27">
+(() => {
+  const phone = window.matchMedia('(max-width: 768px)');
+  const modal = document.getElementById('showcaseModal');
+  const wrapper = document.getElementById('lensSliderWrapper');
+  if (!modal || !wrapper) return;
+
+  /* A transform mutation is followed by one read in the next frame. This is a
+     lightweight mobile-only paint confirmation and does not alter timing. */
+  const observer = new MutationObserver(records => {
+    if (!phone.matches || !document.body.classList.contains('avatar-tour-active')) return;
+    if (!modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+    if (!records.some(record => record.attributeName === 'style')) return;
+    requestAnimationFrame(() => { void wrapper.getBoundingClientRect().left; });
+  });
+  observer.observe(wrapper, { attributes: true, attributeFilter: ['style'] });
 })();
 </script>
 
