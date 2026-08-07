@@ -24637,5 +24637,311 @@ body.avatar-tour-active #portfolioGuide {
 }
 </style>
 
+
+
+<!-- FINAL SLOT 12 CAT-EYE CAROUSEL REPAIR — WEB + MOBILE -->
+<style id="slot12-cat-eye-carousel-final-v1">
+/* Slot 12 uses a deeply clipped cat-eye shell. Keep its media as a stacked
+   gallery rather than translating the clipped flex track. This avoids the
+   transform/clip conflict that prevented its images from visibly changing. */
+#showcaseModal.shape-twelfth-slot #modalLensPrevBtn,
+#showcaseModal.shape-twelfth-slot #modalLensNextBtn {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+#showcaseModal.shape-twelfth-slot #lensSliderWrapper {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+#showcaseModal.shape-twelfth-slot #lensSliderWrapper > .lens-slider-slide {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  min-width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  flex: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  transform: translate3d(5%,0,0) scale(1.015) !important;
+  transition: opacity .30s ease, transform .42s cubic-bezier(.22,1,.36,1) !important;
+  z-index: 1 !important;
+}
+
+#showcaseModal.shape-twelfth-slot #lensSliderWrapper > .lens-slider-slide.slot12-carousel-active {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translate3d(0,0,0) scale(1) !important;
+  z-index: 6 !important;
+}
+
+#showcaseModal.shape-twelfth-slot #lensSliderWrapper > .lens-slider-slide > img,
+#showcaseModal.shape-twelfth-slot #lensSliderWrapper > .lens-slider-slide > video {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+#showcaseModal > .slot12-carousel-btn {
+  display: none !important;
+  position: fixed !important;
+  right: auto !important;
+  width: 38px !important;
+  height: 38px !important;
+  border: 1px solid rgba(255,255,255,.18) !important;
+  border-radius: 50% !important;
+  background: rgba(7,7,10,.76) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 22px rgba(0,0,0,.24) !important;
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  align-items: center !important;
+  justify-content: center !important;
+  font: 700 16px/1 Arial,sans-serif !important;
+  cursor: pointer !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  touch-action: manipulation !important;
+  z-index: 30040 !important;
+  opacity: .96 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translate(-50%,-50%) !important;
+}
+
+#showcaseModal.shape-twelfth-slot.active.carousel-ready > .slot12-carousel-btn.slot12-is-visible {
+  display: flex !important;
+}
+
+#showcaseModal > .slot12-carousel-btn:hover,
+#showcaseModal > .slot12-carousel-btn:focus-visible {
+  background: rgba(0,0,0,.92) !important;
+  transform: translate(-50%,-50%) scale(1.06) !important;
+}
+
+@media (max-width: 768px) {
+  #showcaseModal > .slot12-carousel-btn {
+    width: 32px !important;
+    height: 32px !important;
+    font-size: 13px !important;
+  }
+}
+</style>
+<script id="slot12-cat-eye-carousel-controller-final-v1">
+(() => {
+  'use strict';
+
+  const modal = document.getElementById('showcaseModal');
+  const wrapper = document.getElementById('lensSliderWrapper');
+  const leftLens = document.getElementById('leftLensAnchor') || document.querySelector('#showcaseModal .lens-display-left');
+  if (!modal || !wrapper || !leftLens) return;
+
+  let index = 0;
+  let lastPointerAt = 0;
+  let pulseTimer = 0;
+
+  const isSlot12 = () => modal.classList.contains('shape-twelfth-slot');
+  const slides = () => Array.from(wrapper.querySelectorAll(':scope > .lens-slider-slide'));
+
+  function makeButton(direction) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `lens-nav-btn slot12-carousel-btn ${direction < 0 ? 'slot12-carousel-prev' : 'slot12-carousel-next'}`;
+    button.setAttribute('aria-label', direction < 0 ? 'Previous project image' : 'Next project image');
+    button.innerHTML = direction < 0 ? '&#8249;' : '&#8250;';
+
+    const activate = event => {
+      if (!isSlot12() || !modal.classList.contains('active') || !modal.classList.contains('carousel-ready')) return;
+      if (slides().length <= 1) return;
+      event?.preventDefault?.();
+      event?.stopPropagation?.();
+      event?.stopImmediatePropagation?.();
+      lastPointerAt = performance.now();
+      move(direction, true);
+    };
+
+    button.addEventListener('pointerup', activate, { capture: true, passive: false });
+    button.addEventListener('click', event => {
+      if (performance.now() - lastPointerAt < 650) {
+        event.preventDefault();
+        event.stopPropagation();
+        event.stopImmediatePropagation();
+        return;
+      }
+      activate(event);
+    }, true);
+    button.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      activate(event);
+    }, true);
+    return button;
+  }
+
+  const prev = makeButton(-1);
+  const next = makeButton(1);
+  modal.append(prev, next);
+
+  function hydrate(slide) {
+    if (!slide) return;
+    const image = slide.querySelector('img');
+    const video = slide.querySelector('video');
+    if (image) {
+      image.loading = 'eager';
+      image.decoding = 'async';
+      image.fetchPriority = 'high';
+      if (image.dataset.src && !image.getAttribute('src')) {
+        image.src = image.dataset.src;
+        delete image.dataset.src;
+      }
+    }
+    if (video) {
+      video.muted = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+      if (video.dataset.src && !video.getAttribute('src')) {
+        video.src = video.dataset.src;
+        delete video.dataset.src;
+        try { video.load(); } catch (_) {}
+      }
+    }
+  }
+
+  function publishProgress(count) {
+    try { activeLensSlide = index; } catch (_) { window.activeLensSlide = index; }
+    try { totalLensSlides = count; } catch (_) { window.totalLensSlides = count; }
+    try { updateShowcaseSnapshotProgress(); } catch (_) {}
+
+    // The existing authored-avatar controller watches wrapper class changes.
+    // Pulse it once so slot-specific narration stays synchronized with the view.
+    wrapper.classList.add('slot12-carousel-pulse');
+    clearTimeout(pulseTimer);
+    pulseTimer = window.setTimeout(() => wrapper.classList.remove('slot12-carousel-pulse'), 36);
+  }
+
+  function render(requested = index, instant = false) {
+    if (!isSlot12()) return false;
+    const all = slides();
+    const count = all.length;
+    if (!count) return false;
+
+    index = ((Number(requested) % count) + count) % count;
+    wrapper.style.setProperty('transform', 'none', 'important');
+    wrapper.style.setProperty('transition', 'none', 'important');
+
+    all.forEach((slide, slideIndex) => {
+      slide.classList.remove(
+        'slot12-carousel-active',
+        'mobile-lens-active', 'mobile-lens-enter-left', 'mobile-lens-enter-right',
+        'mobile-lens-exit-left', 'mobile-lens-exit-right'
+      );
+      if (slideIndex === index) slide.classList.add('slot12-carousel-active');
+      const video = slide.querySelector('video');
+      if (video && slideIndex !== index) {
+        try { video.pause(); } catch (_) {}
+      }
+    });
+
+    hydrate(all[index]);
+    hydrate(all[(index + 1) % count]);
+    hydrate(all[(index - 1 + count) % count]);
+    const activeVideo = all[index]?.querySelector('video');
+    if (activeVideo && document.visibilityState === 'visible') activeVideo.play().catch(() => {});
+
+    publishProgress(count);
+    positionButtons();
+    return true;
+  }
+
+  function move(direction, userInitiated = false) {
+    const all = slides();
+    if (!isSlot12() || all.length <= 1) return false;
+
+    if (userInitiated) {
+      try {
+        const state = window.portfolioGuidedTourState;
+        if (state?.running && !state.paused) state.pauseForTest?.(direction < 0 ? prev : next);
+      } catch (_) {}
+    }
+    return render(index + Number(direction || 0), false);
+  }
+
+  function positionButtons() {
+    const count = slides().length;
+    const show = isSlot12() && modal.classList.contains('active') && modal.classList.contains('carousel-ready') && count > 1;
+    prev.classList.toggle('slot12-is-visible', show);
+    next.classList.toggle('slot12-is-visible', show);
+    if (!show) return;
+
+    const rect = leftLens.getBoundingClientRect();
+    if (!rect.width || !rect.height) return;
+    const y = rect.top + rect.height * 0.56;
+    prev.style.setProperty('left', `${rect.left + rect.width * 0.22}px`, 'important');
+    prev.style.setProperty('top', `${y}px`, 'important');
+    next.style.setProperty('left', `${rect.left + rect.width * 0.78}px`, 'important');
+    next.style.setProperty('top', `${y}px`, 'important');
+  }
+
+  // Reset only when Slot 12's five slides are rebuilt.
+  new MutationObserver(mutations => {
+    if (!mutations.some(m => m.type === 'childList')) return;
+    if (!isSlot12()) return;
+    index = 0;
+    requestAnimationFrame(() => render(0, true));
+    window.setTimeout(() => render(0, true), 90);
+  }).observe(wrapper, { childList: true });
+
+  new MutationObserver(() => {
+    if (isSlot12() && modal.classList.contains('active')) {
+      requestAnimationFrame(() => {
+        render(index, true);
+        positionButtons();
+      });
+      window.setTimeout(positionButtons, 220);
+      window.setTimeout(positionButtons, 720);
+    } else {
+      prev.classList.remove('slot12-is-visible');
+      next.classList.remove('slot12-is-visible');
+      wrapper.querySelectorAll('.slot12-carousel-active').forEach(slide => slide.classList.remove('slot12-carousel-active'));
+      index = 0;
+    }
+  }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+  // Reassert Slot 12 after legacy layout callbacks finish the case-to-glasses handoff.
+  [120, 450, 950, 1500].forEach(delay => {
+    modal.addEventListener('transitionend', () => {
+      if (isSlot12() && modal.classList.contains('active')) window.setTimeout(() => render(index, true), delay);
+    }, { passive: true });
+  });
+
+  window.addEventListener('resize', positionButtons, { passive: true });
+  window.addEventListener('scroll', positionButtons, { passive: true });
+  if ('ResizeObserver' in window) new ResizeObserver(positionButtons).observe(leftLens);
+
+  // Keyboard arrows work when the cat-eye popup itself has focus.
+  modal.addEventListener('keydown', event => {
+    if (!isSlot12() || !modal.classList.contains('carousel-ready')) return;
+    if (event.target?.closest?.('input, textarea, select, a, button')) return;
+    if (event.key === 'ArrowLeft') { event.preventDefault(); move(-1, true); }
+    if (event.key === 'ArrowRight') { event.preventDefault(); move(1, true); }
+  });
+
+  window.slot12CarouselController = { render, move, get index() { return index; } };
+})();
+</script>
+
 </body>
 </html>
