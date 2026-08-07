@@ -24571,5 +24571,71 @@ body.avatar-tour-active #portfolioGuide {
 })();
 </script>
 
+
+<style id="mobile-featured-desktop-color-match-v1">
+/* Phone-only: use the exact desktop Featured Work palette even when the
+   desktop featured-focus body class is not active on touch scrolling. */
+@media (max-width: 768px) {
+  #featured-section {
+    background-color: #0b0911 !important;
+    color: #fbf9ff !important;
+  }
+
+  #featured-section::before {
+    opacity: 1 !important;
+    background:
+      radial-gradient(circle at 10% 12%, rgba(255, 104, 174, 0.23) 0%, transparent 34%),
+      radial-gradient(circle at 82% 6%, rgba(132, 72, 255, 0.35) 0%, transparent 38%),
+      radial-gradient(circle at 54% 56%, rgba(74, 116, 255, 0.15) 0%, transparent 44%),
+      linear-gradient(145deg, #100d17 0%, #171020 48%, #0d0b13 100%) !important;
+  }
+
+  #featured-section > .featured-sticky-shell,
+  #featured-section .featured-scroll-track {
+    background: transparent !important;
+  }
+
+  #featured-section .meta-context {
+    color: rgba(242, 235, 255, 0.68) !important;
+  }
+  #featured-section .section-label {
+    color: #d2b4ff !important;
+    text-shadow: 0 0 20px rgba(184, 140, 255, 0.34) !important;
+  }
+  #featured-section h1 {
+    color: #ffffff !important;
+    text-shadow: 0 18px 55px rgba(0, 0, 0, 0.32) !important;
+  }
+  #featured-section h1 span {
+    color: rgba(255, 255, 255, 0.025) !important;
+    -webkit-text-stroke-color: rgba(255, 255, 255, 0.88) !important;
+    text-shadow: 0 0 34px rgba(177, 124, 255, 0.2) !important;
+  }
+  #featured-section .description-text {
+    color: #c9c2d4 !important;
+  }
+  #featured-section .scroll-explore {
+    color: #f3edff !important;
+  }
+  #featured-section .scroll-circle {
+    border-color: rgba(255, 255, 255, 0.3) !important;
+    background: rgba(255, 255, 255, 0.055) !important;
+    box-shadow: 0 0 0 5px rgba(184, 140, 255, 0.05) !important;
+  }
+  #featured-section .action-pill-btn {
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.56) !important;
+    background: rgba(255, 255, 255, 0.055) !important;
+  }
+  #featured-section .slot-card {
+    background-color: #17131f !important;
+    border-color: rgba(255, 255, 255, 0.105) !important;
+  }
+  #featured-section .slot-label {
+    color: #d7bdff !important;
+  }
+}
+</style>
+
 </body>
 </html>
