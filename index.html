@@ -673,7 +673,7 @@ renderLensMarkup(wrapper, `
 } else if (contextMode === 'doffy') {
 totalLensSlides = 4;
 renderLensMarkup(wrapper, `
-                    <div class="lens-slider-slide"><video src="Doffymain.mp4" autoplay loop muted playsinline preload="metadata"></video></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy1.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy2.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy3.png"></div>
+                    <div class="lens-slider-slide"><video src="doffymain.mp4" autoplay loop muted playsinline preload="metadata"></video></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy1.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy2.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy3.png"></div>
                 `);
 } else if (contextMode === 'butty') {
 totalLensSlides = 4;
@@ -1858,7 +1858,7 @@ setTimeout(() => toast.classList.remove('show'), 3500);
 const showcaseFirstAssets = {
 default: { type: 'image', src: 'glasses.png', poster: 'glasses.png' },
 tinted: { type: 'video', src: 'tintedmain.mp4', poster: 'tinted.png' },
-doffy: { type: 'video', src: 'Doffymain.mp4', poster: 'doffy1.png' },
+doffy: { type: 'video', src: 'doffymain.mp4', poster: 'doffy1.png' },
 butty: { type: 'video', src: 'buttymain.mp4', poster: 'butty1.png' },
 clip: { type: 'video', src: 'clipmain.mp4', poster: 'clip1.png' },
 pink: { type: 'image', src: 'pink1.png', poster: 'pink1.png' },
@@ -2864,7 +2864,7 @@ function inferVideoPoster(source) {
 const filename = String(source || '').split('/').pop().toLowerCase();
 const posters = {
 'tintedmain.mp4': 'tinted.png',
-'Doffymain.mp4': 'doffy1.png',
+'doffymain.mp4': 'doffy1.png',
 'buttymain.mp4': 'butty1.png',
 'clipmain.mp4': 'clip1.png',
 'circlemain.mp4': 'circle1.png',
@@ -7498,7 +7498,7 @@ async function startVirtualTryOn() {
   if (error) error.hidden = true;
   setVirtualTryOnProgress(6,'Preparing camera…','Waiting for camera permission.');
   try {
-    if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera access is unavailable in this browser. Open the deployed GitHub Pages site over HTTPS.');
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera access is unavailable in this browser. Open the portfolio through HTTPS or localhost.');
     virtualTryOnStream = await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'user'},width:{ideal:1280},height:{ideal:720}}});
     const video = document.getElementById('virtualTryOnVideo');
     video.srcObject = virtualTryOnStream;
@@ -7537,7 +7537,7 @@ async function startVirtualTryOn() {
     const fill = new THREE.DirectionalLight(0xffffff,1.4); fill.position.set(-3,1,2); virtualTryOnScene.add(fill);
 
     const GLTFLoader = loaderModule.GLTFLoader;
-    const gltf = await new GLTFLoader().loadAsync(new URL('./eyeglasses.glb', document.baseURI).href);
+    const gltf = await new GLTFLoader().loadAsync('eyeglasses.glb');
     virtualTryOnModel = gltf.scene;
     const box = new THREE.Box3().setFromObject(virtualTryOnModel);
     const size = new THREE.Vector3(); const center = new THREE.Vector3();
