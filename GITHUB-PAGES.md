@@ -20,3 +20,7 @@ This build is prepared for GitHub Pages project URLs such as:
 - GitHub Pages provides HTTPS, which is suitable for browser camera permission.
 - The Main Slot 3 try-on model is loaded relative to the current page, so it also works when the site is hosted under `/REPOSITORY/`.
 - Camera frames are processed in the browser by the try-on code and are not intentionally uploaded by this portfolio.
+
+## Virtual try-on tracking update
+
+This build includes crop-aware portrait tracking for `object-fit: cover`, 3D yaw/pitch/roll head pose, resize/orientation handling, and a dedicated GLB tracking anchor. Replace the previous deployed files with this build and hard-refresh the page after GitHub Pages finishes deploying.

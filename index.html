@@ -673,7 +673,7 @@ renderLensMarkup(wrapper, `
 } else if (contextMode === 'doffy') {
 totalLensSlides = 4;
 renderLensMarkup(wrapper, `
-                    <div class="lens-slider-slide"><video src="doffymain.mp4" autoplay loop muted playsinline preload="metadata"></video></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy1.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy2.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy3.png"></div>
+                    <div class="lens-slider-slide"><video src="Doffymain.mp4" autoplay loop muted playsinline preload="metadata"></video></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy1.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy2.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy3.png"></div>
                 `);
 } else if (contextMode === 'butty') {
 totalLensSlides = 4;
@@ -1858,7 +1858,7 @@ setTimeout(() => toast.classList.remove('show'), 3500);
 const showcaseFirstAssets = {
 default: { type: 'image', src: 'glasses.png', poster: 'glasses.png' },
 tinted: { type: 'video', src: 'tintedmain.mp4', poster: 'tinted.png' },
-doffy: { type: 'video', src: 'doffymain.mp4', poster: 'doffy1.png' },
+doffy: { type: 'video', src: 'Doffymain.mp4', poster: 'doffy1.png' },
 butty: { type: 'video', src: 'buttymain.mp4', poster: 'butty1.png' },
 clip: { type: 'video', src: 'clipmain.mp4', poster: 'clip1.png' },
 pink: { type: 'image', src: 'pink1.png', poster: 'pink1.png' },
@@ -2864,7 +2864,7 @@ function inferVideoPoster(source) {
 const filename = String(source || '').split('/').pop().toLowerCase();
 const posters = {
 'tintedmain.mp4': 'tinted.png',
-'doffymain.mp4': 'doffy1.png',
+'Doffymain.mp4': 'doffy1.png',
 'buttymain.mp4': 'butty1.png',
 'clipmain.mp4': 'clip1.png',
 'circlemain.mp4': 'circle1.png',
@@ -7465,9 +7465,27 @@ let virtualTryOnRenderer = null;
 let virtualTryOnScene = null;
 let virtualTryOnCamera = null;
 let virtualTryOnModel = null;
+let virtualTryOnAnchor = null;
 let virtualThree = null;
 let virtualTryOnBusy = false;
 let virtualLastVideoTime = -1;
+let virtualTryOnMissedFrames = 0;
+let virtualTryOnResizeObserver = null;
+let virtualTryOnLastStageSize = { width: 0, height: 0, dpr: 0 };
+
+const VIRTUAL_TRYON_FIT = Object.freeze({
+  frameToFaceWidth: 1.02,
+  verticalEyeOffset: 0.018,
+  maxYaw: 1.02,
+  maxPitch: 0.48,
+  positionSmoothing: 0.34,
+  rotationSmoothing: 0.30,
+  scaleSmoothing: 0.30
+});
+
+function virtualClamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
 
 function setVirtualTryOnProgress(percent, status, substatus) {
   const bar = document.getElementById('virtualTryOnProgress');
@@ -7477,6 +7495,7 @@ function setVirtualTryOnProgress(percent, status, substatus) {
   if (statusEl && status) statusEl.textContent = status;
   if (sub && substatus) sub.textContent = substatus;
 }
+
 function showVirtualTryOnError(message) {
   document.getElementById('virtualTryOnLoader')?.classList.add('is-done');
   const error = document.getElementById('virtualTryOnError');
@@ -7484,156 +7503,380 @@ function showVirtualTryOnError(message) {
   if (text) text.textContent = message;
   if (error) error.hidden = false;
 }
+
+function syncVirtualTryOnRenderer(force = false) {
+  const stage = document.getElementById('virtualTryOnStage');
+  const canvas = document.getElementById('virtualTryOnCanvas');
+  if (!stage || !canvas || !virtualTryOnRenderer || !virtualTryOnCamera) return null;
+
+  const rect = stage.getBoundingClientRect();
+  const width = Math.max(1, rect.width);
+  const height = Math.max(1, rect.height);
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const changed = force ||
+    Math.abs(width - virtualTryOnLastStageSize.width) > 0.5 ||
+    Math.abs(height - virtualTryOnLastStageSize.height) > 0.5 ||
+    dpr !== virtualTryOnLastStageSize.dpr;
+
+  if (changed) {
+    virtualTryOnRenderer.setPixelRatio(dpr);
+    virtualTryOnRenderer.setSize(width, height, false);
+    virtualTryOnCamera.aspect = width / height;
+    virtualTryOnCamera.updateProjectionMatrix();
+    virtualTryOnLastStageSize = { width, height, dpr };
+  }
+  return { width, height };
+}
+
+function getVirtualCoverTransform(video, stageSize) {
+  const videoWidth = Math.max(1, video.videoWidth || 1);
+  const videoHeight = Math.max(1, video.videoHeight || 1);
+  const stageWidth = Math.max(1, stageSize.width);
+  const stageHeight = Math.max(1, stageSize.height);
+
+  // The camera preview uses object-fit: cover. MediaPipe coordinates refer to
+  // the uncropped source frame, so mirror the exact browser cover/crop math.
+  const coverScale = Math.max(stageWidth / videoWidth, stageHeight / videoHeight);
+  const renderedWidth = videoWidth * coverScale;
+  const renderedHeight = videoHeight * coverScale;
+  return {
+    videoWidth,
+    videoHeight,
+    stageWidth,
+    stageHeight,
+    renderedWidth,
+    renderedHeight,
+    cropX: (renderedWidth - stageWidth) * 0.5,
+    cropY: (renderedHeight - stageHeight) * 0.5
+  };
+}
+
+function mapVirtualLandmarkToStage(landmark, cover) {
+  return {
+    x: landmark.x * cover.renderedWidth - cover.cropX,
+    y: landmark.y * cover.renderedHeight - cover.cropY,
+    z: landmark.z * cover.videoWidth
+  };
+}
+
+function virtualDistance2D(a, b) {
+  return Math.hypot(b.x - a.x, b.y - a.y);
+}
+
+function getVirtualHeadPose(landmarks, video) {
+  if (!virtualThree) return { yaw: 0, pitch: 0, roll: 0 };
+  const THREE = virtualThree;
+  const vw = Math.max(1, video.videoWidth || 1);
+  const vh = Math.max(1, video.videoHeight || 1);
+
+  // Use the broad face plane rather than the nose bridge. This makes side
+  // rotation continue to work even when the bridge remains nearly centered.
+  const sideA = landmarks[234];
+  const sideB = landmarks[454];
+  const forehead = landmarks[10];
+  const chin = landmarks[152];
+  if (!sideA || !sideB || !forehead || !chin) return { yaw: 0, pitch: 0, roll: 0 };
+
+  const leftSide = sideA.x <= sideB.x ? sideA : sideB;
+  const rightSide = sideA.x <= sideB.x ? sideB : sideA;
+  const toMetricish = (p) => new THREE.Vector3(p.x * vw, p.y * vh, p.z * vw);
+  const left3 = toMetricish(leftSide);
+  const right3 = toMetricish(rightSide);
+  const forehead3 = toMetricish(forehead);
+  const chin3 = toMetricish(chin);
+
+  const horizontal = right3.clone().sub(left3);
+  const vertical = chin3.clone().sub(forehead3);
+  const normal = horizontal.clone().cross(vertical);
+  if (normal.lengthSq() < 1e-7) return { yaw: 0, pitch: 0, roll: 0 };
+  normal.normalize();
+  if (normal.z < 0) normal.multiplyScalar(-1);
+
+  // MediaPipe z grows away from the viewer opposite Three.js' camera-facing
+  // convention, hence the sign correction on yaw.
+  let yaw = -Math.atan2(normal.x, Math.max(0.0001, normal.z));
+  let pitch = Math.atan2(normal.y, Math.max(0.0001, Math.hypot(normal.x, normal.z)));
+
+  const eyeA = landmarks[33];
+  const eyeB = landmarks[263];
+  let roll = 0;
+  if (eyeA && eyeB) {
+    const leftEye = eyeA.x <= eyeB.x ? eyeA : eyeB;
+    const rightEye = eyeA.x <= eyeB.x ? eyeB : eyeA;
+    roll = -Math.atan2((rightEye.y - leftEye.y) * vh, (rightEye.x - leftEye.x) * vw);
+  }
+
+  yaw = virtualClamp(yaw, -VIRTUAL_TRYON_FIT.maxYaw, VIRTUAL_TRYON_FIT.maxYaw);
+  pitch = virtualClamp(pitch, -VIRTUAL_TRYON_FIT.maxPitch, VIRTUAL_TRYON_FIT.maxPitch);
+  roll = virtualClamp(roll, -0.62, 0.62);
+  return { yaw, pitch, roll };
+}
+
 async function startVirtualTryOn() {
   if (virtualTryOnBusy) return;
   const modal = document.getElementById('showcaseModal');
   if (modal?.dataset.contextMode !== 'doffy') return;
   virtualTryOnBusy = true;
+
   const overlay = document.getElementById('virtualTryOn');
   const loader = document.getElementById('virtualTryOnLoader');
   const error = document.getElementById('virtualTryOnError');
   overlay?.classList.add('is-open');
-  overlay?.setAttribute('aria-hidden','false');
+  overlay?.setAttribute('aria-hidden', 'false');
   loader?.classList.remove('is-done');
   if (error) error.hidden = true;
-  setVirtualTryOnProgress(6,'Preparing camera…','Waiting for camera permission.');
+  setVirtualTryOnProgress(6, 'Preparing camera…', 'Waiting for camera permission.');
+
   try {
-    if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera access is unavailable in this browser. Open the portfolio through HTTPS or localhost.');
-    virtualTryOnStream = await navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'user'},width:{ideal:1280},height:{ideal:720}}});
+    if (!navigator.mediaDevices?.getUserMedia) {
+      throw new Error('Camera access is unavailable in this browser. Open the deployed GitHub Pages site over HTTPS.');
+    }
+
+    // Do not force a landscape camera frame on portrait phones. The browser
+    // can select its best native front-camera stream and the cover mapper below
+    // handles either portrait or landscape sources correctly.
+    virtualTryOnStream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: {
+        facingMode: { ideal: 'user' },
+        width: { ideal: 1280 },
+        height: { ideal: 1280 }
+      }
+    });
+
     const video = document.getElementById('virtualTryOnVideo');
     video.srcObject = virtualTryOnStream;
     await video.play();
-    setVirtualTryOnProgress(24,'Camera ready','Loading the face-tracking engine…');
+    if (!video.videoWidth || !video.videoHeight) {
+      await new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
+    }
+    setVirtualTryOnProgress(24, 'Camera ready', 'Loading the face-tracking engine…');
 
-    const [{FaceLandmarker, FilesetResolver}, THREE, loaderModule] = await Promise.all([
+    const [{ FaceLandmarker, FilesetResolver }, THREE, loaderModule] = await Promise.all([
       import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm'),
       import('https://cdn.jsdelivr.net/npm/three@0.180.0/+esm'),
       import('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js/+esm')
     ]);
     virtualThree = THREE;
-    setVirtualTryOnProgress(48,'Face tracker loaded','Preparing facial landmarks…');
+    setVirtualTryOnProgress(48, 'Face tracker loaded', 'Preparing facial landmarks…');
+
     const fileset = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm');
     virtualTryOnLandmarker = await FaceLandmarker.createFromOptions(fileset, {
-      baseOptions:{modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',delegate:'GPU'},
-      runningMode:'VIDEO',numFaces:1,outputFaceBlendshapes:false,outputFacialTransformationMatrixes:false
+      baseOptions: {
+        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+        delegate: 'GPU'
+      },
+      runningMode: 'VIDEO',
+      numFaces: 1,
+      minFaceDetectionConfidence: 0.55,
+      minFacePresenceConfidence: 0.55,
+      minTrackingConfidence: 0.55,
+      outputFaceBlendshapes: false,
+      outputFacialTransformationMatrixes: false
     });
-    setVirtualTryOnProgress(68,'Tracking ready','Loading your Winged Rimless 3D model…');
+    setVirtualTryOnProgress(68, 'Tracking ready', 'Loading your Winged Rimless 3D model…');
 
     const canvas = document.getElementById('virtualTryOnCanvas');
     const stage = document.getElementById('virtualTryOnStage');
     const rect = stage.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    canvas.width = Math.max(1, Math.round(rect.width*dpr));
-    canvas.height = Math.max(1, Math.round(rect.height*dpr));
-    virtualTryOnRenderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,premultipliedAlpha:true});
-    virtualTryOnRenderer.setPixelRatio(dpr);
-    virtualTryOnRenderer.setSize(rect.width,rect.height,false);
+    virtualTryOnRenderer = new THREE.WebGLRenderer({
+      canvas,
+      alpha: true,
+      antialias: true,
+      premultipliedAlpha: true
+    });
     virtualTryOnRenderer.outputColorSpace = THREE.SRGBColorSpace;
     virtualTryOnScene = new THREE.Scene();
-    virtualTryOnCamera = new THREE.PerspectiveCamera(35, rect.width/rect.height, .01, 100);
-    virtualTryOnCamera.position.set(0,0,5);
-    virtualTryOnScene.add(new THREE.HemisphereLight(0xffffff,0x555555,2.2));
-    const key = new THREE.DirectionalLight(0xffffff,2.8); key.position.set(2,3,4); virtualTryOnScene.add(key);
-    const fill = new THREE.DirectionalLight(0xffffff,1.4); fill.position.set(-3,1,2); virtualTryOnScene.add(fill);
+    virtualTryOnCamera = new THREE.PerspectiveCamera(35, Math.max(1, rect.width) / Math.max(1, rect.height), 0.01, 100);
+    virtualTryOnCamera.position.set(0, 0, 5);
+    virtualTryOnScene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 2.2));
+    const key = new THREE.DirectionalLight(0xffffff, 2.8);
+    key.position.set(2, 3, 4);
+    virtualTryOnScene.add(key);
+    const fill = new THREE.DirectionalLight(0xffffff, 1.4);
+    fill.position.set(-3, 1, 2);
+    virtualTryOnScene.add(fill);
+    syncVirtualTryOnRenderer(true);
 
     const GLTFLoader = loaderModule.GLTFLoader;
-    const gltf = await new GLTFLoader().loadAsync('eyeglasses.glb');
+    const gltf = await new GLTFLoader().loadAsync(new URL('./eyeglasses.glb', document.baseURI).href);
     virtualTryOnModel = gltf.scene;
+
+    // Track a clean anchor group. Re-centering the GLB as a child keeps the
+    // model's bounding-box offset from being overwritten by live face position.
     const box = new THREE.Box3().setFromObject(virtualTryOnModel);
-    const size = new THREE.Vector3(); const center = new THREE.Vector3();
-    box.getSize(size); box.getCenter(center);
+    const size = new THREE.Vector3();
+    const center = new THREE.Vector3();
+    box.getSize(size);
+    box.getCenter(center);
     virtualTryOnModel.position.sub(center);
-    virtualTryOnModel.userData.baseWidth = Math.max(size.x, .001);
-    virtualTryOnModel.rotation.x = 0;
-    virtualTryOnScene.add(virtualTryOnModel);
-    setVirtualTryOnProgress(92,'Model loaded','Calibrating the glasses to your face…');
-    virtualTryOnModel.visible = false;
+    virtualTryOnAnchor = new THREE.Group();
+    virtualTryOnAnchor.userData.baseWidth = Math.max(size.x, 0.001);
+    virtualTryOnAnchor.add(virtualTryOnModel);
+    virtualTryOnAnchor.visible = false;
+    virtualTryOnScene.add(virtualTryOnAnchor);
+
+    setVirtualTryOnProgress(92, 'Model loaded', 'Calibrating the glasses to your face…');
     virtualLastVideoTime = -1;
+    virtualTryOnMissedFrames = 0;
+
+    if ('ResizeObserver' in window) {
+      virtualTryOnResizeObserver?.disconnect?.();
+      virtualTryOnResizeObserver = new ResizeObserver(() => syncVirtualTryOnRenderer(true));
+      virtualTryOnResizeObserver.observe(stage);
+    }
     virtualTryOnLoop();
   } catch (err) {
-    console.error('Virtual try-on error:',err);
+    console.error('Virtual try-on error:', err);
     let message = err?.message || 'Unable to start virtual try-on.';
     if (err?.name === 'NotAllowedError') message = 'Camera permission was blocked. Allow camera access in your browser, then try again.';
     if (err?.name === 'NotFoundError') message = 'No front-facing camera was found on this device.';
     showVirtualTryOnError(message);
-  } finally { virtualTryOnBusy = false; }
+  } finally {
+    virtualTryOnBusy = false;
+  }
 }
+
 function virtualTryOnLoop() {
   const overlay = document.getElementById('virtualTryOn');
   if (!overlay?.classList.contains('is-open')) return;
   const video = document.getElementById('virtualTryOnVideo');
   const stage = document.getElementById('virtualTryOnStage');
-  if (!video || !virtualTryOnRenderer || !virtualTryOnScene || !virtualTryOnCamera || !virtualTryOnModel) return;
+  if (!video || !stage || !virtualTryOnRenderer || !virtualTryOnScene || !virtualTryOnCamera || !virtualTryOnAnchor) return;
+
+  const stageSize = syncVirtualTryOnRenderer(false) || {
+    width: Math.max(1, stage.clientWidth),
+    height: Math.max(1, stage.clientHeight)
+  };
+
   if (video.readyState >= 2 && video.currentTime !== virtualLastVideoTime) {
     virtualLastVideoTime = video.currentTime;
     let result = null;
-    try { result = virtualTryOnLandmarker?.detectForVideo(video, performance.now()); } catch(e) {}
+    try {
+      result = virtualTryOnLandmarker?.detectForVideo(video, performance.now());
+    } catch (e) {
+      // A dropped tracking frame is harmless; keep rendering the prior pose.
+    }
+
     const lm = result?.faceLandmarks?.[0];
-    if (lm && lm.length > 263) {
-      const left = lm[33], right = lm[263], nose = lm[168] || lm[6];
-      const dx = right.x-left.x, dy = right.y-left.y;
-      const eyeDistance = Math.hypot(dx,dy);
-      const midX = (left.x+right.x)/2;
-      const midY = (left.y+right.y)/2;
-      const rect = stage.getBoundingClientRect();
-      const aspect = rect.width/rect.height;
-      const viewHeight = 2*Math.tan((virtualTryOnCamera.fov*Math.PI/180)/2)*virtualTryOnCamera.position.z;
-      const viewWidth = viewHeight*aspect;
-      const targetX = (midX-.5)*viewWidth;
-      const targetY = (.5-midY)*viewHeight - viewHeight*.015;
-      const desiredWidth = eyeDistance*viewWidth*2.02;
-      const scalar = desiredWidth/(virtualTryOnModel.userData.baseWidth || 1);
-      const roll = -Math.atan2(dy,dx);
-      const noseOffset = nose ? (nose.x-midX)/Math.max(eyeDistance,.001) : 0;
-      const yaw = Math.max(-.52,Math.min(.52,-noseOffset*.92));
-      const noseDrop = nose ? (nose.y-midY)/Math.max(eyeDistance,.001) : .48;
-      const pitch = Math.max(-.28,Math.min(.25,(noseDrop-.52)*.42));
-      const smooth=.28;
-      virtualTryOnModel.position.x += (targetX-virtualTryOnModel.position.x)*smooth;
-      virtualTryOnModel.position.y += (targetY-virtualTryOnModel.position.y)*smooth;
-      virtualTryOnModel.position.z = 0;
-      const targetScale = scalar;
-      const current = virtualTryOnModel.scale.x || targetScale;
-      const next = current+(targetScale-current)*smooth;
-      virtualTryOnModel.scale.setScalar(next);
-      virtualTryOnModel.rotation.z += (roll-virtualTryOnModel.rotation.z)*.24;
-      virtualTryOnModel.rotation.y += (yaw-virtualTryOnModel.rotation.y)*.2;
-      virtualTryOnModel.rotation.x += (pitch-virtualTryOnModel.rotation.x)*.2;
-      virtualTryOnModel.visible = true;
+    if (lm && lm.length > 454 && video.videoWidth && video.videoHeight) {
+      const cover = getVirtualCoverTransform(video, stageSize);
+
+      const eyeA = lm[33];
+      const eyeB = lm[263];
+      const sideA = lm[234];
+      const sideB = lm[454];
+      const leftEyeRaw = eyeA.x <= eyeB.x ? eyeA : eyeB;
+      const rightEyeRaw = eyeA.x <= eyeB.x ? eyeB : eyeA;
+      const leftSideRaw = sideA.x <= sideB.x ? sideA : sideB;
+      const rightSideRaw = sideA.x <= sideB.x ? sideB : sideA;
+
+      const leftEye = mapVirtualLandmarkToStage(leftEyeRaw, cover);
+      const rightEye = mapVirtualLandmarkToStage(rightEyeRaw, cover);
+      const leftSide = mapVirtualLandmarkToStage(leftSideRaw, cover);
+      const rightSide = mapVirtualLandmarkToStage(rightSideRaw, cover);
+      const eyeDistancePx = Math.max(1, virtualDistance2D(leftEye, rightEye));
+      const projectedFaceWidthPx = Math.max(eyeDistancePx * 1.25, virtualDistance2D(leftSide, rightSide));
+      const eyeMidX = (leftEye.x + rightEye.x) * 0.5;
+      const eyeMidY = (leftEye.y + rightEye.y) * 0.5;
+
+      const pose = getVirtualHeadPose(lm, video);
+      const cosYaw = Math.max(0.58, Math.cos(Math.min(Math.abs(pose.yaw), 0.95)));
+      const intrinsicFaceWidthPx = projectedFaceWidthPx / cosYaw;
+
+      const viewHeight = 2 * Math.tan((virtualTryOnCamera.fov * Math.PI / 180) * 0.5) * virtualTryOnCamera.position.z;
+      const viewWidth = viewHeight * virtualTryOnCamera.aspect;
+      const worldPerPixelX = viewWidth / stageSize.width;
+      const worldPerPixelY = viewHeight / stageSize.height;
+      const targetX = (eyeMidX - stageSize.width * 0.5) * worldPerPixelX;
+      const targetY = (stageSize.height * 0.5 - eyeMidY) * worldPerPixelY - viewHeight * VIRTUAL_TRYON_FIT.verticalEyeOffset;
+      const desiredWidthWorld = intrinsicFaceWidthPx * worldPerPixelX * VIRTUAL_TRYON_FIT.frameToFaceWidth;
+      const targetScale = desiredWidthWorld / (virtualTryOnAnchor.userData.baseWidth || 1);
+
+      const THREE = virtualThree;
+      const targetPosition = new THREE.Vector3(targetX, targetY, 0);
+      if (!virtualTryOnAnchor.visible) {
+        virtualTryOnAnchor.position.copy(targetPosition);
+        virtualTryOnAnchor.scale.setScalar(targetScale);
+      } else {
+        virtualTryOnAnchor.position.lerp(targetPosition, VIRTUAL_TRYON_FIT.positionSmoothing);
+        const nextScale = virtualTryOnAnchor.scale.x + (targetScale - virtualTryOnAnchor.scale.x) * VIRTUAL_TRYON_FIT.scaleSmoothing;
+        virtualTryOnAnchor.scale.setScalar(nextScale);
+      }
+
+      const targetEuler = new THREE.Euler(pose.pitch, pose.yaw, pose.roll, 'YXZ');
+      const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
+      if (!virtualTryOnAnchor.visible) {
+        virtualTryOnAnchor.quaternion.copy(targetQuaternion);
+      } else {
+        virtualTryOnAnchor.quaternion.slerp(targetQuaternion, VIRTUAL_TRYON_FIT.rotationSmoothing);
+      }
+
+      virtualTryOnMissedFrames = 0;
+      virtualTryOnAnchor.visible = true;
       stage.classList.add('is-tracking');
       document.getElementById('virtualTryOnLoader')?.classList.add('is-done');
-      setVirtualTryOnProgress(100,'Ready','Face tracking active.');
+      setVirtualTryOnProgress(100, 'Ready', 'Face tracking active.');
     } else {
-      virtualTryOnModel.visible = false;
-      stage.classList.remove('is-tracking');
-      const loader=document.getElementById('virtualTryOnLoader');
-      if (loader && !loader.classList.contains('is-done')) setVirtualTryOnProgress(96,'Looking for your face…','Centre your face in the guide.');
+      virtualTryOnMissedFrames += 1;
+      if (virtualTryOnMissedFrames > 6) virtualTryOnAnchor.visible = false;
+      if (virtualTryOnMissedFrames > 6) stage.classList.remove('is-tracking');
+      const loader = document.getElementById('virtualTryOnLoader');
+      if (loader && !loader.classList.contains('is-done')) {
+        setVirtualTryOnProgress(96, 'Looking for your face…', 'Centre your face in the guide.');
+      }
     }
   }
-  virtualTryOnRenderer.render(virtualTryOnScene,virtualTryOnCamera);
-  virtualTryOnFrame=requestAnimationFrame(virtualTryOnLoop);
+
+  virtualTryOnRenderer.render(virtualTryOnScene, virtualTryOnCamera);
+  virtualTryOnFrame = requestAnimationFrame(virtualTryOnLoop);
 }
+
 function stopVirtualTryOn() {
-  cancelAnimationFrame(virtualTryOnFrame); virtualTryOnFrame=0;
-  virtualTryOnStream?.getTracks?.().forEach(track=>track.stop()); virtualTryOnStream=null;
-  const video=document.getElementById('virtualTryOnVideo'); if(video){video.pause();video.srcObject=null;}
-  virtualTryOnLandmarker?.close?.(); virtualTryOnLandmarker=null;
-  if (virtualTryOnRenderer) { try{virtualTryOnRenderer.dispose();}catch(e){} }
-  virtualTryOnRenderer=null; virtualTryOnScene=null; virtualTryOnCamera=null; virtualTryOnModel=null; virtualThree=null;
-  const canvas=document.getElementById('virtualTryOnCanvas'); if(canvas){const c=canvas.getContext('2d');c?.clearRect(0,0,canvas.width,canvas.height);}
+  cancelAnimationFrame(virtualTryOnFrame);
+  virtualTryOnFrame = 0;
+  virtualTryOnResizeObserver?.disconnect?.();
+  virtualTryOnResizeObserver = null;
+  virtualTryOnStream?.getTracks?.().forEach((track) => track.stop());
+  virtualTryOnStream = null;
+
+  const video = document.getElementById('virtualTryOnVideo');
+  if (video) {
+    video.pause();
+    video.srcObject = null;
+  }
+
+  virtualTryOnLandmarker?.close?.();
+  virtualTryOnLandmarker = null;
+  if (virtualTryOnRenderer) {
+    try { virtualTryOnRenderer.dispose(); } catch (e) {}
+  }
+
+  virtualTryOnRenderer = null;
+  virtualTryOnScene = null;
+  virtualTryOnCamera = null;
+  virtualTryOnModel = null;
+  virtualTryOnAnchor = null;
+  virtualThree = null;
+  virtualTryOnLastStageSize = { width: 0, height: 0, dpr: 0 };
+  virtualTryOnMissedFrames = 0;
+
+  const canvas = document.getElementById('virtualTryOnCanvas');
+  if (canvas) {
+    canvas.width = 1;
+    canvas.height = 1;
+  }
   document.getElementById('virtualTryOnStage')?.classList.remove('is-tracking');
   document.getElementById('virtualTryOn')?.classList.remove('is-open');
-  document.getElementById('virtualTryOn')?.setAttribute('aria-hidden','true');
+  document.getElementById('virtualTryOn')?.setAttribute('aria-hidden', 'true');
   document.getElementById('virtualTryOnLoader')?.classList.remove('is-done');
-  const err=document.getElementById('virtualTryOnError'); if(err) err.hidden=true;
-  setVirtualTryOnProgress(5,'Preparing camera…','The 3D glasses and face tracker are loading.');
-  virtualTryOnBusy=false;
+  const err = document.getElementById('virtualTryOnError');
+  if (err) err.hidden = true;
+  setVirtualTryOnProgress(5, 'Preparing camera…', 'The 3D glasses and face tracker are loading.');
+  virtualTryOnBusy = false;
 }
-window.addEventListener('resize',()=>{
-  if(!virtualTryOnRenderer||!virtualTryOnCamera)return;
-  const stage=document.getElementById('virtualTryOnStage'); const canvas=document.getElementById('virtualTryOnCanvas'); if(!stage||!canvas)return;
-  const r=stage.getBoundingClientRect(); const dpr=Math.min(window.devicePixelRatio||1,2);
-  canvas.width=Math.max(1,Math.round(r.width*dpr));canvas.height=Math.max(1,Math.round(r.height*dpr));
-  virtualTryOnRenderer.setPixelRatio(dpr);virtualTryOnRenderer.setSize(r.width,r.height,false);virtualTryOnCamera.aspect=r.width/r.height;virtualTryOnCamera.updateProjectionMatrix();
-},{passive:true});
-</script></body></html>
+
+window.addEventListener('resize', () => syncVirtualTryOnRenderer(true), { passive: true });
+window.visualViewport?.addEventListener?.('resize', () => syncVirtualTryOnRenderer(true), { passive: true });
+</script>
+</body></html>
