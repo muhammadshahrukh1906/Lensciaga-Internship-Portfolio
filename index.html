@@ -7727,7 +7727,7 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
   const baseWidth = virtualTryOnAnchor?.userData?.baseWidth || 1;
   const targetEyeX = Math.max(baseWidth*.17, Math.min(baseWidth*.235, baseWidth * eyeTempleRatio / (2*VIRTUAL_FRAME_TO_TEMPLE)));
   const modelTempleTipX = virtualTryOnAnchor?.userData?.modelTempleTipX || baseWidth*.268;
-  const targetTempleTipX = baseWidth*.455;
+  const targetTempleTipX = baseWidth*.405;
   const templeOut = Math.max(0, targetTempleTipX-modelTempleTipX);
   virtualTryOnCalibration.profile = {
     eyeTempleRatio:Math.max(.28, Math.min(.58, eyeTempleRatio)),
@@ -7749,16 +7749,18 @@ function installEyewearMorph(root, box, size) {
   const baseWidth = Math.max(size.x,.001);
   const modelEyeX = baseWidth*.262;
   const hingeX = baseWidth*.485;
+  const templeStartX = baseWidth*.335;
   const frontZ = box.max.z-size.z*.17;
   const backZ = box.min.z+size.z*.08;
   virtualTryOnMorphUniforms = {
     uModelEyeX:{value:modelEyeX},
     uTargetEyeX:{value:baseWidth*.205},
     uHingeX:{value:hingeX},
+    uTempleStartX:{value:templeStartX},
     uFrontZ:{value:frontZ},
     uBackZ:{value:backZ},
-    uTempleOut:{value:baseWidth*.18},
-    uTempleLift:{value:baseWidth*.006}
+    uTempleOut:{value:baseWidth*.13},
+    uTempleLift:{value:baseWidth*.003}
   };
   root.traverse(node => {
     if (!node?.isMesh) return;
@@ -7771,6 +7773,7 @@ function installEyewearMorph(root, box, size) {
 uniform float uModelEyeX;
 uniform float uTargetEyeX;
 uniform float uHingeX;
+uniform float uTempleStartX;
 uniform float uFrontZ;
 uniform float uBackZ;
 uniform float uTempleOut;
@@ -7780,21 +7783,30 @@ uniform float uTempleLift;
 vec3 transformed = vec3(position);
 float sideSign = transformed.x < 0.0 ? -1.0 : 1.0;
 float ax = abs(transformed.x);
-float frontWeight = smoothstep(uFrontZ - 0.07, uFrontZ, transformed.z);
+
+// Keep the entire optical front coherent.  The previous version blended the
+// lens deformation by Z depth, which could move the front and rear surfaces
+// of one decorative wing by different amounts and make it look detached.
 float mappedAx = ax;
 if (ax <= uModelEyeX) {
   mappedAx = ax * (uTargetEyeX / max(uModelEyeX, 0.0001));
 } else if (ax <= uHingeX) {
   mappedAx = uTargetEyeX + (ax-uModelEyeX) * ((uHingeX-uTargetEyeX) / max(uHingeX-uModelEyeX, 0.0001));
 }
-transformed.x = mix(transformed.x, sideSign*mappedAx, frontWeight);
+if (ax <= uHingeX) transformed.x = sideSign * mappedAx;
+
+// Only the true side/rear region may flare outward.  Requiring both lateral
+// distance and rearward depth prevents the feather lenses and bridge from
+// being interpreted as temple geometry when the head rotates.
 float backProgress = clamp((uFrontZ-transformed.z) / max(uFrontZ-uBackZ, 0.0001), 0.0, 1.0);
-backProgress = smoothstep(0.05, 1.0, backProgress);
-transformed.x += sideSign * uTempleOut * pow(backProgress, 1.18);
-transformed.y += uTempleLift * pow(backProgress, 1.2);
+backProgress = smoothstep(0.18, 1.0, backProgress);
+float sideWeight = smoothstep(uTempleStartX, uHingeX, ax);
+float templeWeight = sideWeight * backProgress;
+transformed.x += sideSign * uTempleOut * pow(templeWeight, 1.28);
+transformed.y += uTempleLift * pow(templeWeight, 1.25);
 `);
       };
-      material.customProgramCacheKey = () => 'lensciaga-personal-fit-v3';
+      material.customProgramCacheKey = () => 'lensciaga-stable-personal-fit-v4';
       material.needsUpdate = true;
     });
   });
@@ -7825,7 +7837,7 @@ function createFaceDepthMask(THREE) {
 
 function updateFaceDepthMask(lm, cover, desiredWorldWidth) {
   if (!virtualTryOnOccluder || !virtualTryOnCamera) return;
-  const maskZ = VIRTUAL_TRYON_PLANE_Z - Math.max(.012, desiredWorldWidth*.035);
+  const maskZ = VIRTUAL_TRYON_PLANE_Z - Math.max(.035, desiredWorldWidth*.145);
   const attr = virtualTryOnOccluder.geometry.attributes.position;
   const worlds = [];
   let cx=0, cy=0;
@@ -8028,7 +8040,11 @@ function updateVirtualTryOnPose(lm, video, stage) {
   const inferredTempleSpan = measurement.eyeSpan3 / Math.max(profile.eyeTempleRatio,.001);
   const physicalTempleSpanPx = measurement.templeSpan3*.55 + inferredTempleSpan*.45;
   const desiredPx = Math.max(measurement.eyeSpan2*1.55,physicalTempleSpanPx*VIRTUAL_FRAME_TO_TEMPLE);
-  const world = stagePointToWorld(measurement.eyeMid,cover,virtualTryOnCamera,VIRTUAL_TRYON_PLANE_Z);
+  const fittedEyePoint = {
+    x:measurement.eyeMid.x,
+    y:measurement.eyeMid.y + measurement.eyeSpan2*.035
+  };
+  const world = stagePointToWorld(fittedEyePoint,cover,virtualTryOnCamera,VIRTUAL_TRYON_PLANE_Z);
   const desiredWorldWidth = (desiredPx/cover.stageW)*world.viewWidth;
   const baseWidth = virtualTryOnAnchor.userData.baseWidth || 1;
   const targetScale = Math.max(.05,desiredWorldWidth/baseWidth);
@@ -8043,8 +8059,8 @@ function updateVirtualTryOnPose(lm, video, stage) {
   virtualTryOnAnchor.userData.targetQuaternion.copy(targetQuaternion);
 
   if (virtualTryOnMorphUniforms) {
-    virtualTryOnMorphUniforms.uTargetEyeX.value = profile.targetEyeX;
-    virtualTryOnMorphUniforms.uTempleOut.value = profile.templeOut;
+    virtualTryOnMorphUniforms.uTargetEyeX.value = Number.isFinite(profile.targetEyeX) ? profile.targetEyeX : virtualTryOnAnchor.userData.modelEyeX;
+    virtualTryOnMorphUniforms.uTempleOut.value = Number.isFinite(profile.templeOut) ? profile.templeOut : 0;
   }
   updateFaceDepthMask(lm,cover,desiredWorldWidth);
 
@@ -8055,17 +8071,18 @@ function updateVirtualTryOnPose(lm, video, stage) {
     virtualTryOnPoseReady = true;
   } else {
     const positionError = virtualTryOnAnchor.position.distanceTo(targetPosition);
-    const posAlpha = adaptiveAlpha(positionError,.46,.82,1.15);
+    const posNorm = positionError / Math.max(desiredWorldWidth,.001);
+    const posAlpha = adaptiveAlpha(posNorm,.18,.58,1.35);
     virtualTryOnAnchor.position.lerp(targetPosition,posAlpha);
 
     const currentScale = virtualTryOnAnchor.scale.x || targetScale;
     const scaleError = Math.abs(targetScale-currentScale)/Math.max(targetScale,.001);
-    const scaleAlpha = adaptiveAlpha(scaleError,.34,.72,1.0);
+    const scaleAlpha = adaptiveAlpha(scaleError,.14,.48,1.15);
     const nextScale = currentScale+(targetScale-currentScale)*scaleAlpha;
     virtualTryOnAnchor.scale.setScalar(nextScale);
 
     const angle = virtualTryOnAnchor.quaternion.angleTo(targetQuaternion);
-    const rotAlpha = adaptiveAlpha(angle,.40,.82,1.25);
+    const rotAlpha = adaptiveAlpha(angle,.16,.54,1.05);
     virtualTryOnAnchor.quaternion.slerp(targetQuaternion,rotAlpha).normalize();
   }
 
@@ -8091,7 +8108,7 @@ function virtualTryOnLoop() {
     if (tracked) {
       stage.classList.add('is-tracking');
       stage.classList.remove('is-calibrating');
-      setVirtualTryOnProgress(100,'Ready','Personal fit active — move naturally.');
+      setVirtualTryOnProgress(100,'Ready','Stable personal fit active — move naturally.');
     } else {
       virtualTryOnLostFrames += 1;
       if (virtualTryOnCalibration?.profile && virtualTryOnLostFrames > 5) {
