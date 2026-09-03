@@ -9,13 +9,35 @@ Public availability of this deployment does not grant an open-source licence.
 .virtual-tryon-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:12px 15px;border:1px solid rgba(130,71,255,.28);border-radius:999px;background:rgba(130,71,255,.09);color:#17131f;font:800 .64rem/1 var(--font-base);letter-spacing:.9px;text-transform:uppercase;cursor:pointer;transition:transform .22s ease,background .22s ease,color .22s ease,border-color .22s ease}.virtual-tryon-btn[hidden]{display:none!important}.virtual-tryon-btn:hover{transform:translateY(-1px);background:#111;color:#fff;border-color:#111}.virtual-tryon-btn-icon{font-size:.82rem}.virtual-tryon-btn-mobile{margin:14px 0 0}
 .virtual-tryon{position:fixed;inset:0;z-index:42000;display:grid;place-items:center;padding:20px;background:rgba(15,13,18,.72);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .28s ease,visibility .28s ease}.virtual-tryon.is-open{opacity:1;visibility:visible;pointer-events:auto}.virtual-tryon-shell{width:min(960px,96vw);background:#0c0c0e;border:1px solid rgba(255,255,255,.1);border-radius:26px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.38)}.virtual-tryon-topbar{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px 18px;color:#fff}.virtual-tryon-topbar>div{display:flex;flex-direction:column;gap:3px}.virtual-tryon-kicker{font-size:.56rem;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.55)}.virtual-tryon-topbar strong{font-size:.92rem}.virtual-tryon-close{width:42px;height:42px;border:1px solid rgba(255,255,255,.14);border-radius:50%;background:rgba(255,255,255,.07);color:#fff;cursor:pointer;font-size:.9rem}.virtual-tryon-stage{position:relative;aspect-ratio:16/10;max-height:72vh;background:#050506;overflow:hidden}.virtual-tryon-stage video,.virtual-tryon-stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transform:scaleX(-1)}.virtual-tryon-stage canvas{z-index:3;pointer-events:none}.virtual-tryon-guide{position:absolute;inset:0;z-index:4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;pointer-events:none;color:rgba(255,255,255,.75);font-size:.68rem;font-weight:700;letter-spacing:.4px;transition:opacity .3s ease}.virtual-face-guide{width:min(42%,280px);aspect-ratio:.78;border:1.5px dashed rgba(255,255,255,.45);border-radius:48% 48% 45% 45%}.virtual-tryon-stage.is-tracking .virtual-tryon-guide{opacity:.18}.virtual-tryon-loader{position:absolute;left:50%;bottom:20px;z-index:8;width:min(360px,calc(100% - 32px));transform:translateX(-50%);padding:14px 16px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(15,15,18,.82);color:#fff;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:grid;grid-template-columns:22px 1fr;column-gap:10px;row-gap:7px;transition:opacity .28s ease,transform .28s ease}.virtual-tryon-loader.is-done{opacity:0;transform:translateX(-50%) translateY(8px);pointer-events:none}.virtual-loader-spinner{grid-row:1/4;width:20px;height:20px;border:2px solid rgba(255,255,255,.2);border-top-color:#fff;border-radius:50%;animation:virtualSpin .8s linear infinite}.virtual-tryon-loader strong{font-size:.7rem}.virtual-tryon-loader span{grid-column:2;color:rgba(255,255,255,.58);font-size:.59rem;line-height:1.35}.virtual-loader-track{grid-column:2;height:3px;border-radius:99px;background:rgba(255,255,255,.14);overflow:hidden}.virtual-loader-bar{width:5%;height:100%;border-radius:inherit;background:#fff;transition:width .3s ease}.virtual-tryon-error{position:absolute;left:50%;top:50%;z-index:9;transform:translate(-50%,-50%);width:min(360px,calc(100% - 36px));padding:20px;border-radius:18px;background:rgba(18,18,22,.94);border:1px solid rgba(255,255,255,.12);color:#fff;text-align:center}.virtual-tryon-error strong,.virtual-tryon-error span{display:block}.virtual-tryon-error strong{font-size:.85rem;margin-bottom:7px}.virtual-tryon-error span{font-size:.65rem;line-height:1.45;color:rgba(255,255,255,.65)}.virtual-tryon-error button{margin-top:14px;padding:10px 16px;border:0;border-radius:999px;background:#fff;color:#111;font:800 .62rem/1 var(--font-base);cursor:pointer}.virtual-tryon-footer{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 18px;color:rgba(255,255,255,.58);font-size:.58rem}.virtual-tryon-footer span{display:flex;align-items:center;gap:7px}.virtual-live-dot{width:6px;height:6px;border-radius:50%;background:#67e08a;box-shadow:0 0 0 4px rgba(103,224,138,.1)}@keyframes virtualSpin{to{transform:rotate(360deg)}}
 @media(max-width:768px){.virtual-tryon{padding:0}.virtual-tryon-shell{width:100%;min-height:100%;border:0;border-radius:0;display:flex;flex-direction:column}.virtual-tryon-stage{aspect-ratio:3/4;max-height:none;flex:1}.virtual-tryon-footer{padding:10px 14px 14px;flex-direction:column;align-items:flex-start;gap:6px}.virtual-tryon-topbar{padding:12px 14px}.virtual-face-guide{width:min(58%,260px)}}
-</style></head><body><svg aria-hidden="true" focusable="false" height="0" style="position:absolute;overflow:hidden" width="0"><defs><clippath clippathunits="objectBoundingBox" id="catEyeLeftClip"><path d="M 0.018 0.055 C 0.27 0.052 0.59 0.082 0.79 0.17 C 0.91 0.223 0.983 0.31 0.994 0.425 C 1 0.645 0.91 0.835 0.724 0.932 C 0.515 1 0.275 0.982 0.135 0.865 C 0.045 0.79 0.006 0.59 0.008 0.325 C 0.009 0.19 0.012 0.095 0.018 0.055 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="catEyeRightClip"><path d="M 0.982 0.055 C 0.73 0.052 0.41 0.082 0.21 0.17 C 0.09 0.223 0.017 0.31 0.006 0.425 C 0 0.645 0.09 0.835 0.276 0.932 C 0.485 1 0.725 0.982 0.865 0.865 C 0.955 0.79 0.994 0.59 0.992 0.325 C 0.991 0.19 0.988 0.095 0.982 0.055 Z"></path></clippath></defs></svg><svg aria-hidden="true" focusable="false" height="0" style="position:absolute;overflow:hidden" width="0"><defs><clippath clippathunits="objectBoundingBox" id="secondSlotLensLeftClip"><path d="M0.075,0.025 C0.035,0.026 0.008,0.072 0.006,0.145 L0.018,0.685 C0.022,0.845 0.107,0.945 0.257,0.963 L0.742,0.982 C0.875,0.986 0.957,0.899 0.975,0.758 L0.997,0.202 C0.999,0.101 0.925,0.045 0.815,0.035 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="secondSlotLensRightClip"><path d="M0.185,0.035 C0.075,0.045 0.001,0.101 0.003,0.202 L0.025,0.758 C0.043,0.899 0.125,0.986 0.258,0.982 L0.743,0.963 C0.893,0.945 0.978,0.845 0.982,0.685 L0.994,0.145 C0.992,0.072 0.965,0.026 0.925,0.025 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="thirdSlotWingLensLeftClip"><path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="thirdSlotWingLensRightClip"><path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z" transform="translate(1 0) scale(-1 1)"></path></clippath><clippath clippathunits="objectBoundingBox" id="fourthSlotButterflyLensLeftClip"><path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="fourthSlotButterflyLensRightClip"><path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z" transform="translate(1 0) scale(-1 1)"></path></clippath></defs></svg><div class="ambient-mesh"></div><div aria-hidden="true" id="kinetic3dStage"><div class="kinetic-box" id="kineticBox"><div class="box-lid" id="kineticBoxLid"><div class="box-lid-photo"></div><div class="case-brand-mark">Lensciaga</div></div><div class="case-rim"></div><div class="box-side box-bottom"></div><div class="box-side box-front"></div><div class="box-side box-back"></div><div class="box-side box-left"></div><div class="box-side box-right"></div></div><div class="folded-glasses-proxy" id="foldedGlasses"><div class="proxy-temple left"></div><div class="proxy-temple right"></div><div class="proxy-hinge left"></div><div class="proxy-hinge right"></div><div class="folded-lens l1"></div><div class="folded-lens l2"></div><div class="proxy-bridge"><div class="proxy-bridge-arch"></div><div class="proxy-nose-pad left"></div><div class="proxy-nose-pad right"></div></div></div></div><div class="fullscreen-menu" id="fullScreenMenu"><button aria-label="Close navigation menu" class="close-menu-btn" onclick="toggleMenu(false)" type="button">✕</button><div class="menu-links"><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Overview')">Overview</a><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Featured Work')">Featured Work</a><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Brand Strategy')">Content Strategy</a><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Contact')">Contact</a></div><nav aria-label="External profiles" class="menu-social-links"><a href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">in</span>LinkedIn</a><a href="https://lensciaga.com/" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">↗</span>Lensciaga</a><a href="https://www.instagram.com/lensciaga.official?igsh=ajlpM3ZjbmozdW5q" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">◎</span>Instagram</a></nav></div><div class="toast-notification" id="toastBox"><span style="font-size: 1.2rem;">⚡</span><div><strong style="display:block; font-size:0.8rem;">External Link Ready</strong><span id="toastMessage" style="font-size:0.75rem; color:var(--text-muted);">Opening the selected destination...</span></div></div><div class="app-container"><aside class="sidebar"><div class="brand-logo" onclick="handleMenuClick('Overview')">Muhammad<br/>Shahrukh</div><nav class="sidebar-nav" id="sidebarNav"><a class="nav-item active" href="#overview-section">Overview</a><a class="nav-item" href="#featured-section">Featured Work</a><a class="nav-item" href="#brand-section">Content Strategy</a><a class="nav-item" href="#contact-section">Contact</a></nav><div class="sidebar-footer"><div><p class="footer-quote">Every frame tells a story. Every detail builds the brand.</p></div><div aria-label="Professional and company links" class="social-links portfolio-social-links"><a aria-label="Open Muhammad Shahrukh on LinkedIn" class="social-icon portfolio-social-link" data-label="LinkedIn" href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" rel="noopener noreferrer" target="_blank" title="LinkedIn"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.4 8.2V19M6.4 5.1v.1M10.9 19v-5.6c0-2.4 1.4-3.9 3.6-3.9 2.1 0 3.1 1.4 3.1 3.9V19M10.9 9.8V19"></path></svg><span class="visually-hidden">LinkedIn</span></a><a aria-label="Open the official Lensciaga website" class="social-icon portfolio-social-link" data-label="Lensciaga website" href="https://lensciaga.com/" rel="noopener noreferrer" target="_blank" title="Lensciaga website"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.8 12h16.4M12 3.5c2.2 2.4 3.3 5.2 3.3 8.5S14.2 18.1 12 20.5M12 3.5C9.8 5.9 8.7 8.7 8.7 12s1.1 6.1 3.3 8.5"></path></svg><span class="visually-hidden">Lensciaga website</span></a><a aria-label="Open Lensciaga on Instagram" class="social-icon portfolio-social-link" data-label="Instagram" href="https://www.instagram.com/lensciaga.official?igsh=ajlpM3ZjbmozdW5q" rel="noopener noreferrer" target="_blank" title="Lensciaga Instagram"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.7" r=".9" class="social-icon-dot"></circle></svg><span class="visually-hidden">Instagram</span></a></div><div class="copyright">© 2025–Present Muhammad Shahrukh · All Rights Reserved</div></div></aside><main class="main-content" id="mainContentArea"><style>.overview-case-poster { isolation: isolate; } .overview-case-photo { position: absolute; inset: 3% 1% 1%; z-index: 3; width: 98%; height: 96%; display: block; object-fit: contain; object-position: center; opacity: 1; transform: translate3d(0, 5px, 0) scale(.97); transform-origin: 50% 58%; filter: drop-shadow(0 24px 24px rgba(32, 38, 49, .20)); transition: opacity 300ms ease, transform 720ms cubic-bezier(.22,1,.36,1), filter 520ms ease; will-change: opacity, transform; pointer-events: none; user-select: none; } .overview-case-poster .overview-case-svg { position: relative; z-index: 2; opacity: 0; transform: translate3d(0, 8px, 0) scale(.96); transition: opacity 260ms ease 110ms, transform 720ms cubic-bezier(.22,1,.36,1); } .overview-case-stage.overview-case-engaged .overview-case-photo, .overview-case-stage.overview-case-unfolded .overview-case-photo, .overview-case-stage.model-loading .overview-case-photo { opacity: 0; transform: translate3d(0, -8px, 0) scale(1.035); filter: drop-shadow(0 18px 20px rgba(32, 38, 49, .12)); transition-delay: 0ms; } .overview-case-stage.overview-case-engaged .overview-case-svg, .overview-case-stage.overview-case-unfolded .overview-case-svg, .overview-case-stage.model-loading .overview-case-svg, .overview-case-stage.overview-is-closing .overview-case-svg { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } .overview-case-stage.overview-is-closing .overview-case-photo { opacity: 0; transform: translate3d(0, -3px, 0) scale(1.01); } .overview-case-stage:not(.overview-case-engaged):not(.overview-is-closing) .overview-case-photo { opacity: 1; transform: translate3d(0, 5px, 0) scale(.97); } .overview-case-stage:not(.overview-case-engaged):not(.overview-is-closing) .overview-case-svg { opacity: 0; } .overview-case-svg #overviewCaseBlack stop:nth-child(1) { stop-color: #718baa; } .overview-case-svg #overviewCaseBlack stop:nth-child(2) { stop-color: #456888; } .overview-case-svg #overviewCaseBlack stop:nth-child(3) { stop-color: #203d58; } .overview-case-svg #overviewCaseInner stop:nth-child(1) { stop-color: #4c6f8f; } .overview-case-svg #overviewCaseInner stop:nth-child(2) { stop-color: #17334c; } .overview-case-svg #overviewLens stop:nth-child(1) { stop-color: #52a7c0; stop-opacity: .90; } .overview-case-svg #overviewLens stop:nth-child(2) { stop-color: #267e9f; stop-opacity: .94; } .overview-case-svg #overviewLens stop:nth-child(3) { stop-color: #155270; stop-opacity: .97; } @media (max-width: 900px) { .overview-case-photo { inset: 5% 0 0; width: 100%; height: 92%; transform: translate3d(0, 4px, 0) scale(.99); } } @media (max-width: 620px) { .overview-case-photo { inset: 7% -2% 0; width: 104%; height: 90%; } } @media (prefers-reduced-motion: reduce) { .overview-case-photo, .overview-case-poster .overview-case-svg { transition-duration: 1ms !important; transition-delay: 0ms !important; } }</style><style>.overview-case-stage { --overview-motion-ease: cubic-bezier(.18,.82,.22,1); --overview-hinge-ease: cubic-bezier(.20,.76,.18,1); --overview-settle-ease: cubic-bezier(.16,1.12,.30,1); } .overview-case-poster .overview-svg-case, .overview-case-poster .overview-svg-base, .overview-case-poster .overview-svg-lid, .overview-case-poster .overview-svg-glasses, .overview-case-poster .overview-svg-front, .overview-case-poster .overview-svg-temple, .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow { transform-box: view-box; backface-visibility: hidden; } .overview-case-poster .overview-svg-glasses { transform-origin: 378px 296px; transform: translateY(76px) rotate(3deg) scale(.68,.62); opacity: 0; transition: transform 520ms var(--overview-motion-ease), opacity 250ms ease, filter 420ms ease; } .overview-case-poster .overview-svg-front { transform-origin: 378px 296px; transform: rotate(1.8deg) scale(1,.91); transition: transform 520ms var(--overview-motion-ease); } .overview-case-poster .overview-svg-temple { opacity: .94; transition: transform 430ms var(--overview-hinge-ease), opacity 220ms ease; } .overview-case-poster .overview-svg-temple-left { transform-origin: 214px 286px; transform: rotate(142deg) scaleX(.82); } .overview-case-poster .overview-svg-temple-right { transform-origin: 541px 286px; transform: rotate(-142deg) scaleX(.82); } .overview-case-stage.overview-case-engaged .overview-svg-case { transform: translateY(7px) rotate(-1deg) scale(.985); } .overview-case-stage.overview-case-engaged .overview-svg-base { transform: translateY(8px) scale(.985); } .overview-case-stage.overview-case-engaged .overview-svg-lid { transform: translateY(-94px) scale(.97,.82); opacity: 1; } .overview-case-stage.overview-case-engaged .overview-svg-interior { opacity: 1; } .overview-case-stage.overview-case-engaged .overview-svg-glasses { transform: translateY(43px) rotate(2deg) scale(.78,.72); opacity: 1; filter: blur(.3px); } .overview-case-stage.overview-case-engaged .overview-svg-front { transform: rotate(1.2deg) scale(1,.94); } .overview-case-stage.overview-case-engaged .overview-svg-shadow { transform: scale(1.02,.90); opacity: .24; } .overview-case-stage.overview-glasses-lifted .overview-svg-case { transform: translateY(13px) rotate(-.5deg) scale(.995); } .overview-case-stage.overview-glasses-lifted .overview-svg-base { transform: translateY(25px) scale(.945); opacity: .94; } .overview-case-stage.overview-glasses-lifted .overview-svg-lid { transform: translateY(-145px) scale(.93,.74); opacity: .91; } .overview-case-stage.overview-glasses-lifted .overview-svg-glasses { transform: translateY(-55px) rotate(-1.4deg) scale(.98,.92); opacity: 1; filter: none; transition-duration: 610ms, 220ms, 360ms; transition-timing-function: var(--overview-motion-ease), ease, ease; } .overview-case-stage.overview-glasses-lifted .overview-svg-front { transform: rotate(-.7deg) scale(1,.98); } .overview-case-stage.overview-glasses-lifted .overview-svg-glow { transform: scale(1.05); opacity: .78; } .overview-case-stage.overview-temples-opening .overview-svg-glasses { transform: translateY(-95px) rotate(-.45deg) scale(1.045,1); transition-duration: 520ms, 180ms, 300ms; } .overview-case-stage.overview-temples-opening .overview-svg-front { transform: rotate(-.2deg) scale(1,1); } .overview-case-stage.overview-temples-opening .overview-svg-temple-left { transform: rotate(24deg) scaleX(.96); } .overview-case-stage.overview-temples-opening .overview-svg-temple-right { transform: rotate(-24deg) scaleX(.96); } .overview-case-stage.overview-case-unfolded .overview-svg-case { transform: translateY(20px) rotate(0deg) scale(1); } .overview-case-stage.overview-case-unfolded .overview-svg-base { transform: translateY(39px) scale(.90); opacity: .88; } .overview-case-stage.overview-case-unfolded .overview-svg-lid { transform: translateY(-166px) scale(.90,.70); opacity: .84; } .overview-case-stage.overview-case-unfolded .overview-svg-glasses { transform: translateY(-114px) rotate(0deg) scale(1.08,1.03); opacity: 1; transition: transform 520ms var(--overview-settle-ease), opacity 180ms ease, filter 260ms ease; } .overview-case-stage.overview-case-unfolded .overview-svg-front { transform: rotate(0deg) scale(1); transition: transform 460ms var(--overview-settle-ease); } .overview-case-stage.overview-case-unfolded .overview-svg-temple-left, .overview-case-stage.overview-case-unfolded .overview-svg-temple-right { transform: rotate(0deg) scaleX(1); opacity: 1; transition: transform 470ms var(--overview-settle-ease), opacity 180ms ease; } .overview-case-stage.overview-case-unfolded .overview-svg-shadow { transform: translateY(9px) scale(1.12,.72); opacity: .20; } .overview-case-stage.overview-case-unfolded .overview-svg-glow { transform: scale(1.14); opacity: 1; } .overview-case-stage.model-loading.overview-case-unfolded .overview-svg-glasses { animation: overviewVideoMatchedFloat 2.8s ease-in-out 700ms infinite; } @keyframes overviewVideoMatchedFloat { 0%, 100% { transform: translateY(-114px) rotate(0deg) scale(1.08,1.03); } 50% { transform: translateY(-120px) rotate(.2deg) scale(1.086,1.035); } } .overview-case-stage.overview-is-closing .overview-svg-glasses, .overview-case-stage.overview-is-closing .overview-svg-temple, .overview-case-stage.overview-is-closing .overview-svg-lid, .overview-case-stage.overview-is-closing .overview-svg-base { animation: none !important; } @media (max-width: 620px) { .overview-case-stage.overview-case-engaged .overview-svg-lid { transform: translateY(-84px) scale(.96,.84); } .overview-case-stage.overview-glasses-lifted .overview-svg-lid { transform: translateY(-126px) scale(.94,.77); } .overview-case-stage.overview-glasses-lifted .overview-svg-glasses { transform: translateY(-43px) rotate(-1deg) scale(.94,.90); } .overview-case-stage.overview-temples-opening .overview-svg-glasses { transform: translateY(-78px) rotate(-.35deg) scale(1,.97); } .overview-case-stage.overview-case-unfolded .overview-svg-lid { transform: translateY(-144px) scale(.91,.73); } .overview-case-stage.overview-case-unfolded .overview-svg-glasses { transform: translateY(-96px) rotate(0deg) scale(1.025,.99); } @keyframes overviewVideoMatchedFloat { 0%, 100% { transform: translateY(-96px) rotate(0deg) scale(1.025,.99); } 50% { transform: translateY(-101px) rotate(.2deg) scale(1.03,.995); } } } @media (prefers-reduced-motion: reduce) { .overview-case-stage.overview-case-engaged .overview-svg-glasses, .overview-case-stage.overview-glasses-lifted .overview-svg-glasses, .overview-case-stage.overview-temples-opening .overview-svg-glasses, .overview-case-stage.overview-case-unfolded .overview-svg-glasses { animation: none !important; } }</style><style>.overview-case-stage { --hero-case-ease: cubic-bezier(.22,.68,.20,1); --hero-glasses-ease: cubic-bezier(.16,1,.30,1); --hero-hinge-ease: cubic-bezier(.20,.78,.18,1); --hero-opacity-ease: cubic-bezier(.25,.46,.45,.94); } .overview-case-photo { transition-property: opacity, transform, filter !important; transition-duration: 460ms, 980ms, 460ms !important; transition-timing-function: var(--hero-opacity-ease), var(--hero-glasses-ease), var(--hero-opacity-ease) !important; transition-delay: 0ms !important; backface-visibility: hidden; transform: translate3d(0,5px,0) scale(.97); } .overview-case-poster .overview-case-svg { transition-property: opacity, transform !important; transition-duration: 420ms, 980ms !important; transition-timing-function: var(--hero-opacity-ease), var(--hero-glasses-ease) !important; transition-delay: 35ms, 0ms !important; backface-visibility: hidden; } .overview-case-poster .overview-svg-case, .overview-case-poster .overview-svg-base, .overview-case-poster .overview-svg-lid, .overview-case-poster .overview-svg-glasses, .overview-case-poster .overview-svg-front, .overview-case-poster .overview-svg-temple, .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow { animation: none !important; transition-delay: 0ms !important; backface-visibility: hidden; will-change: transform, opacity; } .overview-case-poster .overview-svg-case { transition-property: transform, opacity !important; transition-duration: 940ms, 420ms !important; transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-base { transition-property: transform, opacity !important; transition-duration: 900ms, 520ms !important; transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-lid { transition-property: transform, opacity !important; transition-duration: 820ms, 500ms !important; transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-glasses { transition-property: transform, opacity !important; transition-duration: 760ms, 330ms !important; transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important; filter: none !important; } .overview-case-poster .overview-svg-front { transition-property: transform, opacity !important; transition-duration: 720ms, 360ms !important; transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-temple { transition-property: transform, opacity !important; transition-duration: 680ms, 300ms !important; transition-timing-function: var(--hero-hinge-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow { transition-property: transform, opacity !important; transition-duration: 900ms, 520ms !important; transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-interior { transition: opacity 430ms var(--hero-opacity-ease) !important; } .overview-case-stage .overview-final-model.hero-model-viewer { transition: opacity 620ms var(--hero-opacity-ease), visibility 0s linear 0s !important; backface-visibility: hidden; } .overview-case-stage.overview-model-visible .overview-case-poster { transition: opacity 620ms var(--hero-opacity-ease), transform 920ms var(--hero-glasses-ease) !important; } .overview-case-stage.model-loading.overview-case-unfolded.overview-motion-complete .overview-svg-glasses { animation: overviewVideoMatchedFloat 3.2s ease-in-out 260ms infinite !important; } .overview-case-stage.model-loading:not(.overview-motion-complete) .overview-svg-glasses { animation: none !important; } @media (prefers-reduced-motion: reduce) { .overview-case-photo, .overview-case-poster .overview-case-svg, .overview-case-poster .overview-svg-case, .overview-case-poster .overview-svg-base, .overview-case-poster .overview-svg-lid, .overview-case-poster .overview-svg-glasses, .overview-case-poster .overview-svg-front, .overview-case-poster .overview-svg-temple, .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow, .overview-case-poster .overview-svg-interior { transition-duration: 1ms !important; transition-delay: 0ms !important; animation: none !important; } }</style><section class="portfolio-section internship-overview" id="overview-section"><div class="overview-menu-row"><button aria-controls="fullScreenMenu" aria-expanded="false" aria-label="Open navigation menu" class="hamburger-btn" onclick="toggleMenu(true)" type="button"><span></span><span></span></button></div><div class="internship-overview-grid"><div class="internship-overview-copy"><div class="overview-index">01 / OVERVIEW</div><h1 class="internship-overview-title">Selected Work<br/>&amp; Creative Process</h1><p class="internship-overview-description">A curated showcase of the content, product presentations and interactive concepts I created for Lensciaga, reflecting my approach to visual storytelling, brand building and audience engagement.</p><button class="overview-explore-link" onclick="scrollToSection('featured-section')" type="button"><span>Explore my work</span><span aria-hidden="true">→</span></button></div><div class="overview-visual-column"><div aria-hidden="true" class="overview-visual-outline"></div><div aria-label="Hover or tap to open the eyeglasses case and reveal the interactive 3D model" class="glasses-3d-stage overview-case-stage" id="stage3d" role="button" tabindex="0"><div aria-hidden="true" class="overview-case-hint"><span class="overview-case-hint-dot"></span> Hover or tap to open</div><div aria-hidden="true" class="model-poster overview-case-poster" id="modelPoster"><svg aria-label="Blue Lensciaga case transition opening to reveal a pair of eyeglasses" class="overview-case-svg" role="img" viewbox="0 0 760 520" xmlns="http://www.w3.org/2000/svg"><defs><lineargradient id="overviewCaseBlack" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#303036"></stop><stop offset="0.48" stop-color="#111114"></stop><stop offset="1" stop-color="#050507"></stop></lineargradient><lineargradient id="overviewCaseInner" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#292932"></stop><stop offset="1" stop-color="#08080b"></stop></lineargradient><lineargradient id="overviewGold" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#765315"></stop><stop offset="0.18" stop-color="#d5ab44"></stop><stop offset="0.36" stop-color="#fff0b0"></stop><stop offset="0.58" stop-color="#c89228"></stop><stop offset="0.82" stop-color="#f3d47d"></stop><stop offset="1" stop-color="#6e4c10"></stop></lineargradient><lineargradient id="overviewLens" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#33343c" stop-opacity="0.94"></stop><stop offset="0.62" stop-color="#101116" stop-opacity="0.97"></stop><stop offset="1" stop-color="#050609" stop-opacity="0.98"></stop></lineargradient><radialgradient cx="50%" cy="50%" id="overviewCaseGlow" r="50%"><stop offset="0" stop-color="#8247ff" stop-opacity="0.18"></stop><stop offset="1" stop-color="#8247ff" stop-opacity="0"></stop></radialgradient><filter height="220%" id="overviewCaseShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="24" flood-color="#000000" flood-opacity="0.34" stddeviation="21"></fedropshadow></filter><filter height="220%" id="overviewGlassesShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="15" flood-color="#000000" flood-opacity="0.34" stddeviation="12"></fedropshadow></filter><clippath id="overviewLeftLensClip"><path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z"></path></clippath><clippath id="overviewRightLensClip"><path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z"></path></clippath></defs><ellipse class="overview-svg-glow" cx="386" cy="304" fill="url(#overviewCaseGlow)" rx="282" ry="188"></ellipse><ellipse class="overview-svg-shadow" cx="386" cy="406" fill="#000" opacity="0.22" rx="242" ry="42"></ellipse><g class="overview-svg-case"><g class="overview-svg-base" filter="url(#overviewCaseShadow)"><path d="M122 271 C137 241 169 224 205 221 L557 221 C596 223 626 244 641 276 L622 363 C616 391 593 409 560 414 L205 414 C170 410 143 392 135 363Z" fill="url(#overviewCaseBlack)" stroke="url(#overviewGold)" stroke-width="6"></path><path class="overview-svg-interior" d="M151 278 C165 257 188 246 216 244 L548 244 C575 245 598 258 611 281 L596 351 C590 374 571 386 545 389 L218 389 C190 386 169 374 163 351Z" fill="url(#overviewCaseInner)" stroke="#4f3b15" stroke-width="2"></path><path d="M141 350 C225 372 532 373 622 350 L614 377 C607 398 589 411 559 416 L207 416 C177 412 153 399 145 377Z" fill="#07070a" opacity="0.78"></path><text fill="#d5ad4e" fill-opacity="0.52" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" letter-spacing="4" text-anchor="middle" x="382" y="391">Lensciaga</text></g><g class="overview-svg-lid" filter="url(#overviewCaseShadow)"><path d="M121 263 C134 230 166 210 205 207 L558 207 C598 210 627 230 642 264 L625 337 C617 366 594 384 560 390 L204 390 C169 386 144 367 136 337Z" fill="url(#overviewCaseBlack)" stroke="url(#overviewGold)" stroke-width="6"></path><path d="M143 268 C155 243 181 230 211 228 L552 228 C581 231 605 243 617 269 L604 327 C598 348 580 361 553 365 L211 365 C184 362 164 348 158 327Z" fill="#0b0b0f" opacity="0.58"></path><path d="M151 246 C231 220 531 219 615 247" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="3"></path><text fill="#e2bf65" fill-opacity="0.67" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" letter-spacing="7" text-anchor="middle" x="382" y="307">Lensciaga</text></g><g class="overview-svg-glasses" filter="url(#overviewGlassesShadow)"><g class="overview-svg-temple overview-svg-temple-left"><path d="M214 286 C167 266 125 246 86 222" fill="none" stroke="#121217" stroke-linecap="round" stroke-width="15"></path><path d="M214 286 C168 266 127 246 88 222" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="3"></path></g><g class="overview-svg-temple overview-svg-temple-right"><path d="M541 286 C588 266 630 246 669 222" fill="none" stroke="#121217" stroke-linecap="round" stroke-width="15"></path><path d="M541 286 C587 266 628 246 667 222" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="3"></path></g><g class="overview-svg-front"><path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z" fill="url(#overviewLens)" stroke="url(#overviewGold)" stroke-width="7"></path><path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z" fill="url(#overviewLens)" stroke="url(#overviewGold)" stroke-width="7"></path><path d="M321 278 C344 260 410 260 434 278" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path><path d="M216 282 L193 273" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path><path d="M539 282 L562 273" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path><g clip-path="url(#overviewLeftLensClip)" opacity="0.30"><path d="M226 244 L284 356" stroke="#ffffff" stroke-width="13"></path></g><g clip-path="url(#overviewRightLensClip)" opacity="0.24"><path d="M463 244 L516 356" stroke="#ffffff" stroke-width="12"></path></g></g></g></g></svg></div><div aria-live="polite" class="overview-local-model-note" id="overviewLocalModelNote">Load the interactive model when you are ready. The lightweight preview remains available while it loads.</div><model-viewer alt="Interactive 3D model of Lensciaga eyeglasses featured in this portfolio" auto-rotate="" auto-rotate-delay="900" camera-controls="" camera-orbit="22deg 74deg 105%" camera-target="auto auto auto" class="hero-model-viewer overview-final-model" data-model-candidates="./luxury%20eyeglasses%203d%20model.glb|./eyeglasses.glb" data-src="./luxury%20eyeglasses%203d%20model.glb" environment-image="neutral" exposure="1.15" field-of-view="26deg" id="luxuryGlassesModel" interaction-prompt="none" max-field-of-view="38deg" min-field-of-view="20deg" reveal="auto" rotation-per-second="14deg" shadow-intensity="1.35" shadow-softness="0.9"></model-viewer><button aria-controls="luxuryGlassesModel" class="model-load-button overview-hidden-model-trigger" id="load3dModelButton" tabindex="-1" type="button">View Glasses in 3D</button><input accept=".glb,model/gltf-binary" aria-hidden="true" hidden="" id="overviewLocalModelFile" tabindex="-1" type="file"/><div aria-live="polite" class="model-load-panel overview-model-load-panel" id="modelLoadPanel" role="status"><span class="model-load-note" id="modelLoadStatus">Loading the interactive glasses. This may take a moment on slower connections.</span><div aria-hidden="true" class="model-progress-track"><div class="model-progress-bar" id="modelProgressBar"></div></div><span class="model-error" id="modelErrorMessage">The lightweight animated glasses remain available while the 3D version loads.</span></div></div></div></div><div aria-label="Portfolio highlights" class="internship-stat-rail"><div class="internship-stat-item"><span aria-hidden="true" class="internship-stat-icon">▣</span><div><strong>12</strong><span>Featured Projects</span></div></div><div class="internship-stat-item"><span aria-hidden="true" class="internship-stat-icon">&lt;/&gt;</span><div><strong>8+</strong><span>Creative Methods</span></div></div><div class="internship-stat-item"><span aria-hidden="true" class="internship-stat-icon">◇</span><div><strong>1</strong><span>Evolving Portfolio</span></div></div></div></section><section class="portfolio-section" id="featured-section"><div class="featured-sticky-shell" id="featuredStickyShell"><div class="featured-scroll-track" id="featuredScrollTrack"><div class="top-meta-bar"><div class="meta-context">SELECTED LENSCIAGA WORK • 2025-PRESENT</div></div><div class="hero-section"><span class="section-label">/ Content, Campaigns &amp; Product Stories</span><h1>Featured <span>Work</span></h1><div class="hero-footer-row"><p class="description-text">A selection of Lensciaga content created to present products clearly, strengthen the visual identity, and turn individual frames into distinctive brand stories.</p><button class="action-pill-btn" onclick="scrolledToWork()">Explore case studies <span>↗</span></button><div class="scroll-explore" onclick="scrolledToWork()"><span>Scroll to explore</span><div class="scroll-circle">↓</div></div></div></div><div class="instagram-grid" id="portfolioGrid"><div class="slot-card" onclick="openShowcase(this, 'Aurelion Noir 51004', 'A technology-led product campaign presenting the frame as a refined fusion of intelligent styling, everyday utility and premium eyewear design.', 'Built a clean feature-led layout, paired close-up visuals with concise messaging, and structured the post for quick product understanding.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DTN3WlGCLr8/', 'default')"><img alt="Black premium eyeglasses presented in a technology-led product campaign." class="slot-card-img" data-src="glasses.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 01</div><div class="slot-title">Aurelion Noir</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Transition Premium Glasses', 'A reel-led showcase demonstrating how the lenses adapt to changing light conditions while preserving the frame\'s premium appearance.', 'Planned a reveal-based sequence, balanced product close-ups with lifestyle context, and used motion to make the transition benefit easy to understand.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DTe4BrTiO12/', 'tinted')"><img alt="Transition eyeglasses shown changing from clear to tinted lenses." class="slot-card-img" data-src="tinted.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 02</div><div class="slot-title">Transition Frames</div></div></div><div class="slot-card wing-slot" onclick="openShowcase(this, 'Premium Winged Glasses', 'A dramatic rimless eyewear concept built around a sharp winged silhouette that turns the frame into a statement piece.', 'Selected angles that emphasise the wing tips, bridge, and gradient lenses, then paced the reel around the frame\'s distinctive outline.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DTkVEkoCP0U/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'doffy')"><img alt="Rimless glasses with dramatic wing-shaped lenses and a gradient tint." class="slot-card-img" data-src="doffy1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 03</div><div class="slot-title">Winged Rimless</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Premium Butterfly Glasses', 'A fashion-focused product showcase celebrating the oversized butterfly silhouette, soft lens gradient, and elegant face-framing proportions.', 'Combined movement, close-up product views and polished transitions to highlight the frame\'s symmetry, scale and styling versatility.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DUH-ET0iOxz/', 'butty')"><img alt="Oversized butterfly-shaped glasses with softly tinted lenses." class="slot-card-img" data-src="butty1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 04</div><div class="slot-title">Butterfly Frames</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Clip-On Glasses', 'A practical product story showing how one optical frame can shift into a sun-ready look through a clean magnetic clip-on.', 'Presented the base frame and attachment in a clear sequence, using detail shots to explain fit, alignment and everyday convenience.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DUsIzl6CPwA/', 'clip')"><img alt="Optical glasses shown with a removable dark clip-on lens." class="slot-card-img" data-src="clip1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 05</div><div class="slot-title">Clip-On Versatility</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Stare Rose Aura', 'A colour-led product post positioning the rose-toned frame as expressive, modern, and easy to recognise within the Lensciaga feed.', 'Used a soft pink palette, clean framing and close-up imagery to keep the colour, lens tone and silhouette visually consistent.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DTdHglQCJBB/', 'pink')"><img alt="Rose-pink eyeglasses presented against a clean branded background." class="slot-card-img" data-src="pink1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 06</div><div class="slot-title">Rose Aura</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Aurelius Noir 51005', 'A premium campaign built around a refined gold frame, dark lenses, and restrained luxury cues designed to elevate product perception.', 'Focused on bridge proportions, metallic details and controlled lighting, using close-up imagery to communicate finish and craftsmanship.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DTS2J77CMyr/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'gold')"><img alt="Gold-framed eyeglasses with dark lenses shown in a premium product setting." class="slot-card-img" data-src="gold1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 07</div><div class="slot-title">Aurelius Noir</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Premium Oval Glasses - Black', 'A minimalist product showcase presenting a black oval frame through balanced proportions, clean styling, and a timeless visual direction.', 'Selected front and angled views, kept the background restrained, and used consistent spacing to emphasise form and symmetry.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DYO27Z9MG2J/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'circle')"><img alt="Black oval eyeglasses shown from clean front and angled views." class="slot-card-img" data-src="circle1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 08</div><div class="slot-title">Oval Black</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Lensciaga Frame Collection', 'A multi-product campaign bringing several frame personalities together while maintaining one cohesive Lensciaga visual identity.', 'Organised the frames by shape, colour, and mood, then applied consistent typography, pacing, and layouts across the full set.', 'To boost brand sales and build brand image.', 'https://vt.tiktok.com/ZSC42Wemc/', 'multi')"><img alt="A coordinated collection of different Lensciaga frame styles." class="slot-card-img" data-src="multi7.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 09</div><div class="slot-title">Frame Collection</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Product-in-Hand Campaign', 'A close-up product presentation using hand-held framing to make the eyewear feel tangible, wearable and easy to evaluate.', 'Directed natural hand placement, controlled the background, and captured close-up angles that clearly show scale, finish, and frame details.', 'To boost brand sales and build brand image.', 'https://vt.tiktok.com/ZSC42E1wh/', 'hand')"><img alt="A hand holding eyeglasses to show their scale and product details." class="slot-card-img" data-src="hand1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 10</div><div class="slot-title">Product in Hand</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Aurelion Classic', 'A hero visual positioning a classic frame through clean composition, reflective surfaces, and an understated premium atmosphere.', 'Used a focused single-product layout, controlled reflections and kept supporting elements minimal so the frame remained the visual centre.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DW_YedMiKY8/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'aura')"><img alt="Classic eyeglasses presented as a refined standalone hero product." class="slot-card-img" data-src="auramain.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 11</div><div class="slot-title">Aurelion Classic</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Lux Cat-Eye', 'A sharp cat-eye campaign built around lifted outer corners, confident styling and a sequence of detail-rich product views.', 'Created a five-view carousel covering front, side, and close-up angles to communicate the silhouette, finish, and wearable proportions.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DW_ZPVzCGBk/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'cat')"><img alt="Cat-eye glasses with lifted outer corners shown across several close-up views." class="slot-card-img" data-src="catmain.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 12</div><div class="slot-title">Lux Cat-Eye</div></div></div></div><div aria-label="Featured work overview" class="featured-bottom-rail"><div class="featured-rail-summary"><span class="featured-rail-number">12</span><span class="featured-rail-copy"><strong>Featured projects</strong><span>Open any card to view the idea, execution and purpose behind the work.</span></span></div><div aria-hidden="true" class="featured-rail-topics"><span>Creative Direction</span><span>Product Storytelling</span><span>Social Content</span><span>Interactive Experiences</span></div></div></div><div aria-hidden="true" class="featured-view-progress" id="featuredViewProgress"><span class="featured-progress-label">Project progress</span><span class="featured-progress-track"><span class="featured-progress-fill" id="featuredProgressFill"></span></span><span class="featured-progress-count" id="featuredProgressCount">01 / 02</span></div></div></section><section class="portfolio-section brand-strategy-section" id="brand-section"><div class="brand-strategy-shell"><div class="brand-strategy-layout"><div class="brand-strategy-copy"><div class="brand-strategy-index">03 / CONTENT STRATEGY</div><h1 class="brand-strategy-title">Content Strategy<br/><span>&amp; Creative Process</span></h1><p class="brand-strategy-description">A practical process I used to turn product features into clear, consistent, and engaging content that supports Lensciaga's identity and commercial goals.</p><button class="brand-strategy-explore" id="brandStrategyExplore" type="button"><span>Explore the process</span><span aria-hidden="true">→</span></button><p class="brand-strategy-instruction">Select Explore the Process to preview each stage in sequence, or open any stage directly.</p></div><div aria-label="Interactive content strategy and creative process" class="brand-strategy-visual" id="brandStrategyVisual"><div aria-hidden="true" class="brand-orbit-rings"><span></span><span></span><span></span></div><div aria-hidden="true" class="brand-case-art"><svg aria-label="Open black and gold eyeglasses case" role="img" viewbox="0 0 760 520"><defs><lineargradient id="brandCaseBlack" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#35353c"></stop><stop offset="0.5" stop-color="#111116"></stop><stop offset="1" stop-color="#050507"></stop></lineargradient><lineargradient id="brandCaseInner" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#292932"></stop><stop offset="1" stop-color="#08080b"></stop></lineargradient><lineargradient id="brandGold" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#765315"></stop><stop offset="0.2" stop-color="#d5ab44"></stop><stop offset="0.38" stop-color="#fff0b0"></stop><stop offset="0.62" stop-color="#c89228"></stop><stop offset="0.84" stop-color="#f3d47d"></stop><stop offset="1" stop-color="#6e4c10"></stop></lineargradient><lineargradient id="brandLens" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#33343c" stop-opacity=".94"></stop><stop offset=".62" stop-color="#101116" stop-opacity=".97"></stop><stop offset="1" stop-color="#050609" stop-opacity=".98"></stop></lineargradient><filter height="220%" id="brandCaseShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="23" flood-color="#000" flood-opacity=".30" stddeviation="20"></fedropshadow></filter><filter height="220%" id="brandGlassesShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="13" flood-color="#000" flood-opacity=".30" stddeviation="11"></fedropshadow></filter></defs><ellipse cx="382" cy="425" fill="#000" opacity=".18" rx="238" ry="38"></ellipse><g filter="url(#brandCaseShadow)"><path d="M124 275 C141 242 170 226 207 222 L555 222 C594 225 624 245 639 278 L620 365 C614 391 590 408 558 413 L207 413 C171 410 146 392 137 364Z" fill="url(#brandCaseBlack)" stroke="url(#brandGold)" stroke-width="6"></path><path d="M153 282 C168 258 190 248 218 246 L545 246 C573 247 596 260 608 283 L594 351 C588 373 569 385 543 388 L219 388 C191 386 170 373 164 351Z" fill="url(#brandCaseInner)" stroke="#4f3b15" stroke-width="2"></path><path d="M126 260 C140 224 169 197 207 188 L554 188 C594 196 624 222 639 260 L621 318 C614 341 591 354 559 357 L206 357 C173 354 147 340 138 317Z" fill="url(#brandCaseBlack)" stroke="url(#brandGold)" stroke-width="6" transform="translate(0 -92)"></path><path d="M151 251 C166 226 190 212 218 207 L544 207 C572 213 595 228 607 252 L594 299 C587 318 570 327 545 329 L218 329 C191 326 171 316 164 298Z" fill="#0b0b0f" opacity=".65" transform="translate(0 -92)"></path><text fill="#e2bf65" fill-opacity=".75" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" letter-spacing="7" text-anchor="middle" x="382" y="187">Lensciaga</text></g><g filter="url(#brandGlassesShadow)" transform="translate(0 18)"><path d="M213 291 C164 270 124 249 88 226" fill="none" stroke="#111116" stroke-linecap="round" stroke-width="15"></path><path d="M213 291 C165 270 126 249 90 226" fill="none" stroke="url(#brandGold)" stroke-linecap="round" stroke-width="3"></path><path d="M542 291 C591 270 631 249 667 226" fill="none" stroke="#111116" stroke-linecap="round" stroke-width="15"></path><path d="M542 291 C590 270 629 249 665 226" fill="none" stroke="url(#brandGold)" stroke-linecap="round" stroke-width="3"></path><path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z" fill="url(#brandLens)" stroke="url(#brandGold)" stroke-width="7"></path><path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z" fill="url(#brandLens)" stroke="url(#brandGold)" stroke-width="7"></path><path d="M321 278 C344 260 410 260 434 278" fill="none" stroke="url(#brandGold)" stroke-linecap="round" stroke-width="7"></path><path d="M225 271 C247 258 282 257 307 270" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="3"></path><path d="M448 270 C473 257 508 258 530 271" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="3"></path></g></svg></div><div class="brand-orbit-items"><div class="brand-orbit-item brand-node-research"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">⌕</span><span class="brand-orbit-window"><strong>Research</strong><span>Audience, product and competitor insights</span><small>Reviewed the product, competing eyewear content, and audience preferences to identify the strongest angle for each post.</small></span></button><span class="brand-orbit-caption"><strong>Research</strong><small>Audience &amp; competitor insight</small></span></div><div class="brand-orbit-item brand-node-positioning"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">◎</span><span class="brand-orbit-window"><strong>Positioning</strong><span>Define the product's strongest story</span><small>Selected the most relevant benefit, mood and visual hook so each frame had a clear reason to stand out.</small></span></button><span class="brand-orbit-caption"><strong>Positioning</strong><small>Clear product positioning</small></span></div><div class="brand-orbit-item brand-node-identity"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">◇</span><span class="brand-orbit-window"><strong>Creative Direction</strong><span>Build a recognisable visual language</span><small>Matched colour, composition, typography, and tone to the frame while keeping every piece recognisably Lensciaga.</small></span></button><span class="brand-orbit-caption"><strong>Creative Direction</strong><small>Consistent visual direction</small></span></div><div class="brand-orbit-item brand-node-strategy"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">♟</span><span class="brand-orbit-window"><strong>Production</strong><span>Turn the concept into content</span><small>Planned images, reels, carousels, and interactive elements around the format best suited to the product story.</small></span></button><span class="brand-orbit-caption"><strong>Production</strong><small>Content production planning</small></span></div><div class="brand-orbit-item brand-node-execution"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">↗</span><span class="brand-orbit-window"><strong>Optimisation</strong><span>Refine for clarity and engagement</span><small>Reviewed pacing, hierarchy, mobile readability, and calls to action before finalising each piece for publication.</small></span></button><span class="brand-orbit-caption"><strong>Optimisation</strong><small>Refine, test &amp; publish</small></span></div></div></div></div><div class="brand-strategy-rail"><div class="brand-strategy-quote"><span aria-hidden="true">“</span><p>A product earns attention through design.<br/>A brand earns memory through consistency.</p></div><div class="brand-strategy-pillar"><strong>Purpose led</strong><span>Every piece communicates a clear product or brand objective.</span></div><div class="brand-strategy-pillar"><strong>Audience aware</strong><span>Visual choices reflect how people discover and assess eyewear.</span></div><div class="brand-strategy-pillar"><strong>Built to convert</strong><span>Content balances brand value, product clarity and commercial intent.</span></div></div></div></section><section class="portfolio-section contact-section" data-side-label="CONNECT" id="contact-section"><div class="top-meta-bar"><div class="meta-context">CONTACT &amp; COLLABORATION<br/>WORK PORTFOLIO / 2025-PRESENT</div></div><div class="contact-simple-layout"><div class="contact-simple-copy"><div class="contact-simple-index">04 / GET IN TOUCH</div><h1 class="contact-simple-title">Let's<br/>connect.</h1><div aria-hidden="true" class="contact-title-rule"></div><p class="contact-simple-description">I am open to creative collaborations, portfolio discussions, and opportunities where visual storytelling, product presentation, and brand thinking can add value.</p><svg aria-label="Gold eyeglasses resting on a cream notebook beside a pen" class="contact-desk-art" role="img" viewbox="0 0 560 250"><defs><lineargradient id="contactNotebook" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#fffdf8"></stop><stop offset="1" stop-color="#e9dfd2"></stop></lineargradient><lineargradient id="contactGold" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#8f6412"></stop><stop offset="0.32" stop-color="#f4d67b"></stop><stop offset="0.62" stop-color="#bc8420"></stop><stop offset="1" stop-color="#f3df9a"></stop></lineargradient><filter height="180%" id="contactShadow" width="160%" x="-30%" y="-30%"><fedropshadow dx="0" dy="12" flood-color="#6f5337" flood-opacity=".13" stddeviation="10"></fedropshadow></filter></defs><g filter="url(#contactShadow)" transform="translate(154 20) rotate(-11 150 104)"><rect fill="url(#contactNotebook)" height="205" rx="10" stroke="#d9cbbb" width="310" x="0" y="0"></rect><rect fill="none" height="184" rx="7" stroke="#ffffff" stroke-opacity=".8" width="282" x="14" y="10"></rect><text fill="#b59a73" font-family="Georgia, serif" font-size="19" letter-spacing="5" x="205" y="72">CONNECT</text><path d="M38 30 V177" stroke="#d8cbbc" stroke-width="2"></path></g><g filter="url(#contactShadow)" transform="translate(17 75) rotate(7 120 72)"><path d="M37 58 C40 18 72 2 108 8 C145 14 158 39 151 73 C144 108 117 126 82 118 C50 111 34 91 37 58Z" fill="rgba(27,27,31,.04)" stroke="url(#contactGold)" stroke-width="5"></path><path d="M159 62 C164 26 196 11 231 18 C266 25 279 50 269 83 C260 115 231 129 198 120 C168 111 155 91 159 62Z" fill="rgba(27,27,31,.04)" stroke="url(#contactGold)" stroke-width="5"></path><path d="M149 55 C153 48 158 46 164 54" fill="none" stroke="url(#contactGold)" stroke-linecap="round" stroke-width="5"></path><path d="M38 51 L4 31" stroke="#1c1c20" stroke-linecap="round" stroke-width="7"></path><path d="M270 75 L338 61" stroke="#1c1c20" stroke-linecap="round" stroke-width="7"></path><path d="M18 40 L4 31" stroke="url(#contactGold)" stroke-linecap="round" stroke-width="4"></path><path d="M289 72 L338 61" stroke="url(#contactGold)" stroke-linecap="round" stroke-width="4"></path></g><g transform="translate(424 173) rotate(-15)"><rect fill="url(#contactGold)" height="11" rx="5.5" width="112" x="0" y="0"></rect><rect fill="#202023" height="8" rx="4" width="28" x="90" y="1.5"></rect><path d="M-17 5.5 L0 0 V11Z" fill="#a87920"></path></g></svg></div><div class="contact-form-side"><form class="contact-simple-form" id="contactForm" novalidate=""><div class="contact-form-row"><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c.7-4.2 3.2-6.3 7.5-6.3s6.8 2.1 7.5 6.3"></path></svg></span><input autocomplete="name" id="contactName" name="name" placeholder="Your name" required="" type="text"></input></label><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><rect height="14" rx="2" width="18" x="3" y="5"></rect><path d="m4 7 8 6 8-6"></path></svg></span><input autocomplete="email" id="contactVisitorEmail" name="email" placeholder="Your email" required="" type="email"/></label></div><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><path d="M6 7.5h12a2 2 0 0 1 2 2v9.5H4V9.5a2 2 0 0 1 2-2Z"></path><path d="M9 7.5V5.8A2.8 2.8 0 0 1 11.8 3h.4A2.8 2.8 0 0 1 15 5.8v1.7"></path></svg></span><input id="contactSubject" name="subject" placeholder="Subject" required="" type="text"/></label><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><path d="m4 20 4.2-1 10.9-10.9a2.2 2.2 0 0 0-3.2-3.2L5 15.8 4 20Z"></path><path d="m14.5 6.5 3 3"></path></svg></span><textarea id="contactMessage" name="message" placeholder="Your message" required=""></textarea></label><div class="contact-submit-row"><button class="contact-send-button" type="submit"><span>Send message</span><span aria-hidden="true" class="contact-send-arrow">→</span></button><p aria-live="polite" class="contact-form-status" id="contactFormStatus">Your message will open in your default email application.</p></div></form><div aria-label="Contact details" class="contact-detail-grid"><div class="contact-detail-item"><span aria-hidden="true" class="contact-detail-icon"><svg viewbox="0 0 24 24"><rect height="14" rx="2" width="18" x="3" y="5"></rect><path d="m4 7 8 6 8-6"></path></svg></span><div class="contact-detail-copy"><strong>Email</strong><a href="mailto:Muhammadshahrukh01906@gmail.com" id="contactEmailLink">Muhammadshahrukh01906@gmail.com</a><button class="contact-inline-action" id="copyContactEmail" type="button">Copy email</button></div></div><div class="contact-detail-item"><span aria-hidden="true" class="contact-detail-icon"><svg viewbox="0 0 24 24"><path d="M6.5 9.5V19"></path><path d="M6.5 5.5v.1"></path><path d="M11 19v-5.3c0-2.4 1.3-3.9 3.5-3.9 2.1 0 3 1.4 3 3.9V19"></path><path d="M11 10v9"></path></svg></span><div class="contact-detail-copy"><strong>LinkedIn</strong><a href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" id="contactLinkedInLink" rel="noopener noreferrer" target="_blank">View LinkedIn →</a></div></div><div class="contact-detail-item"><span aria-hidden="true" class="contact-detail-icon"><svg viewbox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg></span><div class="contact-detail-copy"><strong>Location</strong><span>Lahore, Pakistan</span><span>Open to creative and professional opportunities</span></div></div></div><p class="contact-response-note">I will respond as soon as possible.</p></div></div><footer class="bottom-nav-bar"><div class="bottom-tabs" id="bottomTabs"><a class="tab-link active" href="#overview-section"><span>01</span>Overview</a><a class="tab-link" href="#featured-section"><span>02</span>Featured Work</a><a class="tab-link" href="#brand-section"><span>03</span>Content Strategy</a><a class="tab-link" href="#contact-section"><span>04</span>Contact</a></div><div class="slider-arrows"><button aria-label="Previous section" class="arrow-btn" id="prevBtn" type="button">←</button><button aria-label="Next section" class="arrow-btn next-btn" id="nextBtn" type="button">→</button></div></footer></section></main></div><div class="modal-container" id="showcaseModal" onclick="closeShowcase(event)"><div class="modal-mesh-bg"></div><button aria-label="Close project showcase" class="modal-close-btn" onclick="event.stopPropagation(); closeShowcase(event)">✕</button><div class="rimless-glasses-assembly" id="mainAssembly" onclick="event.stopPropagation()"><div class="glasses-temple temple-left"><div class="baroque-gold-inlay"></div></div><div class="gold-hinge-assembly hinge-left"></div><div class="rimless-lens lens-display-left" id="leftLensAnchor"><div class="lens-slider-wrapper" id="lensSliderWrapper"></div></div><div class="gold-center-bridge-assembly"><div class="bridge-arch"></div><div class="nose-pads-container"><div class="nose-pad-arm pad-left"></div><div class="nose-pad-arm pad-right"></div></div></div><div class="rimless-lens lens-info-right"><div class="lens-content-fit" id="lensContentFit"><div class="lens-scroll-area"><h3 class="modal-body-title" id="modalTargetTitle">AURELION NOIR 51004</h3><div class="modal-title-divider"></div><div class="project-overview-layout"><div class="modal-spec-block modal-spec-description"><h4>Description</h4><p id="modalTargetDesc">A technology-led product campaign presenting the frame as a refined fusion of intelligent styling, everyday utility and premium eyewear design.</p></div><aside aria-label="Project snapshot" class="project-snapshot"><div class="project-fact"><span class="project-fact-label">Format</span><strong class="project-fact-value" id="modalProjectFormat">Carousel post</strong></div><div class="project-fact"><span class="project-fact-label">Gallery</span><strong class="project-fact-value" id="modalProjectProgress">01 / 05</strong></div><div class="project-fact"><span class="project-fact-label">Focus</span><strong class="project-fact-value" id="modalProjectFocus">Smart styling &amp; features</strong></div></aside></div><div class="modal-side-spec modal-detail-grid"><div class="modal-spec-block"><h4>Process</h4><p id="modalTargetProc">Built a clean feature-led layout, paired close-up visuals with concise messaging, and structured the post for quick product understanding.</p></div><div class="modal-spec-block"><h4>Purpose</h4><p id="modalTargetPurp">To boost brand sales and build brand image.</p></div></div></div><a class="modal-action-btn" href="#" id="modalTargetLink" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;" target="_blank">View project source</a><button class="virtual-tryon-btn" id="virtualTryOnBtn" type="button" hidden onclick="event.stopPropagation(); startVirtualTryOn()"><span class="virtual-tryon-btn-icon" aria-hidden="true">◉</span><span>Try on with camera</span></button></div></div><div class="gold-hinge-assembly hinge-right"></div><div class="glasses-temple temple-right"><div class="baroque-gold-inlay"></div></div></div><section aria-label="Project details" class="mobile-showcase-details" id="mobileShowcaseDetails" onclick="event.stopPropagation()"><div class="mobile-showcase-kicker">Project details</div><h3 id="mobileTargetTitle">AURELION NOIR 51004</h3><div aria-label="Project snapshot" class="mobile-showcase-facts"><div><span>Format</span><strong id="mobileProjectFormat">Carousel post</strong></div><div><span>Gallery</span><strong id="mobileProjectProgress">01 / 05</strong></div><div><span>Focus</span><strong id="mobileProjectFocus">Smart styling &amp; features</strong></div></div><div class="mobile-showcase-copy"><div><span>Description</span><p id="mobileTargetDesc">A technology-led product campaign presenting the frame as a refined fusion of intelligent styling, everyday utility and premium eyewear design.</p></div><div><span>Process</span><p id="mobileTargetProc">Built a clean feature-led layout, paired close-up visuals with concise messaging, and structured the post for quick product understanding.</p></div><div><span>Purpose</span><p id="mobileTargetPurp">To boost brand sales and build brand image.</p></div></div><a class="mobile-showcase-link" href="#" id="mobileTargetLink" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;" target="_blank">View project source</a><button class="virtual-tryon-btn virtual-tryon-btn-mobile" id="virtualTryOnBtnMobile" type="button" hidden onclick="event.stopPropagation(); startVirtualTryOn()"><span class="virtual-tryon-btn-icon" aria-hidden="true">◉</span><span>Try on with camera</span></button></section><div class="virtual-tryon" id="virtualTryOn" aria-hidden="true" onclick="event.stopPropagation()">
+</style><style id="virtual-personal-fit-v3">
+#virtualTryOnScanCanvas{z-index:2;pointer-events:none;opacity:.9;transition:opacity .25s ease}
+#virtualTryOnCanvas{z-index:3}
+.virtual-tryon-stage.is-calibrated #virtualTryOnScanCanvas{opacity:0}
+.virtual-fit-calibration{position:absolute;left:50%;bottom:18px;z-index:7;width:min(390px,calc(100% - 32px));transform:translateX(-50%);padding:14px 16px;border:1px solid rgba(255,255,255,.14);border-radius:17px;background:rgba(10,10,13,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#fff;display:grid;gap:7px;transition:opacity .25s ease,transform .25s ease}
+.virtual-fit-calibration.is-done{opacity:0;transform:translateX(-50%) translateY(9px);pointer-events:none}
+.virtual-fit-kicker{font-size:.5rem;font-weight:800;letter-spacing:1.35px;text-transform:uppercase;color:rgba(255,255,255,.52)}
+.virtual-fit-calibration strong{font-size:.76rem;line-height:1.25}
+.virtual-fit-calibration small{font-size:.57rem;line-height:1.35;color:rgba(255,255,255,.62)}
+.virtual-fit-track{height:4px;border-radius:99px;background:rgba(255,255,255,.13);overflow:hidden}
+.virtual-fit-track>div{height:100%;width:0;border-radius:inherit;background:#fff;transition:width .18s linear}
+.virtual-refit-btn{min-height:32px;padding:7px 12px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.82);font:800 .54rem/1 var(--font-base);letter-spacing:.45px;text-transform:uppercase;cursor:pointer}
+.virtual-refit-btn:hover{background:#fff;color:#111}
+@media(max-width:768px){.virtual-fit-calibration{bottom:14px;width:min(360px,calc(100% - 24px));padding:12px 13px}.virtual-tryon-footer .virtual-refit-btn{align-self:flex-start}}
+</style>
+</head><body><svg aria-hidden="true" focusable="false" height="0" style="position:absolute;overflow:hidden" width="0"><defs><clippath clippathunits="objectBoundingBox" id="catEyeLeftClip"><path d="M 0.018 0.055 C 0.27 0.052 0.59 0.082 0.79 0.17 C 0.91 0.223 0.983 0.31 0.994 0.425 C 1 0.645 0.91 0.835 0.724 0.932 C 0.515 1 0.275 0.982 0.135 0.865 C 0.045 0.79 0.006 0.59 0.008 0.325 C 0.009 0.19 0.012 0.095 0.018 0.055 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="catEyeRightClip"><path d="M 0.982 0.055 C 0.73 0.052 0.41 0.082 0.21 0.17 C 0.09 0.223 0.017 0.31 0.006 0.425 C 0 0.645 0.09 0.835 0.276 0.932 C 0.485 1 0.725 0.982 0.865 0.865 C 0.955 0.79 0.994 0.59 0.992 0.325 C 0.991 0.19 0.988 0.095 0.982 0.055 Z"></path></clippath></defs></svg><svg aria-hidden="true" focusable="false" height="0" style="position:absolute;overflow:hidden" width="0"><defs><clippath clippathunits="objectBoundingBox" id="secondSlotLensLeftClip"><path d="M0.075,0.025 C0.035,0.026 0.008,0.072 0.006,0.145 L0.018,0.685 C0.022,0.845 0.107,0.945 0.257,0.963 L0.742,0.982 C0.875,0.986 0.957,0.899 0.975,0.758 L0.997,0.202 C0.999,0.101 0.925,0.045 0.815,0.035 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="secondSlotLensRightClip"><path d="M0.185,0.035 C0.075,0.045 0.001,0.101 0.003,0.202 L0.025,0.758 C0.043,0.899 0.125,0.986 0.258,0.982 L0.743,0.963 C0.893,0.945 0.978,0.845 0.982,0.685 L0.994,0.145 C0.992,0.072 0.965,0.026 0.925,0.025 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="thirdSlotWingLensLeftClip"><path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="thirdSlotWingLensRightClip"><path d="M0.012,0.045 C0.14,0.14 0.29,0.20 0.49,0.21 L0.75,0.22 C0.81,0.22 0.845,0.29 0.875,0.40 L0.905,0.46 L0.985,0.45 L0.998,0.58 L0.91,0.60 C0.89,0.70 0.85,0.79 0.79,0.85 L0.73,0.91 L0.67,0.89 L0.70,0.98 L0.61,0.96 L0.55,0.87 L0.57,0.99 L0.48,0.97 L0.42,0.86 L0.43,0.97 L0.34,0.94 L0.29,0.83 L0.29,0.93 L0.21,0.88 L0.18,0.79 L0.12,0.77 L0.15,0.70 L0.09,0.67 L0.12,0.59 L0.055,0.54 L0.09,0.44 L0.035,0.34 L0.065,0.24 Z" transform="translate(1 0) scale(-1 1)"></path></clippath><clippath clippathunits="objectBoundingBox" id="fourthSlotButterflyLensLeftClip"><path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z"></path></clippath><clippath clippathunits="objectBoundingBox" id="fourthSlotButterflyLensRightClip"><path d="M0.025,0.075 C0.13,0.055 0.27,0.09 0.43,0.17 C0.61,0.26 0.79,0.39 0.91,0.49 C0.94,0.515 0.97,0.525 0.997,0.525 L0.997,0.62 C0.96,0.62 0.925,0.64 0.895,0.675 L0.79,0.79 L0.64,0.95 L0.55,0.885 L0.46,0.985 L0.375,0.905 L0.285,0.98 L0.225,0.875 L0.14,0.92 L0.115,0.79 C0.055,0.79 0.03,0.735 0.055,0.68 L0.105,0.595 L0.045,0.53 C0.005,0.485 0.025,0.42 0.08,0.38 L0.025,0.30 C-0.005,0.22 0.002,0.13 0.025,0.075 Z" transform="translate(1 0) scale(-1 1)"></path></clippath></defs></svg><div class="ambient-mesh"></div><div aria-hidden="true" id="kinetic3dStage"><div class="kinetic-box" id="kineticBox"><div class="box-lid" id="kineticBoxLid"><div class="box-lid-photo"></div><div class="case-brand-mark">Lensciaga</div></div><div class="case-rim"></div><div class="box-side box-bottom"></div><div class="box-side box-front"></div><div class="box-side box-back"></div><div class="box-side box-left"></div><div class="box-side box-right"></div></div><div class="folded-glasses-proxy" id="foldedGlasses"><div class="proxy-temple left"></div><div class="proxy-temple right"></div><div class="proxy-hinge left"></div><div class="proxy-hinge right"></div><div class="folded-lens l1"></div><div class="folded-lens l2"></div><div class="proxy-bridge"><div class="proxy-bridge-arch"></div><div class="proxy-nose-pad left"></div><div class="proxy-nose-pad right"></div></div></div></div><div class="fullscreen-menu" id="fullScreenMenu"><button aria-label="Close navigation menu" class="close-menu-btn" onclick="toggleMenu(false)" type="button">✕</button><div class="menu-links"><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Overview')">Overview</a><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Featured Work')">Featured Work</a><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Brand Strategy')">Content Strategy</a><a class="menu-link" href="#" onclick="event.preventDefault(); handleMenuClick('Contact')">Contact</a></div><nav aria-label="External profiles" class="menu-social-links"><a href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">in</span>LinkedIn</a><a href="https://lensciaga.com/" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">↗</span>Lensciaga</a><a href="https://www.instagram.com/lensciaga.official?igsh=ajlpM3ZjbmozdW5q" rel="noopener noreferrer" target="_blank"><span aria-hidden="true">◎</span>Instagram</a></nav></div><div class="toast-notification" id="toastBox"><span style="font-size: 1.2rem;">⚡</span><div><strong style="display:block; font-size:0.8rem;">External Link Ready</strong><span id="toastMessage" style="font-size:0.75rem; color:var(--text-muted);">Opening the selected destination...</span></div></div><div class="app-container"><aside class="sidebar"><div class="brand-logo" onclick="handleMenuClick('Overview')">Muhammad<br/>Shahrukh</div><nav class="sidebar-nav" id="sidebarNav"><a class="nav-item active" href="#overview-section">Overview</a><a class="nav-item" href="#featured-section">Featured Work</a><a class="nav-item" href="#brand-section">Content Strategy</a><a class="nav-item" href="#contact-section">Contact</a></nav><div class="sidebar-footer"><div><p class="footer-quote">Every frame tells a story. Every detail builds the brand.</p></div><div aria-label="Professional and company links" class="social-links portfolio-social-links"><a aria-label="Open Muhammad Shahrukh on LinkedIn" class="social-icon portfolio-social-link" data-label="LinkedIn" href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" rel="noopener noreferrer" target="_blank" title="LinkedIn"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6.4 8.2V19M6.4 5.1v.1M10.9 19v-5.6c0-2.4 1.4-3.9 3.6-3.9 2.1 0 3.1 1.4 3.1 3.9V19M10.9 9.8V19"></path></svg><span class="visually-hidden">LinkedIn</span></a><a aria-label="Open the official Lensciaga website" class="social-icon portfolio-social-link" data-label="Lensciaga website" href="https://lensciaga.com/" rel="noopener noreferrer" target="_blank" title="Lensciaga website"><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"></circle><path d="M3.8 12h16.4M12 3.5c2.2 2.4 3.3 5.2 3.3 8.5S14.2 18.1 12 20.5M12 3.5C9.8 5.9 8.7 8.7 8.7 12s1.1 6.1 3.3 8.5"></path></svg><span class="visually-hidden">Lensciaga website</span></a><a aria-label="Open Lensciaga on Instagram" class="social-icon portfolio-social-link" data-label="Instagram" href="https://www.instagram.com/lensciaga.official?igsh=ajlpM3ZjbmozdW5q" rel="noopener noreferrer" target="_blank" title="Lensciaga Instagram"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"></rect><circle cx="12" cy="12" r="4"></circle><circle cx="17.5" cy="6.7" r=".9" class="social-icon-dot"></circle></svg><span class="visually-hidden">Instagram</span></a></div><div class="copyright">© 2025–Present Muhammad Shahrukh · All Rights Reserved</div></div></aside><main class="main-content" id="mainContentArea"><style>.overview-case-poster { isolation: isolate; } .overview-case-photo { position: absolute; inset: 3% 1% 1%; z-index: 3; width: 98%; height: 96%; display: block; object-fit: contain; object-position: center; opacity: 1; transform: translate3d(0, 5px, 0) scale(.97); transform-origin: 50% 58%; filter: drop-shadow(0 24px 24px rgba(32, 38, 49, .20)); transition: opacity 300ms ease, transform 720ms cubic-bezier(.22,1,.36,1), filter 520ms ease; will-change: opacity, transform; pointer-events: none; user-select: none; } .overview-case-poster .overview-case-svg { position: relative; z-index: 2; opacity: 0; transform: translate3d(0, 8px, 0) scale(.96); transition: opacity 260ms ease 110ms, transform 720ms cubic-bezier(.22,1,.36,1); } .overview-case-stage.overview-case-engaged .overview-case-photo, .overview-case-stage.overview-case-unfolded .overview-case-photo, .overview-case-stage.model-loading .overview-case-photo { opacity: 0; transform: translate3d(0, -8px, 0) scale(1.035); filter: drop-shadow(0 18px 20px rgba(32, 38, 49, .12)); transition-delay: 0ms; } .overview-case-stage.overview-case-engaged .overview-case-svg, .overview-case-stage.overview-case-unfolded .overview-case-svg, .overview-case-stage.model-loading .overview-case-svg, .overview-case-stage.overview-is-closing .overview-case-svg { opacity: 1; transform: translate3d(0, 0, 0) scale(1); } .overview-case-stage.overview-is-closing .overview-case-photo { opacity: 0; transform: translate3d(0, -3px, 0) scale(1.01); } .overview-case-stage:not(.overview-case-engaged):not(.overview-is-closing) .overview-case-photo { opacity: 1; transform: translate3d(0, 5px, 0) scale(.97); } .overview-case-stage:not(.overview-case-engaged):not(.overview-is-closing) .overview-case-svg { opacity: 0; } .overview-case-svg #overviewCaseBlack stop:nth-child(1) { stop-color: #718baa; } .overview-case-svg #overviewCaseBlack stop:nth-child(2) { stop-color: #456888; } .overview-case-svg #overviewCaseBlack stop:nth-child(3) { stop-color: #203d58; } .overview-case-svg #overviewCaseInner stop:nth-child(1) { stop-color: #4c6f8f; } .overview-case-svg #overviewCaseInner stop:nth-child(2) { stop-color: #17334c; } .overview-case-svg #overviewLens stop:nth-child(1) { stop-color: #52a7c0; stop-opacity: .90; } .overview-case-svg #overviewLens stop:nth-child(2) { stop-color: #267e9f; stop-opacity: .94; } .overview-case-svg #overviewLens stop:nth-child(3) { stop-color: #155270; stop-opacity: .97; } @media (max-width: 900px) { .overview-case-photo { inset: 5% 0 0; width: 100%; height: 92%; transform: translate3d(0, 4px, 0) scale(.99); } } @media (max-width: 620px) { .overview-case-photo { inset: 7% -2% 0; width: 104%; height: 90%; } } @media (prefers-reduced-motion: reduce) { .overview-case-photo, .overview-case-poster .overview-case-svg { transition-duration: 1ms !important; transition-delay: 0ms !important; } }</style><style>.overview-case-stage { --overview-motion-ease: cubic-bezier(.18,.82,.22,1); --overview-hinge-ease: cubic-bezier(.20,.76,.18,1); --overview-settle-ease: cubic-bezier(.16,1.12,.30,1); } .overview-case-poster .overview-svg-case, .overview-case-poster .overview-svg-base, .overview-case-poster .overview-svg-lid, .overview-case-poster .overview-svg-glasses, .overview-case-poster .overview-svg-front, .overview-case-poster .overview-svg-temple, .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow { transform-box: view-box; backface-visibility: hidden; } .overview-case-poster .overview-svg-glasses { transform-origin: 378px 296px; transform: translateY(76px) rotate(3deg) scale(.68,.62); opacity: 0; transition: transform 520ms var(--overview-motion-ease), opacity 250ms ease, filter 420ms ease; } .overview-case-poster .overview-svg-front { transform-origin: 378px 296px; transform: rotate(1.8deg) scale(1,.91); transition: transform 520ms var(--overview-motion-ease); } .overview-case-poster .overview-svg-temple { opacity: .94; transition: transform 430ms var(--overview-hinge-ease), opacity 220ms ease; } .overview-case-poster .overview-svg-temple-left { transform-origin: 214px 286px; transform: rotate(142deg) scaleX(.82); } .overview-case-poster .overview-svg-temple-right { transform-origin: 541px 286px; transform: rotate(-142deg) scaleX(.82); } .overview-case-stage.overview-case-engaged .overview-svg-case { transform: translateY(7px) rotate(-1deg) scale(.985); } .overview-case-stage.overview-case-engaged .overview-svg-base { transform: translateY(8px) scale(.985); } .overview-case-stage.overview-case-engaged .overview-svg-lid { transform: translateY(-94px) scale(.97,.82); opacity: 1; } .overview-case-stage.overview-case-engaged .overview-svg-interior { opacity: 1; } .overview-case-stage.overview-case-engaged .overview-svg-glasses { transform: translateY(43px) rotate(2deg) scale(.78,.72); opacity: 1; filter: blur(.3px); } .overview-case-stage.overview-case-engaged .overview-svg-front { transform: rotate(1.2deg) scale(1,.94); } .overview-case-stage.overview-case-engaged .overview-svg-shadow { transform: scale(1.02,.90); opacity: .24; } .overview-case-stage.overview-glasses-lifted .overview-svg-case { transform: translateY(13px) rotate(-.5deg) scale(.995); } .overview-case-stage.overview-glasses-lifted .overview-svg-base { transform: translateY(25px) scale(.945); opacity: .94; } .overview-case-stage.overview-glasses-lifted .overview-svg-lid { transform: translateY(-145px) scale(.93,.74); opacity: .91; } .overview-case-stage.overview-glasses-lifted .overview-svg-glasses { transform: translateY(-55px) rotate(-1.4deg) scale(.98,.92); opacity: 1; filter: none; transition-duration: 610ms, 220ms, 360ms; transition-timing-function: var(--overview-motion-ease), ease, ease; } .overview-case-stage.overview-glasses-lifted .overview-svg-front { transform: rotate(-.7deg) scale(1,.98); } .overview-case-stage.overview-glasses-lifted .overview-svg-glow { transform: scale(1.05); opacity: .78; } .overview-case-stage.overview-temples-opening .overview-svg-glasses { transform: translateY(-95px) rotate(-.45deg) scale(1.045,1); transition-duration: 520ms, 180ms, 300ms; } .overview-case-stage.overview-temples-opening .overview-svg-front { transform: rotate(-.2deg) scale(1,1); } .overview-case-stage.overview-temples-opening .overview-svg-temple-left { transform: rotate(24deg) scaleX(.96); } .overview-case-stage.overview-temples-opening .overview-svg-temple-right { transform: rotate(-24deg) scaleX(.96); } .overview-case-stage.overview-case-unfolded .overview-svg-case { transform: translateY(20px) rotate(0deg) scale(1); } .overview-case-stage.overview-case-unfolded .overview-svg-base { transform: translateY(39px) scale(.90); opacity: .88; } .overview-case-stage.overview-case-unfolded .overview-svg-lid { transform: translateY(-166px) scale(.90,.70); opacity: .84; } .overview-case-stage.overview-case-unfolded .overview-svg-glasses { transform: translateY(-114px) rotate(0deg) scale(1.08,1.03); opacity: 1; transition: transform 520ms var(--overview-settle-ease), opacity 180ms ease, filter 260ms ease; } .overview-case-stage.overview-case-unfolded .overview-svg-front { transform: rotate(0deg) scale(1); transition: transform 460ms var(--overview-settle-ease); } .overview-case-stage.overview-case-unfolded .overview-svg-temple-left, .overview-case-stage.overview-case-unfolded .overview-svg-temple-right { transform: rotate(0deg) scaleX(1); opacity: 1; transition: transform 470ms var(--overview-settle-ease), opacity 180ms ease; } .overview-case-stage.overview-case-unfolded .overview-svg-shadow { transform: translateY(9px) scale(1.12,.72); opacity: .20; } .overview-case-stage.overview-case-unfolded .overview-svg-glow { transform: scale(1.14); opacity: 1; } .overview-case-stage.model-loading.overview-case-unfolded .overview-svg-glasses { animation: overviewVideoMatchedFloat 2.8s ease-in-out 700ms infinite; } @keyframes overviewVideoMatchedFloat { 0%, 100% { transform: translateY(-114px) rotate(0deg) scale(1.08,1.03); } 50% { transform: translateY(-120px) rotate(.2deg) scale(1.086,1.035); } } .overview-case-stage.overview-is-closing .overview-svg-glasses, .overview-case-stage.overview-is-closing .overview-svg-temple, .overview-case-stage.overview-is-closing .overview-svg-lid, .overview-case-stage.overview-is-closing .overview-svg-base { animation: none !important; } @media (max-width: 620px) { .overview-case-stage.overview-case-engaged .overview-svg-lid { transform: translateY(-84px) scale(.96,.84); } .overview-case-stage.overview-glasses-lifted .overview-svg-lid { transform: translateY(-126px) scale(.94,.77); } .overview-case-stage.overview-glasses-lifted .overview-svg-glasses { transform: translateY(-43px) rotate(-1deg) scale(.94,.90); } .overview-case-stage.overview-temples-opening .overview-svg-glasses { transform: translateY(-78px) rotate(-.35deg) scale(1,.97); } .overview-case-stage.overview-case-unfolded .overview-svg-lid { transform: translateY(-144px) scale(.91,.73); } .overview-case-stage.overview-case-unfolded .overview-svg-glasses { transform: translateY(-96px) rotate(0deg) scale(1.025,.99); } @keyframes overviewVideoMatchedFloat { 0%, 100% { transform: translateY(-96px) rotate(0deg) scale(1.025,.99); } 50% { transform: translateY(-101px) rotate(.2deg) scale(1.03,.995); } } } @media (prefers-reduced-motion: reduce) { .overview-case-stage.overview-case-engaged .overview-svg-glasses, .overview-case-stage.overview-glasses-lifted .overview-svg-glasses, .overview-case-stage.overview-temples-opening .overview-svg-glasses, .overview-case-stage.overview-case-unfolded .overview-svg-glasses { animation: none !important; } }</style><style>.overview-case-stage { --hero-case-ease: cubic-bezier(.22,.68,.20,1); --hero-glasses-ease: cubic-bezier(.16,1,.30,1); --hero-hinge-ease: cubic-bezier(.20,.78,.18,1); --hero-opacity-ease: cubic-bezier(.25,.46,.45,.94); } .overview-case-photo { transition-property: opacity, transform, filter !important; transition-duration: 460ms, 980ms, 460ms !important; transition-timing-function: var(--hero-opacity-ease), var(--hero-glasses-ease), var(--hero-opacity-ease) !important; transition-delay: 0ms !important; backface-visibility: hidden; transform: translate3d(0,5px,0) scale(.97); } .overview-case-poster .overview-case-svg { transition-property: opacity, transform !important; transition-duration: 420ms, 980ms !important; transition-timing-function: var(--hero-opacity-ease), var(--hero-glasses-ease) !important; transition-delay: 35ms, 0ms !important; backface-visibility: hidden; } .overview-case-poster .overview-svg-case, .overview-case-poster .overview-svg-base, .overview-case-poster .overview-svg-lid, .overview-case-poster .overview-svg-glasses, .overview-case-poster .overview-svg-front, .overview-case-poster .overview-svg-temple, .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow { animation: none !important; transition-delay: 0ms !important; backface-visibility: hidden; will-change: transform, opacity; } .overview-case-poster .overview-svg-case { transition-property: transform, opacity !important; transition-duration: 940ms, 420ms !important; transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-base { transition-property: transform, opacity !important; transition-duration: 900ms, 520ms !important; transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-lid { transition-property: transform, opacity !important; transition-duration: 820ms, 500ms !important; transition-timing-function: var(--hero-case-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-glasses { transition-property: transform, opacity !important; transition-duration: 760ms, 330ms !important; transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important; filter: none !important; } .overview-case-poster .overview-svg-front { transition-property: transform, opacity !important; transition-duration: 720ms, 360ms !important; transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-temple { transition-property: transform, opacity !important; transition-duration: 680ms, 300ms !important; transition-timing-function: var(--hero-hinge-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow { transition-property: transform, opacity !important; transition-duration: 900ms, 520ms !important; transition-timing-function: var(--hero-glasses-ease), var(--hero-opacity-ease) !important; } .overview-case-poster .overview-svg-interior { transition: opacity 430ms var(--hero-opacity-ease) !important; } .overview-case-stage .overview-final-model.hero-model-viewer { transition: opacity 620ms var(--hero-opacity-ease), visibility 0s linear 0s !important; backface-visibility: hidden; } .overview-case-stage.overview-model-visible .overview-case-poster { transition: opacity 620ms var(--hero-opacity-ease), transform 920ms var(--hero-glasses-ease) !important; } .overview-case-stage.model-loading.overview-case-unfolded.overview-motion-complete .overview-svg-glasses { animation: overviewVideoMatchedFloat 3.2s ease-in-out 260ms infinite !important; } .overview-case-stage.model-loading:not(.overview-motion-complete) .overview-svg-glasses { animation: none !important; } @media (prefers-reduced-motion: reduce) { .overview-case-photo, .overview-case-poster .overview-case-svg, .overview-case-poster .overview-svg-case, .overview-case-poster .overview-svg-base, .overview-case-poster .overview-svg-lid, .overview-case-poster .overview-svg-glasses, .overview-case-poster .overview-svg-front, .overview-case-poster .overview-svg-temple, .overview-case-poster .overview-svg-shadow, .overview-case-poster .overview-svg-glow, .overview-case-poster .overview-svg-interior { transition-duration: 1ms !important; transition-delay: 0ms !important; animation: none !important; } }</style><section class="portfolio-section internship-overview" id="overview-section"><div class="overview-menu-row"><button aria-controls="fullScreenMenu" aria-expanded="false" aria-label="Open navigation menu" class="hamburger-btn" onclick="toggleMenu(true)" type="button"><span></span><span></span></button></div><div class="internship-overview-grid"><div class="internship-overview-copy"><div class="overview-index">01 / OVERVIEW</div><h1 class="internship-overview-title">Selected Work<br/>&amp; Creative Process</h1><p class="internship-overview-description">A curated showcase of the content, product presentations and interactive concepts I created for Lensciaga, reflecting my approach to visual storytelling, brand building and audience engagement.</p><button class="overview-explore-link" onclick="scrollToSection('featured-section')" type="button"><span>Explore my work</span><span aria-hidden="true">→</span></button></div><div class="overview-visual-column"><div aria-hidden="true" class="overview-visual-outline"></div><div aria-label="Hover or tap to open the eyeglasses case and reveal the interactive 3D model" class="glasses-3d-stage overview-case-stage" id="stage3d" role="button" tabindex="0"><div aria-hidden="true" class="overview-case-hint"><span class="overview-case-hint-dot"></span> Hover or tap to open</div><div aria-hidden="true" class="model-poster overview-case-poster" id="modelPoster"><svg aria-label="Blue Lensciaga case transition opening to reveal a pair of eyeglasses" class="overview-case-svg" role="img" viewbox="0 0 760 520" xmlns="http://www.w3.org/2000/svg"><defs><lineargradient id="overviewCaseBlack" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#303036"></stop><stop offset="0.48" stop-color="#111114"></stop><stop offset="1" stop-color="#050507"></stop></lineargradient><lineargradient id="overviewCaseInner" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#292932"></stop><stop offset="1" stop-color="#08080b"></stop></lineargradient><lineargradient id="overviewGold" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#765315"></stop><stop offset="0.18" stop-color="#d5ab44"></stop><stop offset="0.36" stop-color="#fff0b0"></stop><stop offset="0.58" stop-color="#c89228"></stop><stop offset="0.82" stop-color="#f3d47d"></stop><stop offset="1" stop-color="#6e4c10"></stop></lineargradient><lineargradient id="overviewLens" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#33343c" stop-opacity="0.94"></stop><stop offset="0.62" stop-color="#101116" stop-opacity="0.97"></stop><stop offset="1" stop-color="#050609" stop-opacity="0.98"></stop></lineargradient><radialgradient cx="50%" cy="50%" id="overviewCaseGlow" r="50%"><stop offset="0" stop-color="#8247ff" stop-opacity="0.18"></stop><stop offset="1" stop-color="#8247ff" stop-opacity="0"></stop></radialgradient><filter height="220%" id="overviewCaseShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="24" flood-color="#000000" flood-opacity="0.34" stddeviation="21"></fedropshadow></filter><filter height="220%" id="overviewGlassesShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="15" flood-color="#000000" flood-opacity="0.34" stddeviation="12"></fedropshadow></filter><clippath id="overviewLeftLensClip"><path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z"></path></clippath><clippath id="overviewRightLensClip"><path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z"></path></clippath></defs><ellipse class="overview-svg-glow" cx="386" cy="304" fill="url(#overviewCaseGlow)" rx="282" ry="188"></ellipse><ellipse class="overview-svg-shadow" cx="386" cy="406" fill="#000" opacity="0.22" rx="242" ry="42"></ellipse><g class="overview-svg-case"><g class="overview-svg-base" filter="url(#overviewCaseShadow)"><path d="M122 271 C137 241 169 224 205 221 L557 221 C596 223 626 244 641 276 L622 363 C616 391 593 409 560 414 L205 414 C170 410 143 392 135 363Z" fill="url(#overviewCaseBlack)" stroke="url(#overviewGold)" stroke-width="6"></path><path class="overview-svg-interior" d="M151 278 C165 257 188 246 216 244 L548 244 C575 245 598 258 611 281 L596 351 C590 374 571 386 545 389 L218 389 C190 386 169 374 163 351Z" fill="url(#overviewCaseInner)" stroke="#4f3b15" stroke-width="2"></path><path d="M141 350 C225 372 532 373 622 350 L614 377 C607 398 589 411 559 416 L207 416 C177 412 153 399 145 377Z" fill="#07070a" opacity="0.78"></path><text fill="#d5ad4e" fill-opacity="0.52" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="13" letter-spacing="4" text-anchor="middle" x="382" y="391">Lensciaga</text></g><g class="overview-svg-lid" filter="url(#overviewCaseShadow)"><path d="M121 263 C134 230 166 210 205 207 L558 207 C598 210 627 230 642 264 L625 337 C617 366 594 384 560 390 L204 390 C169 386 144 367 136 337Z" fill="url(#overviewCaseBlack)" stroke="url(#overviewGold)" stroke-width="6"></path><path d="M143 268 C155 243 181 230 211 228 L552 228 C581 231 605 243 617 269 L604 327 C598 348 580 361 553 365 L211 365 C184 362 164 348 158 327Z" fill="#0b0b0f" opacity="0.58"></path><path d="M151 246 C231 220 531 219 615 247" fill="none" stroke="#fff" stroke-opacity="0.10" stroke-width="3"></path><text fill="#e2bf65" fill-opacity="0.67" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" letter-spacing="7" text-anchor="middle" x="382" y="307">Lensciaga</text></g><g class="overview-svg-glasses" filter="url(#overviewGlassesShadow)"><g class="overview-svg-temple overview-svg-temple-left"><path d="M214 286 C167 266 125 246 86 222" fill="none" stroke="#121217" stroke-linecap="round" stroke-width="15"></path><path d="M214 286 C168 266 127 246 88 222" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="3"></path></g><g class="overview-svg-temple overview-svg-temple-right"><path d="M541 286 C588 266 630 246 669 222" fill="none" stroke="#121217" stroke-linecap="round" stroke-width="15"></path><path d="M541 286 C587 266 628 246 667 222" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="3"></path></g><g class="overview-svg-front"><path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z" fill="url(#overviewLens)" stroke="url(#overviewGold)" stroke-width="7"></path><path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z" fill="url(#overviewLens)" stroke="url(#overviewGold)" stroke-width="7"></path><path d="M321 278 C344 260 410 260 434 278" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path><path d="M216 282 L193 273" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path><path d="M539 282 L562 273" fill="none" stroke="url(#overviewGold)" stroke-linecap="round" stroke-width="7"></path><g clip-path="url(#overviewLeftLensClip)" opacity="0.30"><path d="M226 244 L284 356" stroke="#ffffff" stroke-width="13"></path></g><g clip-path="url(#overviewRightLensClip)" opacity="0.24"><path d="M463 244 L516 356" stroke="#ffffff" stroke-width="12"></path></g></g></g></g></svg></div><div aria-live="polite" class="overview-local-model-note" id="overviewLocalModelNote">Load the interactive model when you are ready. The lightweight preview remains available while it loads.</div><model-viewer alt="Interactive 3D model of Lensciaga eyeglasses featured in this portfolio" auto-rotate="" auto-rotate-delay="900" camera-controls="" camera-orbit="22deg 74deg 105%" camera-target="auto auto auto" class="hero-model-viewer overview-final-model" data-model-candidates="./luxury%20eyeglasses%203d%20model.glb|./eyeglasses.glb" data-src="./luxury%20eyeglasses%203d%20model.glb" environment-image="neutral" exposure="1.15" field-of-view="26deg" id="luxuryGlassesModel" interaction-prompt="none" max-field-of-view="38deg" min-field-of-view="20deg" reveal="auto" rotation-per-second="14deg" shadow-intensity="1.35" shadow-softness="0.9"></model-viewer><button aria-controls="luxuryGlassesModel" class="model-load-button overview-hidden-model-trigger" id="load3dModelButton" tabindex="-1" type="button">View Glasses in 3D</button><input accept=".glb,model/gltf-binary" aria-hidden="true" hidden="" id="overviewLocalModelFile" tabindex="-1" type="file"/><div aria-live="polite" class="model-load-panel overview-model-load-panel" id="modelLoadPanel" role="status"><span class="model-load-note" id="modelLoadStatus">Loading the interactive glasses. This may take a moment on slower connections.</span><div aria-hidden="true" class="model-progress-track"><div class="model-progress-bar" id="modelProgressBar"></div></div><span class="model-error" id="modelErrorMessage">The lightweight animated glasses remain available while the 3D version loads.</span></div></div></div></div><div aria-label="Portfolio highlights" class="internship-stat-rail"><div class="internship-stat-item"><span aria-hidden="true" class="internship-stat-icon">▣</span><div><strong>12</strong><span>Featured Projects</span></div></div><div class="internship-stat-item"><span aria-hidden="true" class="internship-stat-icon">&lt;/&gt;</span><div><strong>8+</strong><span>Creative Methods</span></div></div><div class="internship-stat-item"><span aria-hidden="true" class="internship-stat-icon">◇</span><div><strong>1</strong><span>Evolving Portfolio</span></div></div></div></section><section class="portfolio-section" id="featured-section"><div class="featured-sticky-shell" id="featuredStickyShell"><div class="featured-scroll-track" id="featuredScrollTrack"><div class="top-meta-bar"><div class="meta-context">SELECTED LENSCIAGA WORK • 2025-PRESENT</div></div><div class="hero-section"><span class="section-label">/ Content, Campaigns &amp; Product Stories</span><h1>Featured <span>Work</span></h1><div class="hero-footer-row"><p class="description-text">A selection of Lensciaga content created to present products clearly, strengthen the visual identity, and turn individual frames into distinctive brand stories.</p><button class="action-pill-btn" onclick="scrolledToWork()">Explore case studies <span>↗</span></button><div class="scroll-explore" onclick="scrolledToWork()"><span>Scroll to explore</span><div class="scroll-circle">↓</div></div></div></div><div class="instagram-grid" id="portfolioGrid"><div class="slot-card" onclick="openShowcase(this, 'Aurelion Noir 51004', 'A technology-led product campaign presenting the frame as a refined fusion of intelligent styling, everyday utility and premium eyewear design.', 'Built a clean feature-led layout, paired close-up visuals with concise messaging, and structured the post for quick product understanding.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DTN3WlGCLr8/', 'default')"><img alt="Black premium eyeglasses presented in a technology-led product campaign." class="slot-card-img" data-src="glasses.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 01</div><div class="slot-title">Aurelion Noir</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Transition Premium Glasses', 'A reel-led showcase demonstrating how the lenses adapt to changing light conditions while preserving the frame\'s premium appearance.', 'Planned a reveal-based sequence, balanced product close-ups with lifestyle context, and used motion to make the transition benefit easy to understand.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DTe4BrTiO12/', 'tinted')"><img alt="Transition eyeglasses shown changing from clear to tinted lenses." class="slot-card-img" data-src="tinted.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 02</div><div class="slot-title">Transition Frames</div></div></div><div class="slot-card wing-slot" onclick="openShowcase(this, 'Premium Winged Glasses', 'A dramatic rimless eyewear concept built around a sharp winged silhouette that turns the frame into a statement piece.', 'Selected angles that emphasise the wing tips, bridge, and gradient lenses, then paced the reel around the frame\'s distinctive outline.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DTkVEkoCP0U/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'doffy')"><img alt="Rimless glasses with dramatic wing-shaped lenses and a gradient tint." class="slot-card-img" data-src="doffy1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 03</div><div class="slot-title">Winged Rimless</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Premium Butterfly Glasses', 'A fashion-focused product showcase celebrating the oversized butterfly silhouette, soft lens gradient, and elegant face-framing proportions.', 'Combined movement, close-up product views and polished transitions to highlight the frame\'s symmetry, scale and styling versatility.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DUH-ET0iOxz/', 'butty')"><img alt="Oversized butterfly-shaped glasses with softly tinted lenses." class="slot-card-img" data-src="butty1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 04</div><div class="slot-title">Butterfly Frames</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Clip-On Glasses', 'A practical product story showing how one optical frame can shift into a sun-ready look through a clean magnetic clip-on.', 'Presented the base frame and attachment in a clear sequence, using detail shots to explain fit, alignment and everyday convenience.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DUsIzl6CPwA/', 'clip')"><img alt="Optical glasses shown with a removable dark clip-on lens." class="slot-card-img" data-src="clip1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 05</div><div class="slot-title">Clip-On Versatility</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Stare Rose Aura', 'A colour-led product post positioning the rose-toned frame as expressive, modern, and easy to recognise within the Lensciaga feed.', 'Used a soft pink palette, clean framing and close-up imagery to keep the colour, lens tone and silhouette visually consistent.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DTdHglQCJBB/', 'pink')"><img alt="Rose-pink eyeglasses presented against a clean branded background." class="slot-card-img" data-src="pink1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 06</div><div class="slot-title">Rose Aura</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Aurelius Noir 51005', 'A premium campaign built around a refined gold frame, dark lenses, and restrained luxury cues designed to elevate product perception.', 'Focused on bridge proportions, metallic details and controlled lighting, using close-up imagery to communicate finish and craftsmanship.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DTS2J77CMyr/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'gold')"><img alt="Gold-framed eyeglasses with dark lenses shown in a premium product setting." class="slot-card-img" data-src="gold1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 07</div><div class="slot-title">Aurelius Noir</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Premium Oval Glasses - Black', 'A minimalist product showcase presenting a black oval frame through balanced proportions, clean styling, and a timeless visual direction.', 'Selected front and angled views, kept the background restrained, and used consistent spacing to emphasise form and symmetry.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/reel/DYO27Z9MG2J/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'circle')"><img alt="Black oval eyeglasses shown from clean front and angled views." class="slot-card-img" data-src="circle1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 08</div><div class="slot-title">Oval Black</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Lensciaga Frame Collection', 'A multi-product campaign bringing several frame personalities together while maintaining one cohesive Lensciaga visual identity.', 'Organised the frames by shape, colour, and mood, then applied consistent typography, pacing, and layouts across the full set.', 'To boost brand sales and build brand image.', 'https://vt.tiktok.com/ZSC42Wemc/', 'multi')"><img alt="A coordinated collection of different Lensciaga frame styles." class="slot-card-img" data-src="multi7.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 09</div><div class="slot-title">Frame Collection</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Product-in-Hand Campaign', 'A close-up product presentation using hand-held framing to make the eyewear feel tangible, wearable and easy to evaluate.', 'Directed natural hand placement, controlled the background, and captured close-up angles that clearly show scale, finish, and frame details.', 'To boost brand sales and build brand image.', 'https://vt.tiktok.com/ZSC42E1wh/', 'hand')"><img alt="A hand holding eyeglasses to show their scale and product details." class="slot-card-img" data-src="hand1.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 10</div><div class="slot-title">Product in Hand</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Aurelion Classic', 'A hero visual positioning a classic frame through clean composition, reflective surfaces, and an understated premium atmosphere.', 'Used a focused single-product layout, controlled reflections and kept supporting elements minimal so the frame remained the visual centre.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DW_YedMiKY8/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'aura')"><img alt="Classic eyeglasses presented as a refined standalone hero product." class="slot-card-img" data-src="auramain.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 11</div><div class="slot-title">Aurelion Classic</div></div></div><div class="slot-card" onclick="openShowcase(this, 'Lux Cat-Eye', 'A sharp cat-eye campaign built around lifted outer corners, confident styling and a sequence of detail-rich product views.', 'Created a five-view carousel covering front, side, and close-up angles to communicate the silhouette, finish, and wearable proportions.', 'To boost brand sales and build brand image.', 'https://www.instagram.com/p/DW_ZPVzCGBk/?utm_source=ig_web_copy_link&amp;igsh=MzRlODBiNWFlZA==', 'cat')"><img alt="Cat-eye glasses with lifted outer corners shown across several close-up views." class="slot-card-img" data-src="catmain.png" decoding="async" fetchpriority="low" loading="lazy" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="/><div class="slot-overlay"><div class="slot-label">Project 12</div><div class="slot-title">Lux Cat-Eye</div></div></div></div><div aria-label="Featured work overview" class="featured-bottom-rail"><div class="featured-rail-summary"><span class="featured-rail-number">12</span><span class="featured-rail-copy"><strong>Featured projects</strong><span>Open any card to view the idea, execution and purpose behind the work.</span></span></div><div aria-hidden="true" class="featured-rail-topics"><span>Creative Direction</span><span>Product Storytelling</span><span>Social Content</span><span>Interactive Experiences</span></div></div></div><div aria-hidden="true" class="featured-view-progress" id="featuredViewProgress"><span class="featured-progress-label">Project progress</span><span class="featured-progress-track"><span class="featured-progress-fill" id="featuredProgressFill"></span></span><span class="featured-progress-count" id="featuredProgressCount">01 / 02</span></div></div></section><section class="portfolio-section brand-strategy-section" id="brand-section"><div class="brand-strategy-shell"><div class="brand-strategy-layout"><div class="brand-strategy-copy"><div class="brand-strategy-index">03 / CONTENT STRATEGY</div><h1 class="brand-strategy-title">Content Strategy<br/><span>&amp; Creative Process</span></h1><p class="brand-strategy-description">A practical process I used to turn product features into clear, consistent, and engaging content that supports Lensciaga's identity and commercial goals.</p><button class="brand-strategy-explore" id="brandStrategyExplore" type="button"><span>Explore the process</span><span aria-hidden="true">→</span></button><p class="brand-strategy-instruction">Select Explore the Process to preview each stage in sequence, or open any stage directly.</p></div><div aria-label="Interactive content strategy and creative process" class="brand-strategy-visual" id="brandStrategyVisual"><div aria-hidden="true" class="brand-orbit-rings"><span></span><span></span><span></span></div><div aria-hidden="true" class="brand-case-art"><svg aria-label="Open black and gold eyeglasses case" role="img" viewbox="0 0 760 520"><defs><lineargradient id="brandCaseBlack" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#35353c"></stop><stop offset="0.5" stop-color="#111116"></stop><stop offset="1" stop-color="#050507"></stop></lineargradient><lineargradient id="brandCaseInner" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#292932"></stop><stop offset="1" stop-color="#08080b"></stop></lineargradient><lineargradient id="brandGold" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#765315"></stop><stop offset="0.2" stop-color="#d5ab44"></stop><stop offset="0.38" stop-color="#fff0b0"></stop><stop offset="0.62" stop-color="#c89228"></stop><stop offset="0.84" stop-color="#f3d47d"></stop><stop offset="1" stop-color="#6e4c10"></stop></lineargradient><lineargradient id="brandLens" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#33343c" stop-opacity=".94"></stop><stop offset=".62" stop-color="#101116" stop-opacity=".97"></stop><stop offset="1" stop-color="#050609" stop-opacity=".98"></stop></lineargradient><filter height="220%" id="brandCaseShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="23" flood-color="#000" flood-opacity=".30" stddeviation="20"></fedropshadow></filter><filter height="220%" id="brandGlassesShadow" width="180%" x="-40%" y="-60%"><fedropshadow dx="0" dy="13" flood-color="#000" flood-opacity=".30" stddeviation="11"></fedropshadow></filter></defs><ellipse cx="382" cy="425" fill="#000" opacity=".18" rx="238" ry="38"></ellipse><g filter="url(#brandCaseShadow)"><path d="M124 275 C141 242 170 226 207 222 L555 222 C594 225 624 245 639 278 L620 365 C614 391 590 408 558 413 L207 413 C171 410 146 392 137 364Z" fill="url(#brandCaseBlack)" stroke="url(#brandGold)" stroke-width="6"></path><path d="M153 282 C168 258 190 248 218 246 L545 246 C573 247 596 260 608 283 L594 351 C588 373 569 385 543 388 L219 388 C191 386 170 373 164 351Z" fill="url(#brandCaseInner)" stroke="#4f3b15" stroke-width="2"></path><path d="M126 260 C140 224 169 197 207 188 L554 188 C594 196 624 222 639 260 L621 318 C614 341 591 354 559 357 L206 357 C173 354 147 340 138 317Z" fill="url(#brandCaseBlack)" stroke="url(#brandGold)" stroke-width="6" transform="translate(0 -92)"></path><path d="M151 251 C166 226 190 212 218 207 L544 207 C572 213 595 228 607 252 L594 299 C587 318 570 327 545 329 L218 329 C191 326 171 316 164 298Z" fill="#0b0b0f" opacity=".65" transform="translate(0 -92)"></path><text fill="#e2bf65" fill-opacity=".75" font-family="Plus Jakarta Sans, Arial, sans-serif" font-size="18" letter-spacing="7" text-anchor="middle" x="382" y="187">Lensciaga</text></g><g filter="url(#brandGlassesShadow)" transform="translate(0 18)"><path d="M213 291 C164 270 124 249 88 226" fill="none" stroke="#111116" stroke-linecap="round" stroke-width="15"></path><path d="M213 291 C165 270 126 249 90 226" fill="none" stroke="url(#brandGold)" stroke-linecap="round" stroke-width="3"></path><path d="M542 291 C591 270 631 249 667 226" fill="none" stroke="#111116" stroke-linecap="round" stroke-width="15"></path><path d="M542 291 C590 270 629 249 665 226" fill="none" stroke="url(#brandGold)" stroke-linecap="round" stroke-width="3"></path><path d="M252 253 C221 253 205 268 208 298 C211 331 229 348 266 347 C302 346 321 325 323 291 C325 264 300 252 252 253Z" fill="url(#brandLens)" stroke="url(#brandGold)" stroke-width="7"></path><path d="M503 253 C534 253 550 268 547 298 C544 331 526 348 489 347 C453 346 434 325 432 291 C430 264 455 252 503 253Z" fill="url(#brandLens)" stroke="url(#brandGold)" stroke-width="7"></path><path d="M321 278 C344 260 410 260 434 278" fill="none" stroke="url(#brandGold)" stroke-linecap="round" stroke-width="7"></path><path d="M225 271 C247 258 282 257 307 270" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="3"></path><path d="M448 270 C473 257 508 258 530 271" fill="none" stroke="#fff" stroke-opacity=".14" stroke-width="3"></path></g></svg></div><div class="brand-orbit-items"><div class="brand-orbit-item brand-node-research"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">⌕</span><span class="brand-orbit-window"><strong>Research</strong><span>Audience, product and competitor insights</span><small>Reviewed the product, competing eyewear content, and audience preferences to identify the strongest angle for each post.</small></span></button><span class="brand-orbit-caption"><strong>Research</strong><small>Audience &amp; competitor insight</small></span></div><div class="brand-orbit-item brand-node-positioning"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">◎</span><span class="brand-orbit-window"><strong>Positioning</strong><span>Define the product's strongest story</span><small>Selected the most relevant benefit, mood and visual hook so each frame had a clear reason to stand out.</small></span></button><span class="brand-orbit-caption"><strong>Positioning</strong><small>Clear product positioning</small></span></div><div class="brand-orbit-item brand-node-identity"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">◇</span><span class="brand-orbit-window"><strong>Creative Direction</strong><span>Build a recognisable visual language</span><small>Matched colour, composition, typography, and tone to the frame while keeping every piece recognisably Lensciaga.</small></span></button><span class="brand-orbit-caption"><strong>Creative Direction</strong><small>Consistent visual direction</small></span></div><div class="brand-orbit-item brand-node-strategy"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">♟</span><span class="brand-orbit-window"><strong>Production</strong><span>Turn the concept into content</span><small>Planned images, reels, carousels, and interactive elements around the format best suited to the product story.</small></span></button><span class="brand-orbit-caption"><strong>Production</strong><small>Content production planning</small></span></div><div class="brand-orbit-item brand-node-execution"><button aria-expanded="false" class="brand-orbit-trigger" type="button"><span aria-hidden="true" class="brand-orbit-icon">↗</span><span class="brand-orbit-window"><strong>Optimisation</strong><span>Refine for clarity and engagement</span><small>Reviewed pacing, hierarchy, mobile readability, and calls to action before finalising each piece for publication.</small></span></button><span class="brand-orbit-caption"><strong>Optimisation</strong><small>Refine, test &amp; publish</small></span></div></div></div></div><div class="brand-strategy-rail"><div class="brand-strategy-quote"><span aria-hidden="true">“</span><p>A product earns attention through design.<br/>A brand earns memory through consistency.</p></div><div class="brand-strategy-pillar"><strong>Purpose led</strong><span>Every piece communicates a clear product or brand objective.</span></div><div class="brand-strategy-pillar"><strong>Audience aware</strong><span>Visual choices reflect how people discover and assess eyewear.</span></div><div class="brand-strategy-pillar"><strong>Built to convert</strong><span>Content balances brand value, product clarity and commercial intent.</span></div></div></div></section><section class="portfolio-section contact-section" data-side-label="CONNECT" id="contact-section"><div class="top-meta-bar"><div class="meta-context">CONTACT &amp; COLLABORATION<br/>WORK PORTFOLIO / 2025-PRESENT</div></div><div class="contact-simple-layout"><div class="contact-simple-copy"><div class="contact-simple-index">04 / GET IN TOUCH</div><h1 class="contact-simple-title">Let's<br/>connect.</h1><div aria-hidden="true" class="contact-title-rule"></div><p class="contact-simple-description">I am open to creative collaborations, portfolio discussions, and opportunities where visual storytelling, product presentation, and brand thinking can add value.</p><svg aria-label="Gold eyeglasses resting on a cream notebook beside a pen" class="contact-desk-art" role="img" viewbox="0 0 560 250"><defs><lineargradient id="contactNotebook" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#fffdf8"></stop><stop offset="1" stop-color="#e9dfd2"></stop></lineargradient><lineargradient id="contactGold" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#8f6412"></stop><stop offset="0.32" stop-color="#f4d67b"></stop><stop offset="0.62" stop-color="#bc8420"></stop><stop offset="1" stop-color="#f3df9a"></stop></lineargradient><filter height="180%" id="contactShadow" width="160%" x="-30%" y="-30%"><fedropshadow dx="0" dy="12" flood-color="#6f5337" flood-opacity=".13" stddeviation="10"></fedropshadow></filter></defs><g filter="url(#contactShadow)" transform="translate(154 20) rotate(-11 150 104)"><rect fill="url(#contactNotebook)" height="205" rx="10" stroke="#d9cbbb" width="310" x="0" y="0"></rect><rect fill="none" height="184" rx="7" stroke="#ffffff" stroke-opacity=".8" width="282" x="14" y="10"></rect><text fill="#b59a73" font-family="Georgia, serif" font-size="19" letter-spacing="5" x="205" y="72">CONNECT</text><path d="M38 30 V177" stroke="#d8cbbc" stroke-width="2"></path></g><g filter="url(#contactShadow)" transform="translate(17 75) rotate(7 120 72)"><path d="M37 58 C40 18 72 2 108 8 C145 14 158 39 151 73 C144 108 117 126 82 118 C50 111 34 91 37 58Z" fill="rgba(27,27,31,.04)" stroke="url(#contactGold)" stroke-width="5"></path><path d="M159 62 C164 26 196 11 231 18 C266 25 279 50 269 83 C260 115 231 129 198 120 C168 111 155 91 159 62Z" fill="rgba(27,27,31,.04)" stroke="url(#contactGold)" stroke-width="5"></path><path d="M149 55 C153 48 158 46 164 54" fill="none" stroke="url(#contactGold)" stroke-linecap="round" stroke-width="5"></path><path d="M38 51 L4 31" stroke="#1c1c20" stroke-linecap="round" stroke-width="7"></path><path d="M270 75 L338 61" stroke="#1c1c20" stroke-linecap="round" stroke-width="7"></path><path d="M18 40 L4 31" stroke="url(#contactGold)" stroke-linecap="round" stroke-width="4"></path><path d="M289 72 L338 61" stroke="url(#contactGold)" stroke-linecap="round" stroke-width="4"></path></g><g transform="translate(424 173) rotate(-15)"><rect fill="url(#contactGold)" height="11" rx="5.5" width="112" x="0" y="0"></rect><rect fill="#202023" height="8" rx="4" width="28" x="90" y="1.5"></rect><path d="M-17 5.5 L0 0 V11Z" fill="#a87920"></path></g></svg></div><div class="contact-form-side"><form class="contact-simple-form" id="contactForm" novalidate=""><div class="contact-form-row"><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><circle cx="12" cy="8" r="4"></circle><path d="M4.5 21c.7-4.2 3.2-6.3 7.5-6.3s6.8 2.1 7.5 6.3"></path></svg></span><input autocomplete="name" id="contactName" name="name" placeholder="Your name" required="" type="text"></input></label><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><rect height="14" rx="2" width="18" x="3" y="5"></rect><path d="m4 7 8 6 8-6"></path></svg></span><input autocomplete="email" id="contactVisitorEmail" name="email" placeholder="Your email" required="" type="email"/></label></div><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><path d="M6 7.5h12a2 2 0 0 1 2 2v9.5H4V9.5a2 2 0 0 1 2-2Z"></path><path d="M9 7.5V5.8A2.8 2.8 0 0 1 11.8 3h.4A2.8 2.8 0 0 1 15 5.8v1.7"></path></svg></span><input id="contactSubject" name="subject" placeholder="Subject" required="" type="text"/></label><label class="contact-field"><span aria-hidden="true" class="contact-field-icon"><svg viewbox="0 0 24 24"><path d="m4 20 4.2-1 10.9-10.9a2.2 2.2 0 0 0-3.2-3.2L5 15.8 4 20Z"></path><path d="m14.5 6.5 3 3"></path></svg></span><textarea id="contactMessage" name="message" placeholder="Your message" required=""></textarea></label><div class="contact-submit-row"><button class="contact-send-button" type="submit"><span>Send message</span><span aria-hidden="true" class="contact-send-arrow">→</span></button><p aria-live="polite" class="contact-form-status" id="contactFormStatus">Your message will open in your default email application.</p></div></form><div aria-label="Contact details" class="contact-detail-grid"><div class="contact-detail-item"><span aria-hidden="true" class="contact-detail-icon"><svg viewbox="0 0 24 24"><rect height="14" rx="2" width="18" x="3" y="5"></rect><path d="m4 7 8 6 8-6"></path></svg></span><div class="contact-detail-copy"><strong>Email</strong><a href="mailto:Muhammadshahrukh01906@gmail.com" id="contactEmailLink">Muhammadshahrukh01906@gmail.com</a><button class="contact-inline-action" id="copyContactEmail" type="button">Copy email</button></div></div><div class="contact-detail-item"><span aria-hidden="true" class="contact-detail-icon"><svg viewbox="0 0 24 24"><path d="M6.5 9.5V19"></path><path d="M6.5 5.5v.1"></path><path d="M11 19v-5.3c0-2.4 1.3-3.9 3.5-3.9 2.1 0 3 1.4 3 3.9V19"></path><path d="M11 10v9"></path></svg></span><div class="contact-detail-copy"><strong>LinkedIn</strong><a href="https://www.linkedin.com/in/muhammad-shahrukh-3467633a8" id="contactLinkedInLink" rel="noopener noreferrer" target="_blank">View LinkedIn →</a></div></div><div class="contact-detail-item"><span aria-hidden="true" class="contact-detail-icon"><svg viewbox="0 0 24 24"><path d="M12 21s6-5.2 6-11a6 6 0 1 0-12 0c0 5.8 6 11 6 11Z"></path><circle cx="12" cy="10" r="2"></circle></svg></span><div class="contact-detail-copy"><strong>Location</strong><span>Lahore, Pakistan</span><span>Open to creative and professional opportunities</span></div></div></div><p class="contact-response-note">I will respond as soon as possible.</p></div></div><footer class="bottom-nav-bar"><div class="bottom-tabs" id="bottomTabs"><a class="tab-link active" href="#overview-section"><span>01</span>Overview</a><a class="tab-link" href="#featured-section"><span>02</span>Featured Work</a><a class="tab-link" href="#brand-section"><span>03</span>Content Strategy</a><a class="tab-link" href="#contact-section"><span>04</span>Contact</a></div><div class="slider-arrows"><button aria-label="Previous section" class="arrow-btn" id="prevBtn" type="button">←</button><button aria-label="Next section" class="arrow-btn next-btn" id="nextBtn" type="button">→</button></div></footer></section></main></div><div class="modal-container" id="showcaseModal" onclick="closeShowcase(event)"><div class="modal-mesh-bg"></div><button aria-label="Close project showcase" class="modal-close-btn" onclick="event.stopPropagation(); closeShowcase(event)">✕</button><div class="rimless-glasses-assembly" id="mainAssembly" onclick="event.stopPropagation()"><div class="glasses-temple temple-left"><div class="baroque-gold-inlay"></div></div><div class="gold-hinge-assembly hinge-left"></div><div class="rimless-lens lens-display-left" id="leftLensAnchor"><div class="lens-slider-wrapper" id="lensSliderWrapper"></div></div><div class="gold-center-bridge-assembly"><div class="bridge-arch"></div><div class="nose-pads-container"><div class="nose-pad-arm pad-left"></div><div class="nose-pad-arm pad-right"></div></div></div><div class="rimless-lens lens-info-right"><div class="lens-content-fit" id="lensContentFit"><div class="lens-scroll-area"><h3 class="modal-body-title" id="modalTargetTitle">AURELION NOIR 51004</h3><div class="modal-title-divider"></div><div class="project-overview-layout"><div class="modal-spec-block modal-spec-description"><h4>Description</h4><p id="modalTargetDesc">A technology-led product campaign presenting the frame as a refined fusion of intelligent styling, everyday utility and premium eyewear design.</p></div><aside aria-label="Project snapshot" class="project-snapshot"><div class="project-fact"><span class="project-fact-label">Format</span><strong class="project-fact-value" id="modalProjectFormat">Carousel post</strong></div><div class="project-fact"><span class="project-fact-label">Gallery</span><strong class="project-fact-value" id="modalProjectProgress">01 / 05</strong></div><div class="project-fact"><span class="project-fact-label">Focus</span><strong class="project-fact-value" id="modalProjectFocus">Smart styling &amp; features</strong></div></aside></div><div class="modal-side-spec modal-detail-grid"><div class="modal-spec-block"><h4>Process</h4><p id="modalTargetProc">Built a clean feature-led layout, paired close-up visuals with concise messaging, and structured the post for quick product understanding.</p></div><div class="modal-spec-block"><h4>Purpose</h4><p id="modalTargetPurp">To boost brand sales and build brand image.</p></div></div></div><a class="modal-action-btn" href="#" id="modalTargetLink" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;" target="_blank">View project source</a><button class="virtual-tryon-btn" id="virtualTryOnBtn" type="button" hidden onclick="event.stopPropagation(); startVirtualTryOn()"><span class="virtual-tryon-btn-icon" aria-hidden="true">◉</span><span>Try on with camera</span></button></div></div><div class="gold-hinge-assembly hinge-right"></div><div class="glasses-temple temple-right"><div class="baroque-gold-inlay"></div></div></div><section aria-label="Project details" class="mobile-showcase-details" id="mobileShowcaseDetails" onclick="event.stopPropagation()"><div class="mobile-showcase-kicker">Project details</div><h3 id="mobileTargetTitle">AURELION NOIR 51004</h3><div aria-label="Project snapshot" class="mobile-showcase-facts"><div><span>Format</span><strong id="mobileProjectFormat">Carousel post</strong></div><div><span>Gallery</span><strong id="mobileProjectProgress">01 / 05</strong></div><div><span>Focus</span><strong id="mobileProjectFocus">Smart styling &amp; features</strong></div></div><div class="mobile-showcase-copy"><div><span>Description</span><p id="mobileTargetDesc">A technology-led product campaign presenting the frame as a refined fusion of intelligent styling, everyday utility and premium eyewear design.</p></div><div><span>Process</span><p id="mobileTargetProc">Built a clean feature-led layout, paired close-up visuals with concise messaging, and structured the post for quick product understanding.</p></div><div><span>Purpose</span><p id="mobileTargetPurp">To boost brand sales and build brand image.</p></div></div><a class="mobile-showcase-link" href="#" id="mobileTargetLink" onclick="event.stopPropagation(); window.open(this.href, '_blank'); return false;" target="_blank">View project source</a><button class="virtual-tryon-btn virtual-tryon-btn-mobile" id="virtualTryOnBtnMobile" type="button" hidden onclick="event.stopPropagation(); startVirtualTryOn()"><span class="virtual-tryon-btn-icon" aria-hidden="true">◉</span><span>Try on with camera</span></button></section><div class="virtual-tryon" id="virtualTryOn" aria-hidden="true" onclick="event.stopPropagation()">
 <div class="virtual-tryon-shell">
 <div class="virtual-tryon-topbar"><div><span class="virtual-tryon-kicker">Live virtual try-on</span><strong>Winged Rimless</strong></div><button class="virtual-tryon-close" type="button" aria-label="Close virtual try-on" onclick="stopVirtualTryOn()">✕</button></div>
 <div class="virtual-tryon-stage" id="virtualTryOnStage">
 <video id="virtualTryOnVideo" autoplay muted playsinline></video>
+<canvas id="virtualTryOnScanCanvas" aria-hidden="true"></canvas>
 <canvas id="virtualTryOnCanvas"></canvas>
 <div class="virtual-tryon-guide" id="virtualTryOnGuide"><div class="virtual-face-guide"></div><span>Centre your face in the frame</span></div>
+<div class="virtual-fit-calibration is-done" id="virtualTryOnCalibration" aria-live="polite">
+<span class="virtual-fit-kicker">Personal face fit</span>
+<strong id="virtualCalibrationTitle">Look straight at the camera</strong>
+<div class="virtual-fit-track"><div id="virtualCalibrationProgress"></div></div>
+<small id="virtualCalibrationDetail">Mapping pupils, bridge, temple width and head contour.</small>
+</div>
 <div class="virtual-tryon-loader" id="virtualTryOnLoader">
 <div class="virtual-loader-spinner" aria-hidden="true"></div>
 <strong id="virtualTryOnStatus">Preparing camera…</strong>
@@ -24,7 +46,7 @@ Public availability of this deployment does not grant an open-source licence.
 </div>
 <div class="virtual-tryon-error" id="virtualTryOnError" hidden><strong>Try-on could not start</strong><span id="virtualTryOnErrorText">Please allow camera access and try again.</span><button type="button" onclick="startVirtualTryOn()">Try again</button></div>
 </div>
-<div class="virtual-tryon-footer"><span><i class="virtual-live-dot"></i> Camera frames stay on your device</span><span>Move your head slowly for the best fit</span></div>
+<div class="virtual-tryon-footer"><span><i class="virtual-live-dot"></i> Camera frames stay on your device</span><span>Move naturally — the frame follows your calibrated head fit</span><button class="virtual-refit-btn" id="virtualTryOnRefitBtn" type="button" hidden onclick="recalibrateVirtualTryOn()">Refit face</button></div>
 </div>
 </div><button aria-label="Previous project image" class="lens-nav-btn lens-nav-prev" id="modalLensPrevBtn" onclick="event.stopPropagation(); moveLensSlider(-1)" type="button">‹</button><button aria-label="Next project image" class="lens-nav-btn lens-nav-next" id="modalLensNextBtn" onclick="event.stopPropagation(); moveLensSlider(1)" type="button">›</button></div><script>let activeLensSlide = 0;
 let totalLensSlides = 5;
@@ -673,7 +695,7 @@ renderLensMarkup(wrapper, `
 } else if (contextMode === 'doffy') {
 totalLensSlides = 4;
 renderLensMarkup(wrapper, `
-                    <div class="lens-slider-slide"><video src="Doffymain.mp4" autoplay loop muted playsinline preload="metadata"></video></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy1.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy2.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy3.png"></div>
+                    <div class="lens-slider-slide"><video src="doffymain.mp4" autoplay loop muted playsinline preload="metadata"></video></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy1.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy2.png"></div><div class="lens-slider-slide"><img loading="lazy" decoding="async" src="doffy3.png"></div>
                 `);
 } else if (contextMode === 'butty') {
 totalLensSlides = 4;
@@ -1858,7 +1880,7 @@ setTimeout(() => toast.classList.remove('show'), 3500);
 const showcaseFirstAssets = {
 default: { type: 'image', src: 'glasses.png', poster: 'glasses.png' },
 tinted: { type: 'video', src: 'tintedmain.mp4', poster: 'tinted.png' },
-doffy: { type: 'video', src: 'Doffymain.mp4', poster: 'doffy1.png' },
+doffy: { type: 'video', src: 'doffymain.mp4', poster: 'doffy1.png' },
 butty: { type: 'video', src: 'buttymain.mp4', poster: 'butty1.png' },
 clip: { type: 'video', src: 'clipmain.mp4', poster: 'clip1.png' },
 pink: { type: 'image', src: 'pink1.png', poster: 'pink1.png' },
@@ -2864,7 +2886,7 @@ function inferVideoPoster(source) {
 const filename = String(source || '').split('/').pop().toLowerCase();
 const posters = {
 'tintedmain.mp4': 'tinted.png',
-'Doffymain.mp4': 'doffy1.png',
+'doffymain.mp4': 'doffy1.png',
 'buttymain.mp4': 'butty1.png',
 'clipmain.mp4': 'clip1.png',
 'circlemain.mp4': 'circle1.png',
@@ -7466,26 +7488,20 @@ let virtualTryOnScene = null;
 let virtualTryOnCamera = null;
 let virtualTryOnModel = null;
 let virtualTryOnAnchor = null;
+let virtualTryOnOccluder = null;
+let virtualTryOnMorphUniforms = null;
 let virtualThree = null;
 let virtualTryOnBusy = false;
 let virtualLastVideoTime = -1;
-let virtualTryOnMissedFrames = 0;
-let virtualTryOnResizeObserver = null;
-let virtualTryOnLastStageSize = { width: 0, height: 0, dpr: 0 };
-
-const VIRTUAL_TRYON_FIT = Object.freeze({
-  frameToFaceWidth: 1.02,
-  verticalEyeOffset: 0.018,
-  maxYaw: 1.02,
-  maxPitch: 0.48,
-  positionSmoothing: 0.34,
-  rotationSmoothing: 0.30,
-  scaleSmoothing: 0.30
-});
-
-function virtualClamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
+let virtualTryOnPoseReady = false;
+let virtualTryOnLostFrames = 0;
+let virtualTryOnCalibration = null;
+const VIRTUAL_TRYON_PLANE_Z = 0;
+const VIRTUAL_CALIBRATION_FRAMES = 28;
+const VIRTUAL_FRAME_TO_TEMPLE = 1.035;
+const VIRTUAL_FACE_OVAL = [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
+const VIRTUAL_EYE_A = [33,160,158,133,153,144];
+const VIRTUAL_EYE_B = [362,385,387,263,373,380];
 
 function setVirtualTryOnProgress(percent, status, substatus) {
   const bar = document.getElementById('virtualTryOnProgress');
@@ -7496,120 +7512,381 @@ function setVirtualTryOnProgress(percent, status, substatus) {
   if (sub && substatus) sub.textContent = substatus;
 }
 
+function setCalibrationUI(percent, title, detail) {
+  const panel = document.getElementById('virtualTryOnCalibration');
+  const bar = document.getElementById('virtualCalibrationProgress');
+  const titleEl = document.getElementById('virtualCalibrationTitle');
+  const detailEl = document.getElementById('virtualCalibrationDetail');
+  if (panel) panel.classList.remove('is-done');
+  if (bar) bar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+  if (titleEl && title) titleEl.textContent = title;
+  if (detailEl && detail) detailEl.textContent = detail;
+}
+
+function finishCalibrationUI() {
+  document.getElementById('virtualTryOnCalibration')?.classList.add('is-done');
+  document.getElementById('virtualTryOnStage')?.classList.remove('is-calibrating');
+  document.getElementById('virtualTryOnStage')?.classList.add('is-calibrated');
+  const btn = document.getElementById('virtualTryOnRefitBtn');
+  if (btn) btn.hidden = false;
+}
+
 function showVirtualTryOnError(message) {
   document.getElementById('virtualTryOnLoader')?.classList.add('is-done');
+  document.getElementById('virtualTryOnCalibration')?.classList.add('is-done');
   const error = document.getElementById('virtualTryOnError');
   const text = document.getElementById('virtualTryOnErrorText');
   if (text) text.textContent = message;
   if (error) error.hidden = false;
 }
 
-function syncVirtualTryOnRenderer(force = false) {
-  const stage = document.getElementById('virtualTryOnStage');
-  const canvas = document.getElementById('virtualTryOnCanvas');
-  if (!stage || !canvas || !virtualTryOnRenderer || !virtualTryOnCamera) return null;
+function waitForVideoMetadata(video) {
+  if (video.videoWidth && video.videoHeight) return Promise.resolve();
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('The camera started but did not provide video dimensions.')), 5000);
+    const done = () => { clearTimeout(timer); resolve(); };
+    video.addEventListener('loadedmetadata', done, { once:true });
+  });
+}
 
+function getCoverTransform(video, stage) {
   const rect = stage.getBoundingClientRect();
-  const width = Math.max(1, rect.width);
-  const height = Math.max(1, rect.height);
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  const changed = force ||
-    Math.abs(width - virtualTryOnLastStageSize.width) > 0.5 ||
-    Math.abs(height - virtualTryOnLastStageSize.height) > 0.5 ||
-    dpr !== virtualTryOnLastStageSize.dpr;
-
-  if (changed) {
-    virtualTryOnRenderer.setPixelRatio(dpr);
-    virtualTryOnRenderer.setSize(width, height, false);
-    virtualTryOnCamera.aspect = width / height;
-    virtualTryOnCamera.updateProjectionMatrix();
-    virtualTryOnLastStageSize = { width, height, dpr };
-  }
-  return { width, height };
-}
-
-function getVirtualCoverTransform(video, stageSize) {
-  const videoWidth = Math.max(1, video.videoWidth || 1);
-  const videoHeight = Math.max(1, video.videoHeight || 1);
-  const stageWidth = Math.max(1, stageSize.width);
-  const stageHeight = Math.max(1, stageSize.height);
-
-  // The camera preview uses object-fit: cover. MediaPipe coordinates refer to
-  // the uncropped source frame, so mirror the exact browser cover/crop math.
-  const coverScale = Math.max(stageWidth / videoWidth, stageHeight / videoHeight);
-  const renderedWidth = videoWidth * coverScale;
-  const renderedHeight = videoHeight * coverScale;
+  const sourceW = Math.max(1, video.videoWidth || rect.width || 1);
+  const sourceH = Math.max(1, video.videoHeight || rect.height || 1);
+  const stageW = Math.max(1, rect.width || 1);
+  const stageH = Math.max(1, rect.height || 1);
+  const coverScale = Math.max(stageW / sourceW, stageH / sourceH);
+  const drawnW = sourceW * coverScale;
+  const drawnH = sourceH * coverScale;
   return {
-    videoWidth,
-    videoHeight,
-    stageWidth,
-    stageHeight,
-    renderedWidth,
-    renderedHeight,
-    cropX: (renderedWidth - stageWidth) * 0.5,
-    cropY: (renderedHeight - stageHeight) * 0.5
+    rect, stageW, stageH, drawnW, drawnH,
+    offsetX:(stageW - drawnW) * .5,
+    offsetY:(stageH - drawnH) * .5
   };
 }
 
-function mapVirtualLandmarkToStage(landmark, cover) {
+function landmarkToStage(lm, cover) {
   return {
-    x: landmark.x * cover.renderedWidth - cover.cropX,
-    y: landmark.y * cover.renderedHeight - cover.cropY,
-    z: landmark.z * cover.videoWidth
+    x:cover.offsetX + lm.x * cover.drawnW,
+    y:cover.offsetY + lm.y * cover.drawnH,
+    z:Number.isFinite(lm.z) ? lm.z : 0
   };
 }
 
-function virtualDistance2D(a, b) {
-  return Math.hypot(b.x - a.x, b.y - a.y);
+function landmarkToMetric(lm, cover, THREE) {
+  const p = landmarkToStage(lm, cover);
+  return new THREE.Vector3(p.x, -p.y, -p.z * cover.drawnW);
 }
 
-function getVirtualHeadPose(landmarks, video) {
-  if (!virtualThree) return { yaw: 0, pitch: 0, roll: 0 };
-  const THREE = virtualThree;
-  const vw = Math.max(1, video.videoWidth || 1);
-  const vh = Math.max(1, video.videoHeight || 1);
+function stagePointToWorld(point, cover, camera, planeZ = VIRTUAL_TRYON_PLANE_Z) {
+  const distance = Math.max(.01, camera.position.z - planeZ);
+  const viewHeight = 2 * Math.tan((camera.fov * Math.PI / 180) * .5) * distance;
+  const viewWidth = viewHeight * camera.aspect;
+  return {
+    x:((point.x / cover.stageW) - .5) * viewWidth,
+    y:(.5 - (point.y / cover.stageH)) * viewHeight,
+    viewWidth,
+    viewHeight
+  };
+}
 
-  // Use the broad face plane rather than the nose bridge. This makes side
-  // rotation continue to work even when the bridge remains nearly centered.
-  const sideA = landmarks[234];
-  const sideB = landmarks[454];
-  const forehead = landmarks[10];
-  const chin = landmarks[152];
-  if (!sideA || !sideB || !forehead || !chin) return { yaw: 0, pitch: 0, roll: 0 };
+function adaptiveAlpha(error, minimum, maximum, boost) {
+  return Math.min(maximum, minimum + Math.max(0, error) * boost);
+}
 
-  const leftSide = sideA.x <= sideB.x ? sideA : sideB;
-  const rightSide = sideA.x <= sideB.x ? sideB : sideA;
-  const toMetricish = (p) => new THREE.Vector3(p.x * vw, p.y * vh, p.z * vw);
-  const left3 = toMetricish(leftSide);
-  const right3 = toMetricish(rightSide);
-  const forehead3 = toMetricish(forehead);
-  const chin3 = toMetricish(chin);
+function median(values) {
+  const valid = values.filter(Number.isFinite).slice().sort((a,b) => a-b);
+  if (!valid.length) return 0;
+  const mid = Math.floor(valid.length / 2);
+  return valid.length % 2 ? valid[mid] : (valid[mid-1] + valid[mid]) * .5;
+}
 
-  const horizontal = right3.clone().sub(left3);
-  const vertical = chin3.clone().sub(forehead3);
-  const normal = horizontal.clone().cross(vertical);
-  if (normal.lengthSq() < 1e-7) return { yaw: 0, pitch: 0, roll: 0 };
-  normal.normalize();
-  if (normal.z < 0) normal.multiplyScalar(-1);
+function getEyeCenters(lm, cover) {
+  let a;
+  let b;
+  if (lm.length > 473 && lm[468] && lm[473]) {
+    a = landmarkToStage(lm[468], cover);
+    b = landmarkToStage(lm[473], cover);
+  } else {
+    const a1 = landmarkToStage(lm[33], cover);
+    const a2 = landmarkToStage(lm[133], cover);
+    const b1 = landmarkToStage(lm[362], cover);
+    const b2 = landmarkToStage(lm[263], cover);
+    a = {x:(a1.x+a2.x)*.5, y:(a1.y+a2.y)*.5, z:(a1.z+a2.z)*.5};
+    b = {x:(b1.x+b2.x)*.5, y:(b1.y+b2.y)*.5, z:(b1.z+b2.z)*.5};
+  }
+  return a.x <= b.x ? [a,b] : [b,a];
+}
 
-  // MediaPipe z grows away from the viewer opposite Three.js' camera-facing
-  // convention, hence the sign correction on yaw.
-  let yaw = -Math.atan2(normal.x, Math.max(0.0001, normal.z));
-  let pitch = Math.atan2(normal.y, Math.max(0.0001, Math.hypot(normal.x, normal.z)));
+function getRawFaceQuaternion(lm, THREE, cover) {
+  const left = landmarkToMetric(lm[127], cover, THREE);
+  const right = landmarkToMetric(lm[356], cover, THREE);
+  const top = landmarkToMetric(lm[10], cover, THREE);
+  const chin = landmarkToMetric(lm[152], cover, THREE);
+  const xAxis = right.clone().sub(left).normalize();
+  const roughY = top.clone().sub(chin).normalize();
+  const zAxis = xAxis.clone().cross(roughY).normalize();
+  if (zAxis.z < 0) zAxis.multiplyScalar(-1);
+  const yAxis = zAxis.clone().cross(xAxis).normalize();
+  const matrix = new THREE.Matrix4().makeBasis(xAxis, yAxis, zAxis);
+  return new THREE.Quaternion().setFromRotationMatrix(matrix).normalize();
+}
 
-  const eyeA = landmarks[33];
-  const eyeB = landmarks[263];
-  let roll = 0;
-  if (eyeA && eyeB) {
-    const leftEye = eyeA.x <= eyeB.x ? eyeA : eyeB;
-    const rightEye = eyeA.x <= eyeB.x ? eyeB : eyeA;
-    roll = -Math.atan2((rightEye.y - leftEye.y) * vh, (rightEye.x - leftEye.x) * vw);
+function measureFace(lm, cover, THREE) {
+  const [eyeL, eyeR] = getEyeCenters(lm, cover);
+  const templeL = landmarkToStage(lm[127], cover);
+  const templeR = landmarkToStage(lm[356], cover);
+  const bridge = landmarkToStage(lm[6] || lm[168], cover);
+  const eyeMid = {x:(eyeL.x+eyeR.x)*.5, y:(eyeL.y+eyeR.y)*.5};
+  const eyeSpan2 = Math.max(1, Math.hypot(eyeR.x-eyeL.x, eyeR.y-eyeL.y));
+  const templeSpan2 = Math.max(1, Math.hypot(templeR.x-templeL.x, templeR.y-templeL.y));
+  const eyeL3 = new THREE.Vector3(eyeL.x, -eyeL.y, -eyeL.z*cover.drawnW);
+  const eyeR3 = new THREE.Vector3(eyeR.x, -eyeR.y, -eyeR.z*cover.drawnW);
+  const templeL3 = landmarkToMetric(lm[127], cover, THREE);
+  const templeR3 = landmarkToMetric(lm[356], cover, THREE);
+  const top3 = landmarkToMetric(lm[10], cover, THREE);
+  const chin3 = landmarkToMetric(lm[152], cover, THREE);
+  const eyeSpan3 = Math.max(1, eyeL3.distanceTo(eyeR3));
+  const templeSpan3 = Math.max(1, templeL3.distanceTo(templeR3));
+  const faceHeight3 = Math.max(1, top3.distanceTo(chin3));
+  const roll = Math.atan2(eyeR.y-eyeL.y, eyeR.x-eyeL.x);
+  const yawSymmetry = (bridge.x-eyeMid.x) / eyeSpan2;
+  return {eyeL,eyeR,eyeMid,templeL,templeR,bridge,eyeSpan2,templeSpan2,eyeSpan3,templeSpan3,faceHeight3,roll,yawSymmetry};
+}
+
+function resetCalibrationState() {
+  virtualTryOnCalibration = {
+    samples:[],
+    neutralQuaternion:null,
+    profile:null,
+    lastMeasurement:null
+  };
+  virtualTryOnPoseReady = false;
+  if (virtualTryOnAnchor) virtualTryOnAnchor.visible = false;
+  if (virtualTryOnOccluder) virtualTryOnOccluder.visible = false;
+  const stage = document.getElementById('virtualTryOnStage');
+  stage?.classList.remove('is-tracking','is-calibrated');
+  stage?.classList.add('is-calibrating');
+  const btn = document.getElementById('virtualTryOnRefitBtn');
+  if (btn) btn.hidden = true;
+  setCalibrationUI(0,'Look straight at the camera','Mapping pupils, bridge, temple width and head contour.');
+}
+
+function recalibrateVirtualTryOn() {
+  if (!document.getElementById('virtualTryOn')?.classList.contains('is-open')) return;
+  resetCalibrationState();
+}
+
+function processCalibration(lm, cover, measurement, rawQuaternion) {
+  if (!virtualTryOnCalibration || virtualTryOnCalibration.profile) return true;
+  const stageW = cover.stageW;
+  const stageH = cover.stageH;
+  const centred = measurement.eyeMid.x > stageW*.25 && measurement.eyeMid.x < stageW*.75 && measurement.eyeMid.y > stageH*.22 && measurement.eyeMid.y < stageH*.62;
+  const largeEnough = measurement.templeSpan2 > stageW*.18;
+  const frontal = Math.abs(measurement.roll) < .13 && Math.abs(measurement.yawSymmetry) < .12;
+  let steady = true;
+  const last = virtualTryOnCalibration.lastMeasurement;
+  if (last) {
+    const movement = Math.hypot(measurement.eyeMid.x-last.eyeMid.x, measurement.eyeMid.y-last.eyeMid.y) / Math.max(measurement.templeSpan2,1);
+    const sizeChange = Math.abs(measurement.templeSpan2-last.templeSpan2) / Math.max(measurement.templeSpan2,1);
+    steady = movement < .035 && sizeChange < .045;
+  }
+  virtualTryOnCalibration.lastMeasurement = measurement;
+
+  if (!centred || !largeEnough || !frontal || !steady) {
+    if (virtualTryOnCalibration.samples.length > 4) virtualTryOnCalibration.samples.splice(0, Math.ceil(virtualTryOnCalibration.samples.length*.45));
+    const pct = (virtualTryOnCalibration.samples.length / VIRTUAL_CALIBRATION_FRAMES) * 100;
+    if (!largeEnough) setCalibrationUI(pct,'Move a little closer','Keep your whole face visible while the fit scan locks onto your features.');
+    else if (!centred) setCalibrationUI(pct,'Centre your face','Keep both eyes and both sides of your face inside the guide.');
+    else if (!frontal) setCalibrationUI(pct,'Look straight ahead','Hold your head level for the initial fit scan.');
+    else setCalibrationUI(pct,'Hold still for a moment','The scan is averaging several frames so the fit does not jump.');
+    return false;
   }
 
-  yaw = virtualClamp(yaw, -VIRTUAL_TRYON_FIT.maxYaw, VIRTUAL_TRYON_FIT.maxYaw);
-  pitch = virtualClamp(pitch, -VIRTUAL_TRYON_FIT.maxPitch, VIRTUAL_TRYON_FIT.maxPitch);
-  roll = virtualClamp(roll, -0.62, 0.62);
-  return { yaw, pitch, roll };
+  virtualTryOnCalibration.samples.push({
+    eyeTempleRatio:measurement.eyeSpan3/measurement.templeSpan3,
+    faceTempleRatio:measurement.faceHeight3/measurement.templeSpan3,
+    quaternion:rawQuaternion.clone()
+  });
+  const count = virtualTryOnCalibration.samples.length;
+  const pct = Math.min(100, count / VIRTUAL_CALIBRATION_FRAMES * 100);
+  setCalibrationUI(pct, count < VIRTUAL_CALIBRATION_FRAMES*.62 ? 'Scanning your face…' : 'Building your frame fit…', 'Pupils • nose bridge • temple line • head contour');
+
+  if (!virtualTryOnCalibration.neutralQuaternion) {
+    virtualTryOnCalibration.neutralQuaternion = rawQuaternion.clone();
+  } else {
+    const q = rawQuaternion.clone();
+    if (virtualTryOnCalibration.neutralQuaternion.dot(q) < 0) q.set(-q.x,-q.y,-q.z,-q.w);
+    virtualTryOnCalibration.neutralQuaternion.slerp(q, 1/Math.min(count,12)).normalize();
+  }
+
+  if (count < VIRTUAL_CALIBRATION_FRAMES) return false;
+
+  const eyeTempleRatio = median(virtualTryOnCalibration.samples.map(s => s.eyeTempleRatio));
+  const faceTempleRatio = median(virtualTryOnCalibration.samples.map(s => s.faceTempleRatio));
+  const baseWidth = virtualTryOnAnchor?.userData?.baseWidth || 1;
+  const targetEyeX = Math.max(baseWidth*.17, Math.min(baseWidth*.235, baseWidth * eyeTempleRatio / (2*VIRTUAL_FRAME_TO_TEMPLE)));
+  const modelTempleTipX = virtualTryOnAnchor?.userData?.modelTempleTipX || baseWidth*.268;
+  const targetTempleTipX = baseWidth*.455;
+  const templeOut = Math.max(0, targetTempleTipX-modelTempleTipX);
+  virtualTryOnCalibration.profile = {
+    eyeTempleRatio:Math.max(.28, Math.min(.58, eyeTempleRatio)),
+    faceTempleRatio:Math.max(.75, Math.min(1.6, faceTempleRatio)),
+    neutralQuaternion:virtualTryOnCalibration.neutralQuaternion.clone().normalize(),
+    targetEyeX,
+    templeOut
+  };
+
+  if (virtualTryOnMorphUniforms) {
+    virtualTryOnMorphUniforms.uTargetEyeX.value = targetEyeX;
+    virtualTryOnMorphUniforms.uTempleOut.value = templeOut;
+  }
+  finishCalibrationUI();
+  return true;
+}
+
+function installEyewearMorph(root, box, size) {
+  const baseWidth = Math.max(size.x,.001);
+  const modelEyeX = baseWidth*.262;
+  const hingeX = baseWidth*.485;
+  const frontZ = box.max.z-size.z*.17;
+  const backZ = box.min.z+size.z*.08;
+  virtualTryOnMorphUniforms = {
+    uModelEyeX:{value:modelEyeX},
+    uTargetEyeX:{value:baseWidth*.205},
+    uHingeX:{value:hingeX},
+    uFrontZ:{value:frontZ},
+    uBackZ:{value:backZ},
+    uTempleOut:{value:baseWidth*.18},
+    uTempleLift:{value:baseWidth*.006}
+  };
+  root.traverse(node => {
+    if (!node?.isMesh) return;
+    node.renderOrder = 2;
+    const materials = Array.isArray(node.material) ? node.material : [node.material];
+    materials.filter(Boolean).forEach(material => {
+      material.onBeforeCompile = shader => {
+        Object.assign(shader.uniforms, virtualTryOnMorphUniforms);
+        shader.vertexShader = `
+uniform float uModelEyeX;
+uniform float uTargetEyeX;
+uniform float uHingeX;
+uniform float uFrontZ;
+uniform float uBackZ;
+uniform float uTempleOut;
+uniform float uTempleLift;
+` + shader.vertexShader;
+        shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', `
+vec3 transformed = vec3(position);
+float sideSign = transformed.x < 0.0 ? -1.0 : 1.0;
+float ax = abs(transformed.x);
+float frontWeight = smoothstep(uFrontZ - 0.07, uFrontZ, transformed.z);
+float mappedAx = ax;
+if (ax <= uModelEyeX) {
+  mappedAx = ax * (uTargetEyeX / max(uModelEyeX, 0.0001));
+} else if (ax <= uHingeX) {
+  mappedAx = uTargetEyeX + (ax-uModelEyeX) * ((uHingeX-uTargetEyeX) / max(uHingeX-uModelEyeX, 0.0001));
+}
+transformed.x = mix(transformed.x, sideSign*mappedAx, frontWeight);
+float backProgress = clamp((uFrontZ-transformed.z) / max(uFrontZ-uBackZ, 0.0001), 0.0, 1.0);
+backProgress = smoothstep(0.05, 1.0, backProgress);
+transformed.x += sideSign * uTempleOut * pow(backProgress, 1.18);
+transformed.y += uTempleLift * pow(backProgress, 1.2);
+`);
+      };
+      material.customProgramCacheKey = () => 'lensciaga-personal-fit-v3';
+      material.needsUpdate = true;
+    });
+  });
+  return {modelEyeX,hingeX,frontZ,backZ};
+}
+
+function createFaceDepthMask(THREE) {
+  const count = VIRTUAL_FACE_OVAL.length;
+  const positions = new Float32Array((count+1)*3);
+  const indices = [];
+  for (let i=0;i<count;i++) indices.push(0,i+1,((i+1)%count)+1);
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions,3));
+  geometry.setIndex(indices);
+  const material = new THREE.MeshBasicMaterial({
+    color:0x000000,
+    colorWrite:false,
+    depthWrite:true,
+    depthTest:true,
+    side:THREE.DoubleSide
+  });
+  const mesh = new THREE.Mesh(geometry,material);
+  mesh.renderOrder = -10;
+  mesh.frustumCulled = false;
+  mesh.visible = false;
+  return mesh;
+}
+
+function updateFaceDepthMask(lm, cover, desiredWorldWidth) {
+  if (!virtualTryOnOccluder || !virtualTryOnCamera) return;
+  const maskZ = VIRTUAL_TRYON_PLANE_Z - Math.max(.012, desiredWorldWidth*.035);
+  const attr = virtualTryOnOccluder.geometry.attributes.position;
+  const worlds = [];
+  let cx=0, cy=0;
+  for (const idx of VIRTUAL_FACE_OVAL) {
+    const stage = landmarkToStage(lm[idx],cover);
+    const w = stagePointToWorld(stage,cover,virtualTryOnCamera,maskZ);
+    worlds.push(w);
+    cx += w.x;
+    cy += w.y;
+  }
+  cx /= worlds.length;
+  cy /= worlds.length;
+  attr.setXYZ(0,cx,cy,maskZ);
+  worlds.forEach((w,i) => attr.setXYZ(i+1,w.x,w.y,maskZ));
+  attr.needsUpdate = true;
+  virtualTryOnOccluder.visible = true;
+}
+
+function resizeScanCanvas() {
+  const canvas = document.getElementById('virtualTryOnScanCanvas');
+  const stage = document.getElementById('virtualTryOnStage');
+  if (!canvas || !stage) return null;
+  const r = stage.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio||1,2);
+  const w = Math.max(1,Math.round(r.width*dpr));
+  const h = Math.max(1,Math.round(r.height*dpr));
+  if (canvas.width!==w || canvas.height!==h) {canvas.width=w;canvas.height=h;}
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  return ctx;
+}
+
+function drawScanPath(ctx,lm,cover,indices,close=false) {
+  if (!indices.length) return;
+  ctx.beginPath();
+  indices.forEach((idx,i) => {
+    const p=landmarkToStage(lm[idx],cover);
+    if(i===0) ctx.moveTo(p.x,p.y); else ctx.lineTo(p.x,p.y);
+  });
+  if(close) ctx.closePath();
+  ctx.stroke();
+}
+
+function drawFaceScan(lm,cover,active) {
+  const ctx=resizeScanCanvas();
+  if(!ctx)return;
+  ctx.clearRect(0,0,cover.stageW,cover.stageH);
+  if(!lm || !active)return;
+  ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(255,255,255,.48)';
+  ctx.fillStyle='rgba(255,255,255,.75)';
+  drawScanPath(ctx,lm,cover,VIRTUAL_FACE_OVAL,true);
+  drawScanPath(ctx,lm,cover,VIRTUAL_EYE_A,true);
+  drawScanPath(ctx,lm,cover,VIRTUAL_EYE_B,true);
+  drawScanPath(ctx,lm,cover,[168,6,197,195],false);
+  const key=[33,133,362,263,468,473,6,168,127,356,234,454].filter(i=>lm[i]);
+  key.forEach(idx=>{
+    const p=landmarkToStage(lm[idx],cover);
+    ctx.beginPath();ctx.arc(p.x,p.y,2.2,0,Math.PI*2);ctx.fill();
+  });
 }
 
 async function startVirtualTryOn() {
@@ -7617,117 +7894,115 @@ async function startVirtualTryOn() {
   const modal = document.getElementById('showcaseModal');
   if (modal?.dataset.contextMode !== 'doffy') return;
   virtualTryOnBusy = true;
-
   const overlay = document.getElementById('virtualTryOn');
   const loader = document.getElementById('virtualTryOnLoader');
   const error = document.getElementById('virtualTryOnError');
   overlay?.classList.add('is-open');
-  overlay?.setAttribute('aria-hidden', 'false');
+  overlay?.setAttribute('aria-hidden','false');
   loader?.classList.remove('is-done');
+  document.getElementById('virtualTryOnCalibration')?.classList.add('is-done');
   if (error) error.hidden = true;
-  setVirtualTryOnProgress(6, 'Preparing camera…', 'Waiting for camera permission.');
+  setVirtualTryOnProgress(6,'Preparing camera…','Waiting for camera permission.');
 
   try {
-    if (!navigator.mediaDevices?.getUserMedia) {
-      throw new Error('Camera access is unavailable in this browser. Open the deployed GitHub Pages site over HTTPS.');
-    }
-
-    // Do not force a landscape camera frame on portrait phones. The browser
-    // can select its best native front-camera stream and the cover mapper below
-    // handles either portrait or landscape sources correctly.
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error('Camera access is unavailable in this browser. Open the portfolio through HTTPS or localhost.');
     virtualTryOnStream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: { ideal: 'user' },
-        width: { ideal: 1280 },
-        height: { ideal: 1280 }
+      audio:false,
+      video:{
+        facingMode:{ideal:'user'},
+        width:{ideal:1280},
+        height:{ideal:720},
+        frameRate:{ideal:30,max:60}
       }
     });
-
     const video = document.getElementById('virtualTryOnVideo');
     video.srcObject = virtualTryOnStream;
+    await waitForVideoMetadata(video);
     await video.play();
-    if (!video.videoWidth || !video.videoHeight) {
-      await new Promise((resolve) => video.addEventListener('loadedmetadata', resolve, { once: true }));
-    }
-    setVirtualTryOnProgress(24, 'Camera ready', 'Loading the face-tracking engine…');
+    setVirtualTryOnProgress(24,'Camera ready','Loading the face-tracking engine…');
 
-    const [{ FaceLandmarker, FilesetResolver }, THREE, loaderModule] = await Promise.all([
+    const [{FaceLandmarker, FilesetResolver}, THREE, loaderModule] = await Promise.all([
       import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm'),
       import('https://cdn.jsdelivr.net/npm/three@0.180.0/+esm'),
       import('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js/+esm')
     ]);
     virtualThree = THREE;
-    setVirtualTryOnProgress(48, 'Face tracker loaded', 'Preparing facial landmarks…');
-
+    setVirtualTryOnProgress(48,'Face tracker loaded','Preparing the personal-fit scan…');
     const fileset = await FilesetResolver.forVisionTasks('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm');
     virtualTryOnLandmarker = await FaceLandmarker.createFromOptions(fileset, {
-      baseOptions: {
-        modelAssetPath: 'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
-        delegate: 'GPU'
+      baseOptions:{
+        modelAssetPath:'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+        delegate:'GPU'
       },
-      runningMode: 'VIDEO',
-      numFaces: 1,
-      minFaceDetectionConfidence: 0.55,
-      minFacePresenceConfidence: 0.55,
-      minTrackingConfidence: 0.55,
-      outputFaceBlendshapes: false,
-      outputFacialTransformationMatrixes: false
+      runningMode:'VIDEO',
+      numFaces:1,
+      minFaceDetectionConfidence:.58,
+      minFacePresenceConfidence:.58,
+      minTrackingConfidence:.58,
+      outputFaceBlendshapes:false,
+      outputFacialTransformationMatrixes:false
     });
-    setVirtualTryOnProgress(68, 'Tracking ready', 'Loading your Winged Rimless 3D model…');
+    setVirtualTryOnProgress(68,'Tracking ready','Loading your Winged Rimless 3D model…');
 
     const canvas = document.getElementById('virtualTryOnCanvas');
     const stage = document.getElementById('virtualTryOnStage');
     const rect = stage.getBoundingClientRect();
-    virtualTryOnRenderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: true,
-      premultipliedAlpha: true
-    });
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    virtualTryOnRenderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,premultipliedAlpha:true});
+    virtualTryOnRenderer.setPixelRatio(dpr);
+    virtualTryOnRenderer.setSize(rect.width,rect.height,false);
     virtualTryOnRenderer.outputColorSpace = THREE.SRGBColorSpace;
+    virtualTryOnRenderer.setClearColor(0x000000,0);
     virtualTryOnScene = new THREE.Scene();
-    virtualTryOnCamera = new THREE.PerspectiveCamera(35, Math.max(1, rect.width) / Math.max(1, rect.height), 0.01, 100);
-    virtualTryOnCamera.position.set(0, 0, 5);
-    virtualTryOnScene.add(new THREE.HemisphereLight(0xffffff, 0x555555, 2.2));
-    const key = new THREE.DirectionalLight(0xffffff, 2.8);
-    key.position.set(2, 3, 4);
-    virtualTryOnScene.add(key);
-    const fill = new THREE.DirectionalLight(0xffffff, 1.4);
-    fill.position.set(-3, 1, 2);
-    virtualTryOnScene.add(fill);
-    syncVirtualTryOnRenderer(true);
+    virtualTryOnCamera = new THREE.PerspectiveCamera(35, rect.width/rect.height, .01, 100);
+    virtualTryOnCamera.position.set(0,0,5);
+    virtualTryOnCamera.lookAt(0,0,0);
+    virtualTryOnScene.add(new THREE.HemisphereLight(0xffffff,0x555555,2.2));
+    const key = new THREE.DirectionalLight(0xffffff,2.8); key.position.set(2,3,4); virtualTryOnScene.add(key);
+    const fill = new THREE.DirectionalLight(0xffffff,1.4); fill.position.set(-3,1,2); virtualTryOnScene.add(fill);
 
     const GLTFLoader = loaderModule.GLTFLoader;
-    const gltf = await new GLTFLoader().loadAsync(new URL('./eyeglasses.glb', document.baseURI).href);
+    const gltf = await new GLTFLoader().loadAsync('eyeglasses.glb');
     virtualTryOnModel = gltf.scene;
-
-    // Track a clean anchor group. Re-centering the GLB as a child keeps the
-    // model's bounding-box offset from being overwritten by live face position.
     const box = new THREE.Box3().setFromObject(virtualTryOnModel);
     const size = new THREE.Vector3();
     const center = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(center);
-    virtualTryOnModel.position.sub(center);
+
+    // The pivot is deliberately placed on the eye/hinge line rather than at
+    // the centre of the complete model. That keeps the bridge seated while
+    // the long temple arms rotate behind the head.
+    const opticalLineY = box.min.y + size.y*.57;
+    const lensPlaneZ = box.max.z - size.z*.08;
     virtualTryOnAnchor = new THREE.Group();
-    virtualTryOnAnchor.userData.baseWidth = Math.max(size.x, 0.001);
+    virtualTryOnModel.position.set(-center.x,-opticalLineY,-lensPlaneZ);
+    const morphInfo = installEyewearMorph(virtualTryOnModel,box,size);
     virtualTryOnAnchor.add(virtualTryOnModel);
+    virtualTryOnAnchor.userData.baseWidth = Math.max(size.x,.001);
+    virtualTryOnAnchor.userData.modelEyeX = morphInfo.modelEyeX;
+    virtualTryOnAnchor.userData.modelTempleTipX = size.x*.268;
+    virtualTryOnAnchor.userData.targetPosition = new THREE.Vector3();
+    virtualTryOnAnchor.userData.targetQuaternion = new THREE.Quaternion();
     virtualTryOnAnchor.visible = false;
     virtualTryOnScene.add(virtualTryOnAnchor);
 
-    setVirtualTryOnProgress(92, 'Model loaded', 'Calibrating the glasses to your face…');
-    virtualLastVideoTime = -1;
-    virtualTryOnMissedFrames = 0;
+    // Use the detected face outline itself as the depth mask. Unlike the old
+    // circular proxy, this follows the visible face silhouette on every frame
+    // and hides only geometry that has actually passed behind the face.
+    virtualTryOnOccluder = createFaceDepthMask(THREE);
+    virtualTryOnScene.add(virtualTryOnOccluder);
 
-    if ('ResizeObserver' in window) {
-      virtualTryOnResizeObserver?.disconnect?.();
-      virtualTryOnResizeObserver = new ResizeObserver(() => syncVirtualTryOnRenderer(true));
-      virtualTryOnResizeObserver.observe(stage);
-    }
+    setVirtualTryOnProgress(92,'Model loaded','Starting the personal face-fit scan…');
+    virtualLastVideoTime = -1;
+    virtualTryOnPoseReady = false;
+    virtualTryOnLostFrames = 0;
+    resizeVirtualTryOnRenderer();
+    resetCalibrationState();
+    loader?.classList.add('is-done');
     virtualTryOnLoop();
   } catch (err) {
-    console.error('Virtual try-on error:', err);
+    console.error('Virtual try-on error:',err);
     let message = err?.message || 'Unable to start virtual try-on.';
     if (err?.name === 'NotAllowedError') message = 'Camera permission was blocked. Allow camera access in your browser, then try again.';
     if (err?.name === 'NotFoundError') message = 'No front-facing camera was found on this device.';
@@ -7737,146 +8012,175 @@ async function startVirtualTryOn() {
   }
 }
 
+function updateVirtualTryOnPose(lm, video, stage) {
+  const THREE = virtualThree;
+  if (!THREE || !virtualTryOnAnchor || !virtualTryOnCamera) return false;
+  if (!lm || lm.length <= 454) return false;
+
+  const cover = getCoverTransform(video,stage);
+  const measurement = measureFace(lm,cover,THREE);
+  const rawQuaternion = getRawFaceQuaternion(lm,THREE,cover);
+  const calibrated = processCalibration(lm,cover,measurement,rawQuaternion);
+  drawFaceScan(lm,cover,!calibrated);
+  if (!calibrated || !virtualTryOnCalibration?.profile) return false;
+
+  const profile = virtualTryOnCalibration.profile;
+  const inferredTempleSpan = measurement.eyeSpan3 / Math.max(profile.eyeTempleRatio,.001);
+  const physicalTempleSpanPx = measurement.templeSpan3*.55 + inferredTempleSpan*.45;
+  const desiredPx = Math.max(measurement.eyeSpan2*1.55,physicalTempleSpanPx*VIRTUAL_FRAME_TO_TEMPLE);
+  const world = stagePointToWorld(measurement.eyeMid,cover,virtualTryOnCamera,VIRTUAL_TRYON_PLANE_Z);
+  const desiredWorldWidth = (desiredPx/cover.stageW)*world.viewWidth;
+  const baseWidth = virtualTryOnAnchor.userData.baseWidth || 1;
+  const targetScale = Math.max(.05,desiredWorldWidth/baseWidth);
+
+  const targetPosition = virtualTryOnAnchor.userData.targetPosition;
+  targetPosition.set(world.x,world.y,VIRTUAL_TRYON_PLANE_Z);
+
+  // Calibration records the user's neutral head basis. Removing that neutral
+  // basis makes the front-on fit exactly the model's native orientation, then
+  // applies only the user's real motion from that point onward.
+  const targetQuaternion = rawQuaternion.clone().multiply(profile.neutralQuaternion.clone().invert()).normalize();
+  virtualTryOnAnchor.userData.targetQuaternion.copy(targetQuaternion);
+
+  if (virtualTryOnMorphUniforms) {
+    virtualTryOnMorphUniforms.uTargetEyeX.value = profile.targetEyeX;
+    virtualTryOnMorphUniforms.uTempleOut.value = profile.templeOut;
+  }
+  updateFaceDepthMask(lm,cover,desiredWorldWidth);
+
+  if (!virtualTryOnPoseReady) {
+    virtualTryOnAnchor.position.copy(targetPosition);
+    virtualTryOnAnchor.quaternion.copy(targetQuaternion);
+    virtualTryOnAnchor.scale.setScalar(targetScale);
+    virtualTryOnPoseReady = true;
+  } else {
+    const positionError = virtualTryOnAnchor.position.distanceTo(targetPosition);
+    const posAlpha = adaptiveAlpha(positionError,.46,.82,1.15);
+    virtualTryOnAnchor.position.lerp(targetPosition,posAlpha);
+
+    const currentScale = virtualTryOnAnchor.scale.x || targetScale;
+    const scaleError = Math.abs(targetScale-currentScale)/Math.max(targetScale,.001);
+    const scaleAlpha = adaptiveAlpha(scaleError,.34,.72,1.0);
+    const nextScale = currentScale+(targetScale-currentScale)*scaleAlpha;
+    virtualTryOnAnchor.scale.setScalar(nextScale);
+
+    const angle = virtualTryOnAnchor.quaternion.angleTo(targetQuaternion);
+    const rotAlpha = adaptiveAlpha(angle,.40,.82,1.25);
+    virtualTryOnAnchor.quaternion.slerp(targetQuaternion,rotAlpha).normalize();
+  }
+
+  virtualTryOnAnchor.visible = true;
+  virtualTryOnLostFrames = 0;
+  return true;
+}
+
 function virtualTryOnLoop() {
   const overlay = document.getElementById('virtualTryOn');
   if (!overlay?.classList.contains('is-open')) return;
   const video = document.getElementById('virtualTryOnVideo');
   const stage = document.getElementById('virtualTryOnStage');
-  if (!video || !stage || !virtualTryOnRenderer || !virtualTryOnScene || !virtualTryOnCamera || !virtualTryOnAnchor) return;
-
-  const stageSize = syncVirtualTryOnRenderer(false) || {
-    width: Math.max(1, stage.clientWidth),
-    height: Math.max(1, stage.clientHeight)
-  };
+  if (!video || !virtualTryOnRenderer || !virtualTryOnScene || !virtualTryOnCamera || !virtualTryOnAnchor) return;
 
   if (video.readyState >= 2 && video.currentTime !== virtualLastVideoTime) {
     virtualLastVideoTime = video.currentTime;
     let result = null;
-    try {
-      result = virtualTryOnLandmarker?.detectForVideo(video, performance.now());
-    } catch (e) {
-      // A dropped tracking frame is harmless; keep rendering the prior pose.
-    }
-
+    try { result = virtualTryOnLandmarker?.detectForVideo(video,performance.now()); } catch(e) {}
     const lm = result?.faceLandmarks?.[0];
-    if (lm && lm.length > 454 && video.videoWidth && video.videoHeight) {
-      const cover = getVirtualCoverTransform(video, stageSize);
+    const tracked = updateVirtualTryOnPose(lm,video,stage);
 
-      const eyeA = lm[33];
-      const eyeB = lm[263];
-      const sideA = lm[234];
-      const sideB = lm[454];
-      const leftEyeRaw = eyeA.x <= eyeB.x ? eyeA : eyeB;
-      const rightEyeRaw = eyeA.x <= eyeB.x ? eyeB : eyeA;
-      const leftSideRaw = sideA.x <= sideB.x ? sideA : sideB;
-      const rightSideRaw = sideA.x <= sideB.x ? sideB : sideA;
-
-      const leftEye = mapVirtualLandmarkToStage(leftEyeRaw, cover);
-      const rightEye = mapVirtualLandmarkToStage(rightEyeRaw, cover);
-      const leftSide = mapVirtualLandmarkToStage(leftSideRaw, cover);
-      const rightSide = mapVirtualLandmarkToStage(rightSideRaw, cover);
-      const eyeDistancePx = Math.max(1, virtualDistance2D(leftEye, rightEye));
-      const projectedFaceWidthPx = Math.max(eyeDistancePx * 1.25, virtualDistance2D(leftSide, rightSide));
-      const eyeMidX = (leftEye.x + rightEye.x) * 0.5;
-      const eyeMidY = (leftEye.y + rightEye.y) * 0.5;
-
-      const pose = getVirtualHeadPose(lm, video);
-      const cosYaw = Math.max(0.58, Math.cos(Math.min(Math.abs(pose.yaw), 0.95)));
-      const intrinsicFaceWidthPx = projectedFaceWidthPx / cosYaw;
-
-      const viewHeight = 2 * Math.tan((virtualTryOnCamera.fov * Math.PI / 180) * 0.5) * virtualTryOnCamera.position.z;
-      const viewWidth = viewHeight * virtualTryOnCamera.aspect;
-      const worldPerPixelX = viewWidth / stageSize.width;
-      const worldPerPixelY = viewHeight / stageSize.height;
-      const targetX = (eyeMidX - stageSize.width * 0.5) * worldPerPixelX;
-      const targetY = (stageSize.height * 0.5 - eyeMidY) * worldPerPixelY - viewHeight * VIRTUAL_TRYON_FIT.verticalEyeOffset;
-      const desiredWidthWorld = intrinsicFaceWidthPx * worldPerPixelX * VIRTUAL_TRYON_FIT.frameToFaceWidth;
-      const targetScale = desiredWidthWorld / (virtualTryOnAnchor.userData.baseWidth || 1);
-
-      const THREE = virtualThree;
-      const targetPosition = new THREE.Vector3(targetX, targetY, 0);
-      if (!virtualTryOnAnchor.visible) {
-        virtualTryOnAnchor.position.copy(targetPosition);
-        virtualTryOnAnchor.scale.setScalar(targetScale);
-      } else {
-        virtualTryOnAnchor.position.lerp(targetPosition, VIRTUAL_TRYON_FIT.positionSmoothing);
-        const nextScale = virtualTryOnAnchor.scale.x + (targetScale - virtualTryOnAnchor.scale.x) * VIRTUAL_TRYON_FIT.scaleSmoothing;
-        virtualTryOnAnchor.scale.setScalar(nextScale);
-      }
-
-      const targetEuler = new THREE.Euler(pose.pitch, pose.yaw, pose.roll, 'YXZ');
-      const targetQuaternion = new THREE.Quaternion().setFromEuler(targetEuler);
-      if (!virtualTryOnAnchor.visible) {
-        virtualTryOnAnchor.quaternion.copy(targetQuaternion);
-      } else {
-        virtualTryOnAnchor.quaternion.slerp(targetQuaternion, VIRTUAL_TRYON_FIT.rotationSmoothing);
-      }
-
-      virtualTryOnMissedFrames = 0;
-      virtualTryOnAnchor.visible = true;
+    if (tracked) {
       stage.classList.add('is-tracking');
-      document.getElementById('virtualTryOnLoader')?.classList.add('is-done');
-      setVirtualTryOnProgress(100, 'Ready', 'Face tracking active.');
+      stage.classList.remove('is-calibrating');
+      setVirtualTryOnProgress(100,'Ready','Personal fit active — move naturally.');
     } else {
-      virtualTryOnMissedFrames += 1;
-      if (virtualTryOnMissedFrames > 6) virtualTryOnAnchor.visible = false;
-      if (virtualTryOnMissedFrames > 6) stage.classList.remove('is-tracking');
-      const loader = document.getElementById('virtualTryOnLoader');
-      if (loader && !loader.classList.contains('is-done')) {
-        setVirtualTryOnProgress(96, 'Looking for your face…', 'Centre your face in the guide.');
+      virtualTryOnLostFrames += 1;
+      if (virtualTryOnCalibration?.profile && virtualTryOnLostFrames > 5) {
+        virtualTryOnAnchor.visible = false;
+        if (virtualTryOnOccluder) virtualTryOnOccluder.visible = false;
+        virtualTryOnPoseReady = false;
+        stage.classList.remove('is-tracking');
+      }
+      if (!lm) {
+        drawFaceScan(null,getCoverTransform(video,stage),false);
+        if (!virtualTryOnCalibration?.profile) setCalibrationUI(0,'Looking for your face…','Centre your face in the guide to begin the fit scan.');
       }
     }
   }
 
-  virtualTryOnRenderer.render(virtualTryOnScene, virtualTryOnCamera);
-  virtualTryOnFrame = requestAnimationFrame(virtualTryOnLoop);
+  virtualTryOnRenderer.render(virtualTryOnScene,virtualTryOnCamera);
+  virtualTryOnFrame=requestAnimationFrame(virtualTryOnLoop);
+}
+
+function disposeVirtualTryOnModel() {
+  if (!virtualTryOnModel) return;
+  virtualTryOnModel.traverse?.(node => {
+    if (!node?.isMesh) return;
+    try { node.geometry?.dispose?.(); } catch (_) {}
+    const materials = Array.isArray(node.material) ? node.material : [node.material];
+    materials.filter(Boolean).forEach(material => {
+      for (const value of Object.values(material)) {
+        if (value?.isTexture) { try { value.dispose(); } catch (_) {} }
+      }
+      try { material.dispose?.(); } catch (_) {}
+    });
+  });
 }
 
 function stopVirtualTryOn() {
-  cancelAnimationFrame(virtualTryOnFrame);
-  virtualTryOnFrame = 0;
-  virtualTryOnResizeObserver?.disconnect?.();
-  virtualTryOnResizeObserver = null;
-  virtualTryOnStream?.getTracks?.().forEach((track) => track.stop());
-  virtualTryOnStream = null;
-
-  const video = document.getElementById('virtualTryOnVideo');
-  if (video) {
-    video.pause();
-    video.srcObject = null;
+  cancelAnimationFrame(virtualTryOnFrame); virtualTryOnFrame=0;
+  virtualTryOnStream?.getTracks?.().forEach(track=>track.stop()); virtualTryOnStream=null;
+  const video=document.getElementById('virtualTryOnVideo'); if(video){video.pause();video.srcObject=null;}
+  virtualTryOnLandmarker?.close?.(); virtualTryOnLandmarker=null;
+  disposeVirtualTryOnModel();
+  if (virtualTryOnOccluder) {
+    try { virtualTryOnOccluder.geometry?.dispose?.(); } catch (_) {}
+    try { virtualTryOnOccluder.material?.dispose?.(); } catch (_) {}
   }
-
-  virtualTryOnLandmarker?.close?.();
-  virtualTryOnLandmarker = null;
-  if (virtualTryOnRenderer) {
-    try { virtualTryOnRenderer.dispose(); } catch (e) {}
-  }
-
-  virtualTryOnRenderer = null;
-  virtualTryOnScene = null;
-  virtualTryOnCamera = null;
-  virtualTryOnModel = null;
-  virtualTryOnAnchor = null;
-  virtualThree = null;
-  virtualTryOnLastStageSize = { width: 0, height: 0, dpr: 0 };
-  virtualTryOnMissedFrames = 0;
-
-  const canvas = document.getElementById('virtualTryOnCanvas');
-  if (canvas) {
-    canvas.width = 1;
-    canvas.height = 1;
-  }
-  document.getElementById('virtualTryOnStage')?.classList.remove('is-tracking');
+  if (virtualTryOnRenderer) { try{virtualTryOnRenderer.dispose();}catch(e){} }
+  virtualTryOnRenderer=null;
+  virtualTryOnScene=null;
+  virtualTryOnCamera=null;
+  virtualTryOnModel=null;
+  virtualTryOnAnchor=null;
+  virtualTryOnOccluder=null;
+  virtualTryOnMorphUniforms=null;
+  virtualThree=null;
+  virtualTryOnCalibration=null;
+  virtualTryOnPoseReady=false;
+  virtualTryOnLostFrames=0;
+  ['virtualTryOnCanvas','virtualTryOnScanCanvas'].forEach(id=>{
+    const canvas=document.getElementById(id);
+    if(!canvas)return;
+    try { const c=canvas.getContext('2d'); c?.clearRect(0,0,canvas.width,canvas.height); } catch (_) {}
+  });
+  const stage=document.getElementById('virtualTryOnStage');
+  stage?.classList.remove('is-tracking','is-calibrating','is-calibrated');
   document.getElementById('virtualTryOn')?.classList.remove('is-open');
-  document.getElementById('virtualTryOn')?.setAttribute('aria-hidden', 'true');
+  document.getElementById('virtualTryOn')?.setAttribute('aria-hidden','true');
   document.getElementById('virtualTryOnLoader')?.classList.remove('is-done');
-  const err = document.getElementById('virtualTryOnError');
-  if (err) err.hidden = true;
-  setVirtualTryOnProgress(5, 'Preparing camera…', 'The 3D glasses and face tracker are loading.');
-  virtualTryOnBusy = false;
+  document.getElementById('virtualTryOnCalibration')?.classList.add('is-done');
+  const btn=document.getElementById('virtualTryOnRefitBtn'); if(btn)btn.hidden=true;
+  const err=document.getElementById('virtualTryOnError'); if(err) err.hidden=true;
+  setVirtualTryOnProgress(5,'Preparing camera…','The 3D glasses and face tracker are loading.');
+  virtualTryOnBusy=false;
 }
 
-window.addEventListener('resize', () => syncVirtualTryOnRenderer(true), { passive: true });
-window.visualViewport?.addEventListener?.('resize', () => syncVirtualTryOnRenderer(true), { passive: true });
+function resizeVirtualTryOnRenderer() {
+  const stage=document.getElementById('virtualTryOnStage');
+  if(!stage)return;
+  if(virtualTryOnRenderer&&virtualTryOnCamera){
+    const r=stage.getBoundingClientRect();
+    if (r.width && r.height) {
+      const dpr=Math.min(window.devicePixelRatio||1,2);
+      virtualTryOnRenderer.setPixelRatio(dpr);
+      virtualTryOnRenderer.setSize(r.width,r.height,false);
+      virtualTryOnCamera.aspect=r.width/r.height;
+      virtualTryOnCamera.updateProjectionMatrix();
+    }
+  }
+  resizeScanCanvas();
+}
+
+window.addEventListener('resize',resizeVirtualTryOnRenderer,{passive:true});
 </script>
 </body></html>
