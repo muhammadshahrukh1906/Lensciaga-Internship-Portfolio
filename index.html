@@ -7483,6 +7483,9 @@ else boot();
 let virtualTryOnStream = null;
 let virtualTryOnFrame = 0;
 let virtualTryOnLandmarker = null;
+let virtualPoseLandmarker = null;
+let virtualPoseLandmarks = null;
+let virtualPoseFrameCounter = 0;
 let virtualTryOnRenderer = null;
 let virtualTryOnScene = null;
 let virtualTryOnCamera = null;
@@ -7662,6 +7665,18 @@ function getEyeCenters(lm, cover) {
   return a.x <= b.x ? [a,b] : [b,a];
 }
 
+
+function getPoseEarPoints(poseLm, cover) {
+  if (!poseLm || poseLm.length < 9) return null;
+  const candidates = [poseLm[7], poseLm[8]]
+    .filter(p => p && (p.visibility == null || p.visibility > .32))
+    .map(p => landmarkToStage(p, cover))
+    .sort((a,b) => a.x-b.x);
+  if (!candidates.length) return null;
+  if (candidates.length === 1) return {left:candidates[0], right:null};
+  return {left:candidates[0], right:candidates[candidates.length-1]};
+}
+
 function getRawFaceQuaternion(lm, THREE, cover) {
   const left = landmarkToMetric(lm[127], cover, THREE);
   const right = landmarkToMetric(lm[356], cover, THREE);
@@ -7676,14 +7691,20 @@ function getRawFaceQuaternion(lm, THREE, cover) {
   return new THREE.Quaternion().setFromRotationMatrix(matrix).normalize();
 }
 
-function measureFace(lm, cover, THREE) {
+function measureFace(lm, cover, THREE, poseLm = null) {
   const [eyeL, eyeR] = getEyeCenters(lm, cover);
   const templeL = landmarkToStage(lm[127], cover);
   const templeR = landmarkToStage(lm[356], cover);
   const faceL = averageStageLandmarks(lm, cover, [234, 127, 93]);
   const faceR = averageStageLandmarks(lm, cover, [454, 356, 323]);
-  const earL = averageStageLandmarks(lm, cover, [234, 127, 132, 93, 58]);
-  const earR = averageStageLandmarks(lm, cover, [454, 356, 361, 323, 288]);
+  const poseEars = getPoseEarPoints(poseLm, cover);
+  const faceEarPair = [
+    averageStageLandmarks(lm, cover, [234, 127, 132, 93, 58]),
+    averageStageLandmarks(lm, cover, [454, 356, 361, 323, 288])
+  ].sort((a,b) => a.x-b.x);
+  const earL = poseEars?.left || faceEarPair[0];
+  const earR = poseEars?.right || faceEarPair[1];
+  const earsFromPose = !!(poseEars?.left && poseEars?.right);
   const bridge = averageStageLandmarks(lm, cover, [6, 168, 197, 195]);
   const noseL = averageStageLandmarks(lm, cover, [129, 98, 97, 64]);
   const noseR = averageStageLandmarks(lm, cover, [358, 327, 326, 294]);
@@ -7709,6 +7730,8 @@ function measureFace(lm, cover, THREE) {
   const eyeHeight2 = (eyeHeightL + eyeHeightR) * .5;
   const bridgeDrop2 = bridge.y - eyeMid.y;
   const browEyeGap2 = eyeMid.y - browMid.y;
+  const earDropL2 = earL.y - eyeL.y;
+  const earDropR2 = earR.y - eyeR.y;
 
   const eyeL3 = new THREE.Vector3(eyeL.x, -eyeL.y, -eyeL.z * cover.drawnW);
   const eyeR3 = new THREE.Vector3(eyeR.x, -eyeR.y, -eyeR.z * cover.drawnW);
@@ -7726,6 +7749,9 @@ function measureFace(lm, cover, THREE) {
   const faceWidth3 = Math.max(1, faceL3.distanceTo(faceR3));
   const earSpan3 = Math.max(1, earL3.distanceTo(earR3));
   const faceHeight3 = Math.max(1, top3.distanceTo(chin3));
+  const noseTip3 = landmarkToMetric(lm[1] || lm[4] || lm[6], cover, THREE);
+  const sideDepth3 = (templeL3.z + templeR3.z) * .5;
+  const headDepth3 = Math.max(1, Math.abs(noseTip3.z - sideDepth3));
   const roll = Math.atan2(eyeR.y-eyeL.y, eyeR.x-eyeL.x);
   const yawSymmetry = (bridge.x-eyeMid.x) / eyeSpan2;
 
@@ -7737,7 +7763,8 @@ function measureFace(lm, cover, THREE) {
     bridge,
     eyeSpan2, templeSpan2, faceWidth2, earSpan2,
     innerGap2, noseWidth2, eyeHeight2, bridgeDrop2, browEyeGap2,
-    eyeSpan3, templeSpan3, faceWidth3, earSpan3, faceHeight3,
+    earDropL2, earDropR2, earsFromPose,
+    eyeSpan3, templeSpan3, faceWidth3, earSpan3, faceHeight3, headDepth3,
     roll, yawSymmetry
   };
 }
@@ -7757,7 +7784,7 @@ function resetCalibrationState() {
   stage?.classList.add('is-calibrating');
   const btn = document.getElementById('virtualTryOnRefitBtn');
   if (btn) btn.hidden = true;
-  setCalibrationUI(0,'Look straight at the camera','Scanning pupils, eye shape, nose bridge, face width and side anchors.');
+  setCalibrationUI(0,'Look straight at the camera','Scanning pupils, eye shape, nose bridge, face width and ear level.');
 }
 
 function recalibrateVirtualTryOn() {
@@ -7807,11 +7834,15 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
     faceRatio: measurement.faceWidth2 / Math.max(desiredFramePx, 1),
     earRatio: measurement.earSpan2 / Math.max(desiredFramePx, 1),
     frameScaleRatio: desiredFramePx / Math.max(measurement.earSpan2, 1),
+    earDropLRatio: measurement.earDropL2 / Math.max(desiredFramePx, 1),
+    earDropRRatio: measurement.earDropR2 / Math.max(desiredFramePx, 1),
+    headDepthRatio: measurement.headDepth3 / Math.max(measurement.templeSpan3, 1),
+    earsFromPose: measurement.earsFromPose,
     quaternion: rawQuaternion.clone()
   });
   const count = virtualTryOnCalibration.samples.length;
   const pct = Math.min(100, count / VIRTUAL_CALIBRATION_FRAMES * 100);
-  setCalibrationUI(pct, count < VIRTUAL_CALIBRATION_FRAMES*.62 ? 'Scanning your face…' : 'Building your personal eyewear fit…', 'Pupils • eye size • nose bridge • face width • side anchors');
+  setCalibrationUI(pct, count < VIRTUAL_CALIBRATION_FRAMES*.62 ? 'Scanning your face…' : 'Building your personal eyewear fit…', 'Pupils • eye size • nose bridge • face width • ears');
 
   if (!virtualTryOnCalibration.neutralQuaternion) {
     virtualTryOnCalibration.neutralQuaternion = rawQuaternion.clone();
@@ -7831,18 +7862,29 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
   const bridgeDropRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.bridgeDropRatio)), .02, .14);
   const eyeHeightRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.eyeHeightRatio)), .11, .34);
   const frameScaleRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.frameScaleRatio)), 1.0, 1.22);
+  const poseEarSamples = virtualTryOnCalibration.samples.filter(s => s.earsFromPose);
+  const earSource = poseEarSamples.length >= Math.max(5, VIRTUAL_CALIBRATION_FRAMES*.18) ? poseEarSamples : virtualTryOnCalibration.samples;
+  const earDropLRatio = clampValue(median(earSource.map(s => s.earDropLRatio)), .018, .18);
+  const earDropRRatio = clampValue(median(earSource.map(s => s.earDropRRatio)), .018, .18);
+  const headDepthRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.headDepthRatio)), .035, .28);
 
   const targetEyeX = clampValue(baseWidth * eyeRatio * .5, baseWidth*.198, baseWidth*.305);
   const targetBridgeHalf = clampValue(baseWidth * Math.max(innerGapRatio*.48, noseWidthRatio*.62) * .5, baseWidth*.032, baseWidth*.09);
-  const targetTempleTipX = clampValue(baseWidth * .5 * 1.02, baseWidth*.39, baseWidth*.56);
-  const templeOut = Math.max(0, targetTempleTipX - modelTempleTipX);
+  const earSpanRatio = clampValue(median(earSource.map(s => s.earRatio)), .82, 1.08);
+  const templeRailX = baseWidth * clampValue(earSpanRatio * .5, .43, .54);
+  const templeDropL = -baseWidth * clampValue(earDropLRatio * .92, .025, .135);
+  const templeDropR = -baseWidth * clampValue(earDropRRatio * .92, .025, .135);
+  const templeBackStretch = clampValue(.045 + headDepthRatio * .55, .055, .18);
   const lensLift = clampValue(baseWidth * ((bridgeDropRatio * .22) + ((eyeHeightRatio - .18) * .06)), -baseWidth*.01, baseWidth*.018);
 
   virtualTryOnCalibration.profile = {
     neutralQuaternion: virtualTryOnCalibration.neutralQuaternion.clone().normalize(),
     targetEyeX,
     targetBridgeHalf,
-    templeOut,
+    templeRailX,
+    templeDropL,
+    templeDropR,
+    templeBackStretch,
     lensLift,
     frameScaleBias: frameScaleRatio
   };
@@ -7850,7 +7892,10 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
   if (virtualTryOnMorphUniforms) {
     virtualTryOnMorphUniforms.uTargetEyeX.value = targetEyeX;
     virtualTryOnMorphUniforms.uTargetBridgeHalf.value = targetBridgeHalf;
-    virtualTryOnMorphUniforms.uTempleOut.value = templeOut;
+    virtualTryOnMorphUniforms.uTempleRailX.value = templeRailX;
+    virtualTryOnMorphUniforms.uTempleDropL.value = templeDropL;
+    virtualTryOnMorphUniforms.uTempleDropR.value = templeDropR;
+    virtualTryOnMorphUniforms.uTempleBackStretch.value = templeBackStretch;
     virtualTryOnMorphUniforms.uLensLift.value = lensLift;
   }
   finishCalibrationUI();
@@ -7874,8 +7919,11 @@ function installEyewearMorph(root, box, size) {
     uTempleStartX:{value:templeStartX},
     uFrontZ:{value:frontZ},
     uBackZ:{value:backZ},
-    uTempleOut:{value:baseWidth*.16},
-    uTempleLift:{value:baseWidth*.0045},
+    uTempleRailX:{value:baseWidth*.49},
+    uTempleDropL:{value:-baseWidth*.07},
+    uTempleDropR:{value:-baseWidth*.075},
+    uTempleBackStretch:{value:.10},
+    uTempleLift:{value:0},
     uLensLift:{value:0}
   };
   root.traverse(node => {
@@ -7894,7 +7942,10 @@ uniform float uHingeX;
 uniform float uTempleStartX;
 uniform float uFrontZ;
 uniform float uBackZ;
-uniform float uTempleOut;
+uniform float uTempleRailX;
+uniform float uTempleDropL;
+uniform float uTempleDropR;
+uniform float uTempleBackStretch;
 uniform float uTempleLift;
 uniform float uLensLift;
 ` + shader.vertexShader;
@@ -7916,14 +7967,23 @@ float frontWeight = 1.0 - smoothstep(uTempleStartX, uHingeX, ax);
 transformed.y += uLensLift * pow(frontWeight, 0.85);
 
 float backProgress = clamp((uFrontZ-transformed.z) / max(uFrontZ-uBackZ, 0.0001), 0.0, 1.0);
-backProgress = smoothstep(0.16, 1.0, backProgress);
-float sideWeight = smoothstep(uTempleStartX, uHingeX, ax);
-float templeWeight = sideWeight * backProgress;
-transformed.x += sideSign * uTempleOut * pow(templeWeight, 1.22);
+backProgress = smoothstep(0.12, 1.0, backProgress);
+// The source GLB stores both temples folded inward.  Their rear tips sit near
+// the centre of the frame, so merely scaling the mesh can never put them on
+// the ears.  Open them progressively around the hinge into an ear-width rail.
+float lateralGate = smoothstep(uModelEyeX * 0.46, uModelEyeX * 0.92, ax);
+float templeWeight = lateralGate * backProgress;
+float railX = mix(uHingeX, uTempleRailX, backProgress);
+float openedAx = mix(abs(transformed.x), railX, templeWeight);
+transformed.x = sideSign * openedAx;
+float earDrop = sideSign < 0.0 ? uTempleDropL : uTempleDropR;
+transformed.y += earDrop * pow(templeWeight, 1.12);
+float rearDistance = max(0.0, uFrontZ - transformed.z);
+transformed.z -= rearDistance * uTempleBackStretch * pow(templeWeight, 1.05);
 transformed.y += uTempleLift * pow(templeWeight, 1.12);
 `);
       };
-      material.customProgramCacheKey = () => 'lensciaga-precise-personal-fit-v5';
+      material.customProgramCacheKey = () => 'lensciaga-open-temple-ear-fit-v7';
       material.needsUpdate = true;
     });
   });
@@ -7954,21 +8014,24 @@ function createFaceDepthMask(THREE) {
 
 function updateFaceDepthMask(lm, cover, desiredWorldWidth) {
   if (!virtualTryOnOccluder || !virtualTryOnCamera) return;
-  const maskZ = VIRTUAL_TRYON_PLANE_Z - Math.max(.035, desiredWorldWidth*.145);
   const attr = virtualTryOnOccluder.geometry.attributes.position;
-  const worlds = [];
-  let cx=0, cy=0;
-  for (const idx of VIRTUAL_FACE_OVAL) {
-    const stage = landmarkToStage(lm[idx],cover);
-    const w = stagePointToWorld(stage,cover,virtualTryOnCamera,maskZ);
-    worlds.push(w);
-    cx += w.x;
-    cy += w.y;
-  }
-  cx /= worlds.length;
-  cy /= worlds.length;
-  attr.setXYZ(0,cx,cy,maskZ);
-  worlds.forEach((w,i) => attr.setXYZ(i+1,w.x,w.y,maskZ));
+  const centerStage = landmarkToStage(lm[168] || lm[6], cover);
+  const centerDepth = Number.isFinite((lm[168] || lm[6])?.z) ? (lm[168] || lm[6]).z : 0;
+  const depthScale = desiredWorldWidth * .72;
+  const centerZ = VIRTUAL_TRYON_PLANE_Z - Math.max(.018, desiredWorldWidth*.032);
+  const centerWorld = stagePointToWorld(centerStage, cover, virtualTryOnCamera, centerZ);
+  attr.setXYZ(0, centerWorld.x, centerWorld.y, centerZ);
+
+  VIRTUAL_FACE_OVAL.forEach((idx, i) => {
+    const point = lm[idx];
+    const stage = landmarkToStage(point, cover);
+    const relativeDepth = (Number.isFinite(point?.z) ? point.z : centerDepth) - centerDepth;
+    // MediaPipe's positive relative Z is farther from the camera.  Reproduce
+    // that depth in the occlusion surface rather than using a flat oval.
+    const z = centerZ - clampValue(relativeDepth * depthScale, -desiredWorldWidth*.025, desiredWorldWidth*.24);
+    const world = stagePointToWorld(stage, cover, virtualTryOnCamera, z);
+    attr.setXYZ(i+1, world.x, world.y, z);
+  });
   attr.needsUpdate = true;
   virtualTryOnOccluder.visible = true;
 }
@@ -8050,7 +8113,7 @@ async function startVirtualTryOn() {
     await video.play();
     setVirtualTryOnProgress(24,'Camera ready','Loading the face-tracking engine…');
 
-    const [{FaceLandmarker, FilesetResolver}, THREE, loaderModule] = await Promise.all([
+    const [{FaceLandmarker, PoseLandmarker, FilesetResolver}, THREE, loaderModule] = await Promise.all([
       import('https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/+esm'),
       import('https://cdn.jsdelivr.net/npm/three@0.180.0/+esm'),
       import('https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/loaders/GLTFLoader.js/+esm')
@@ -8071,6 +8134,41 @@ async function startVirtualTryOn() {
       outputFaceBlendshapes:false,
       outputFacialTransformationMatrixes:false
     });
+    try {
+      virtualPoseLandmarker = await PoseLandmarker.createFromOptions(fileset, {
+        baseOptions:{
+          modelAssetPath:'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
+          delegate:'GPU'
+        },
+        runningMode:'VIDEO',
+        numPoses:1,
+        minPoseDetectionConfidence:.45,
+        minPosePresenceConfidence:.45,
+        minTrackingConfidence:.45,
+        outputSegmentationMasks:false
+      });
+    } catch (poseGpuError) {
+      console.warn('GPU ear tracker unavailable, retrying on CPU.', poseGpuError);
+      try {
+        virtualPoseLandmarker = await PoseLandmarker.createFromOptions(fileset, {
+          baseOptions:{
+            modelAssetPath:'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
+            delegate:'CPU'
+          },
+          runningMode:'VIDEO',
+          numPoses:1,
+          minPoseDetectionConfidence:.4,
+          minPosePresenceConfidence:.4,
+          minTrackingConfidence:.4,
+          outputSegmentationMasks:false
+        });
+      } catch (poseCpuError) {
+        console.warn('Dedicated ear landmarks unavailable; using face-side anchors.', poseCpuError);
+        virtualPoseLandmarker = null;
+      }
+    }
+    virtualPoseLandmarks = null;
+    virtualPoseFrameCounter = 0;
     setVirtualTryOnProgress(68,'Tracking ready','Loading your Winged Rimless 3D model…');
 
     const canvas = document.getElementById('virtualTryOnCanvas');
@@ -8148,7 +8246,7 @@ function updateVirtualTryOnPose(lm, video, stage) {
   if (!lm || lm.length <= 454) return false;
 
   const cover = getCoverTransform(video,stage);
-  const measurement = measureFace(lm,cover,THREE);
+  const measurement = measureFace(lm,cover,THREE,virtualPoseLandmarks);
   const rawQuaternion = getRawFaceQuaternion(lm,THREE,cover);
   const calibrated = processCalibration(lm,cover,measurement,rawQuaternion);
   drawFaceScan(lm,cover,!calibrated);
@@ -8181,7 +8279,10 @@ function updateVirtualTryOnPose(lm, video, stage) {
   if (virtualTryOnMorphUniforms) {
     virtualTryOnMorphUniforms.uTargetEyeX.value = Number.isFinite(profile.targetEyeX) ? profile.targetEyeX : virtualTryOnAnchor.userData.modelEyeX;
     virtualTryOnMorphUniforms.uTargetBridgeHalf.value = Number.isFinite(profile.targetBridgeHalf) ? profile.targetBridgeHalf : (virtualTryOnAnchor.userData.modelBridgeHalf || (baseWidth*.058));
-    virtualTryOnMorphUniforms.uTempleOut.value = Number.isFinite(profile.templeOut) ? profile.templeOut : 0;
+    virtualTryOnMorphUniforms.uTempleRailX.value = Number.isFinite(profile.templeRailX) ? profile.templeRailX : (baseWidth*.49);
+    virtualTryOnMorphUniforms.uTempleDropL.value = Number.isFinite(profile.templeDropL) ? profile.templeDropL : -(baseWidth*.07);
+    virtualTryOnMorphUniforms.uTempleDropR.value = Number.isFinite(profile.templeDropR) ? profile.templeDropR : -(baseWidth*.07);
+    virtualTryOnMorphUniforms.uTempleBackStretch.value = Number.isFinite(profile.templeBackStretch) ? profile.templeBackStretch : .10;
     virtualTryOnMorphUniforms.uLensLift.value = Number.isFinite(profile.lensLift) ? profile.lensLift : 0;
   }
   updateFaceDepthMask(lm,cover,desiredWorldWidth*1.03);
@@ -8222,15 +8323,24 @@ function virtualTryOnLoop() {
 
   if (video.readyState >= 2 && video.currentTime !== virtualLastVideoTime) {
     virtualLastVideoTime = video.currentTime;
+    const now = performance.now();
     let result = null;
-    try { result = virtualTryOnLandmarker?.detectForVideo(video,performance.now()); } catch(e) {}
+    try { result = virtualTryOnLandmarker?.detectForVideo(video,now); } catch(e) {}
+    virtualPoseFrameCounter += 1;
+    if (virtualPoseLandmarker && (virtualPoseFrameCounter % 3 === 1 || !virtualPoseLandmarks)) {
+      try {
+        const poseResult = virtualPoseLandmarker.detectForVideo(video, now);
+        const candidate = poseResult?.landmarks?.[0];
+        if (candidate?.length >= 9) virtualPoseLandmarks = candidate;
+      } catch (e) {}
+    }
     const lm = result?.faceLandmarks?.[0];
     const tracked = updateVirtualTryOnPose(lm,video,stage);
 
     if (tracked) {
       stage.classList.add('is-tracking');
       stage.classList.remove('is-calibrating');
-      setVirtualTryOnProgress(100,'Ready','Personal face fit active — move naturally.');
+      setVirtualTryOnProgress(100,'Ready','Ear-anchored personal fit active — move naturally.');
     } else {
       virtualTryOnLostFrames += 1;
       if (virtualTryOnCalibration?.profile && virtualTryOnLostFrames > 5) {
@@ -8270,6 +8380,8 @@ function stopVirtualTryOn() {
   virtualTryOnStream?.getTracks?.().forEach(track=>track.stop()); virtualTryOnStream=null;
   const video=document.getElementById('virtualTryOnVideo'); if(video){video.pause();video.srcObject=null;}
   virtualTryOnLandmarker?.close?.(); virtualTryOnLandmarker=null;
+  virtualPoseLandmarker?.close?.(); virtualPoseLandmarker=null;
+  virtualPoseLandmarks=null; virtualPoseFrameCounter=0;
   disposeVirtualTryOnModel();
   if (virtualTryOnOccluder) {
     try { virtualTryOnOccluder.geometry?.dispose?.(); } catch (_) {}
