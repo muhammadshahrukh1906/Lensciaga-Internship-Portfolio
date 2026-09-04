@@ -7871,10 +7871,10 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
   const targetEyeX = clampValue(baseWidth * eyeRatio * .5, baseWidth*.198, baseWidth*.305);
   const targetBridgeHalf = clampValue(baseWidth * Math.max(innerGapRatio*.48, noseWidthRatio*.62) * .5, baseWidth*.032, baseWidth*.09);
   const earSpanRatio = clampValue(median(earSource.map(s => s.earRatio)), .82, 1.08);
-  const templeRailX = baseWidth * clampValue(earSpanRatio * .5, .43, .54);
-  const templeDropL = -baseWidth * clampValue(earDropLRatio * .92, .025, .135);
-  const templeDropR = -baseWidth * clampValue(earDropRRatio * .92, .025, .135);
-  const templeBackStretch = clampValue(.045 + headDepthRatio * .55, .055, .18);
+  const templeRailX = baseWidth * clampValue(earSpanRatio * .5 + .035, .515, .585);
+  const templeDropL = -baseWidth * clampValue(earDropLRatio * .72, .018, .105);
+  const templeDropR = -baseWidth * clampValue(earDropRRatio * .72, .018, .105);
+  const templeBackStretch = clampValue(.018 + headDepthRatio * .28, .025, .095);
   const lensLift = clampValue(baseWidth * ((bridgeDropRatio * .22) + ((eyeHeightRatio - .18) * .06)), -baseWidth*.01, baseWidth*.018);
 
   virtualTryOnCalibration.profile = {
@@ -7967,23 +7967,35 @@ float frontWeight = 1.0 - smoothstep(uTempleStartX, uHingeX, ax);
 transformed.y += uLensLift * pow(frontWeight, 0.85);
 
 float backProgress = clamp((uFrontZ-transformed.z) / max(uFrontZ-uBackZ, 0.0001), 0.0, 1.0);
-backProgress = smoothstep(0.12, 1.0, backProgress);
-// The source GLB stores both temples folded inward.  Their rear tips sit near
-// the centre of the frame, so merely scaling the mesh can never put them on
-// the ears.  Open them progressively around the hinge into an ear-width rail.
-float lateralGate = smoothstep(uModelEyeX * 0.46, uModelEyeX * 0.92, ax);
-float templeWeight = lateralGate * backProgress;
-float railX = mix(uHingeX, uTempleRailX, backProgress);
-float openedAx = mix(abs(transformed.x), railX, templeWeight);
-transformed.x = sideSign * openedAx;
+backProgress = smoothstep(0.02, 1.0, backProgress);
+// The temple curve in the source GLB folds inward as it travels backwards.
+// Every genuinely rearward vertex is therefore opened toward an OUTSIDE rail;
+// do not gate this by X, because the folded tips are precisely the vertices
+// whose X values have moved inward toward the centre of the model.
+float templeWeight = pow(backProgress, 0.88);
+float railProgress = smoothstep(0.02, 0.92, backProgress);
+float railX = mix(uHingeX * 0.995, uTempleRailX, railProgress);
+float sourceAx = abs(transformed.x);
+float outwardFloor = railX - mix(0.0, uTempleRailX * 0.012, railProgress);
+float openedAx = max(sourceAx, outwardFloor);
+transformed.x = sideSign * mix(sourceAx, openedAx, templeWeight);
+
+// A real temple remains almost level from the hinge across the temple region.
+// Only the final rear section descends onto/behind the ear.  Delaying this
+// drop prevents the arm from diving through the eye or cheek during yaw.
 float earDrop = sideSign < 0.0 ? uTempleDropL : uTempleDropR;
-transformed.y += earDrop * pow(templeWeight, 1.12);
+float earHook = smoothstep(0.62, 1.0, backProgress);
+transformed.y += earDrop * earHook;
+
+// The GLB already contains substantial rearward length.  Add only a modest
+// extension to the last section so the arm does not spear through the head.
 float rearDistance = max(0.0, uFrontZ - transformed.z);
-transformed.z -= rearDistance * uTempleBackStretch * pow(templeWeight, 1.05);
-transformed.y += uTempleLift * pow(templeWeight, 1.12);
+float rearStretchWeight = smoothstep(0.48, 1.0, backProgress);
+transformed.z -= rearDistance * uTempleBackStretch * rearStretchWeight;
+transformed.y += uTempleLift * earHook;
 `);
       };
-      material.customProgramCacheKey = () => 'lensciaga-open-temple-ear-fit-v7';
+      material.customProgramCacheKey = () => 'lensciaga-head-surface-temple-fit-v8';
       material.needsUpdate = true;
     });
   });
@@ -8017,18 +8029,22 @@ function updateFaceDepthMask(lm, cover, desiredWorldWidth) {
   const attr = virtualTryOnOccluder.geometry.attributes.position;
   const centerStage = landmarkToStage(lm[168] || lm[6], cover);
   const centerDepth = Number.isFinite((lm[168] || lm[6])?.z) ? (lm[168] || lm[6]).z : 0;
-  const depthScale = desiredWorldWidth * .72;
-  const centerZ = VIRTUAL_TRYON_PLANE_Z - Math.max(.018, desiredWorldWidth*.032);
+  const depthScale = desiredWorldWidth * .52;
+  // Keep the depth surface clearly behind the complete optical front.  On a
+  // head turn the far wing can move rearward in world Z; the previous mask was
+  // close enough to slice that wing and make the frame look broken.
+  const centerZ = VIRTUAL_TRYON_PLANE_Z - Math.max(.032, desiredWorldWidth*.072);
   const centerWorld = stagePointToWorld(centerStage, cover, virtualTryOnCamera, centerZ);
   attr.setXYZ(0, centerWorld.x, centerWorld.y, centerZ);
 
   VIRTUAL_FACE_OVAL.forEach((idx, i) => {
     const point = lm[idx];
     const stage = landmarkToStage(point, cover);
+    // Slightly widen the rear head silhouette.  This hides only deep temple
+    // geometry that has genuinely passed behind the side of the head.
+    stage.x = centerStage.x + (stage.x-centerStage.x) * 1.065;
     const relativeDepth = (Number.isFinite(point?.z) ? point.z : centerDepth) - centerDepth;
-    // MediaPipe's positive relative Z is farther from the camera.  Reproduce
-    // that depth in the occlusion surface rather than using a flat oval.
-    const z = centerZ - clampValue(relativeDepth * depthScale, -desiredWorldWidth*.025, desiredWorldWidth*.24);
+    const z = centerZ - clampValue(relativeDepth * depthScale, -desiredWorldWidth*.018, desiredWorldWidth*.17);
     const world = stagePointToWorld(stage, cover, virtualTryOnCamera, z);
     attr.setXYZ(i+1, world.x, world.y, z);
   });
@@ -8340,7 +8356,7 @@ function virtualTryOnLoop() {
     if (tracked) {
       stage.classList.add('is-tracking');
       stage.classList.remove('is-calibrating');
-      setVirtualTryOnProgress(100,'Ready','Ear-anchored personal fit active — move naturally.');
+      setVirtualTryOnProgress(100,'Ready','Head-surface temple fit active — move naturally.');
     } else {
       virtualTryOnLostFrames += 1;
       if (virtualTryOnCalibration?.profile && virtualTryOnLostFrames > 5) {
