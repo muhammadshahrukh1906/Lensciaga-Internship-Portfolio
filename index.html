@@ -7601,6 +7601,50 @@ function median(values) {
   return valid.length % 2 ? valid[mid] : (valid[mid-1] + valid[mid]) * .5;
 }
 
+function clampValue(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function distance2(a, b) {
+  return Math.hypot((b?.x || 0) - (a?.x || 0), (b?.y || 0) - (a?.y || 0));
+}
+
+function averageStageLandmarks(lm, cover, indices) {
+  let x = 0;
+  let y = 0;
+  let z = 0;
+  let count = 0;
+  for (const idx of indices) {
+    const pt = lm[idx];
+    if (!pt) continue;
+    const stagePt = landmarkToStage(pt, cover);
+    x += stagePt.x;
+    y += stagePt.y;
+    z += stagePt.z;
+    count += 1;
+  }
+  if (!count) return { x: 0, y: 0, z: 0 };
+  return { x: x / count, y: y / count, z: z / count };
+}
+
+function averageMetricLandmarks(lm, cover, THREE, indices) {
+  let x = 0;
+  let y = 0;
+  let z = 0;
+  let count = 0;
+  for (const idx of indices) {
+    const pt = lm[idx];
+    if (!pt) continue;
+    const metricPt = landmarkToMetric(pt, cover, THREE);
+    x += metricPt.x;
+    y += metricPt.y;
+    z += metricPt.z;
+    count += 1;
+  }
+  if (!count) return new THREE.Vector3();
+  return new THREE.Vector3(x / count, y / count, z / count);
+}
+
 function getEyeCenters(lm, cover) {
   let a;
   let b;
@@ -7636,22 +7680,66 @@ function measureFace(lm, cover, THREE) {
   const [eyeL, eyeR] = getEyeCenters(lm, cover);
   const templeL = landmarkToStage(lm[127], cover);
   const templeR = landmarkToStage(lm[356], cover);
-  const bridge = landmarkToStage(lm[6] || lm[168], cover);
+  const faceL = averageStageLandmarks(lm, cover, [234, 127, 93]);
+  const faceR = averageStageLandmarks(lm, cover, [454, 356, 323]);
+  const earL = averageStageLandmarks(lm, cover, [234, 127, 132, 93, 58]);
+  const earR = averageStageLandmarks(lm, cover, [454, 356, 361, 323, 288]);
+  const bridge = averageStageLandmarks(lm, cover, [6, 168, 197, 195]);
+  const noseL = averageStageLandmarks(lm, cover, [129, 98, 97, 64]);
+  const noseR = averageStageLandmarks(lm, cover, [358, 327, 326, 294]);
+  const innerL = landmarkToStage(lm[133], cover);
+  const innerR = landmarkToStage(lm[362], cover);
+  const browL = averageStageLandmarks(lm, cover, [70, 63, 105]);
+  const browR = averageStageLandmarks(lm, cover, [336, 296, 334]);
+  const upperL = averageStageLandmarks(lm, cover, [159, 160, 158]);
+  const lowerL = averageStageLandmarks(lm, cover, [145, 144, 153]);
+  const upperR = averageStageLandmarks(lm, cover, [386, 385, 387]);
+  const lowerR = averageStageLandmarks(lm, cover, [374, 380, 373]);
   const eyeMid = {x:(eyeL.x+eyeR.x)*.5, y:(eyeL.y+eyeR.y)*.5};
-  const eyeSpan2 = Math.max(1, Math.hypot(eyeR.x-eyeL.x, eyeR.y-eyeL.y));
-  const templeSpan2 = Math.max(1, Math.hypot(templeR.x-templeL.x, templeR.y-templeL.y));
-  const eyeL3 = new THREE.Vector3(eyeL.x, -eyeL.y, -eyeL.z*cover.drawnW);
-  const eyeR3 = new THREE.Vector3(eyeR.x, -eyeR.y, -eyeR.z*cover.drawnW);
+  const browMid = {x:(browL.x+browR.x)*.5, y:(browL.y+browR.y)*.5};
+
+  const eyeSpan2 = Math.max(1, distance2(eyeL, eyeR));
+  const templeSpan2 = Math.max(1, distance2(templeL, templeR));
+  const faceWidth2 = Math.max(1, distance2(faceL, faceR));
+  const earSpan2 = Math.max(1, distance2(earL, earR));
+  const innerGap2 = Math.max(1, distance2(innerL, innerR));
+  const noseWidth2 = Math.max(1, distance2(noseL, noseR));
+  const eyeHeightL = Math.max(1, distance2(upperL, lowerL));
+  const eyeHeightR = Math.max(1, distance2(upperR, lowerR));
+  const eyeHeight2 = (eyeHeightL + eyeHeightR) * .5;
+  const bridgeDrop2 = bridge.y - eyeMid.y;
+  const browEyeGap2 = eyeMid.y - browMid.y;
+
+  const eyeL3 = new THREE.Vector3(eyeL.x, -eyeL.y, -eyeL.z * cover.drawnW);
+  const eyeR3 = new THREE.Vector3(eyeR.x, -eyeR.y, -eyeR.z * cover.drawnW);
   const templeL3 = landmarkToMetric(lm[127], cover, THREE);
   const templeR3 = landmarkToMetric(lm[356], cover, THREE);
+  const faceL3 = averageMetricLandmarks(lm, cover, THREE, [234, 127, 93]);
+  const faceR3 = averageMetricLandmarks(lm, cover, THREE, [454, 356, 323]);
+  const earL3 = averageMetricLandmarks(lm, cover, THREE, [234, 127, 132, 93, 58]);
+  const earR3 = averageMetricLandmarks(lm, cover, THREE, [454, 356, 361, 323, 288]);
   const top3 = landmarkToMetric(lm[10], cover, THREE);
   const chin3 = landmarkToMetric(lm[152], cover, THREE);
+
   const eyeSpan3 = Math.max(1, eyeL3.distanceTo(eyeR3));
   const templeSpan3 = Math.max(1, templeL3.distanceTo(templeR3));
+  const faceWidth3 = Math.max(1, faceL3.distanceTo(faceR3));
+  const earSpan3 = Math.max(1, earL3.distanceTo(earR3));
   const faceHeight3 = Math.max(1, top3.distanceTo(chin3));
   const roll = Math.atan2(eyeR.y-eyeL.y, eyeR.x-eyeL.x);
   const yawSymmetry = (bridge.x-eyeMid.x) / eyeSpan2;
-  return {eyeL,eyeR,eyeMid,templeL,templeR,bridge,eyeSpan2,templeSpan2,eyeSpan3,templeSpan3,faceHeight3,roll,yawSymmetry};
+
+  return {
+    eyeL, eyeR, eyeMid,
+    templeL, templeR,
+    faceL, faceR,
+    earL, earR,
+    bridge,
+    eyeSpan2, templeSpan2, faceWidth2, earSpan2,
+    innerGap2, noseWidth2, eyeHeight2, bridgeDrop2, browEyeGap2,
+    eyeSpan3, templeSpan3, faceWidth3, earSpan3, faceHeight3,
+    roll, yawSymmetry
+  };
 }
 
 function resetCalibrationState() {
@@ -7669,7 +7757,7 @@ function resetCalibrationState() {
   stage?.classList.add('is-calibrating');
   const btn = document.getElementById('virtualTryOnRefitBtn');
   if (btn) btn.hidden = true;
-  setCalibrationUI(0,'Look straight at the camera','Mapping pupils, bridge, temple width and head contour.');
+  setCalibrationUI(0,'Look straight at the camera','Scanning pupils, eye shape, nose bridge, face width and side anchors.');
 }
 
 function recalibrateVirtualTryOn() {
@@ -7681,36 +7769,49 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
   if (!virtualTryOnCalibration || virtualTryOnCalibration.profile) return true;
   const stageW = cover.stageW;
   const stageH = cover.stageH;
-  const centred = measurement.eyeMid.x > stageW*.25 && measurement.eyeMid.x < stageW*.75 && measurement.eyeMid.y > stageH*.22 && measurement.eyeMid.y < stageH*.62;
-  const largeEnough = measurement.templeSpan2 > stageW*.18;
-  const frontal = Math.abs(measurement.roll) < .13 && Math.abs(measurement.yawSymmetry) < .12;
+  const centred = measurement.eyeMid.x > stageW*.25 && measurement.eyeMid.x < stageW*.75 && measurement.eyeMid.y > stageH*.20 && measurement.eyeMid.y < stageH*.62;
+  const largeEnough = measurement.earSpan2 > stageW*.19;
+  const frontal = Math.abs(measurement.roll) < .13 && Math.abs(measurement.yawSymmetry) < .115;
   let steady = true;
   const last = virtualTryOnCalibration.lastMeasurement;
   if (last) {
-    const movement = Math.hypot(measurement.eyeMid.x-last.eyeMid.x, measurement.eyeMid.y-last.eyeMid.y) / Math.max(measurement.templeSpan2,1);
-    const sizeChange = Math.abs(measurement.templeSpan2-last.templeSpan2) / Math.max(measurement.templeSpan2,1);
-    steady = movement < .035 && sizeChange < .045;
+    const movement = Math.hypot(measurement.eyeMid.x-last.eyeMid.x, measurement.eyeMid.y-last.eyeMid.y) / Math.max(measurement.earSpan2,1);
+    const sizeChange = Math.abs(measurement.earSpan2-last.earSpan2) / Math.max(measurement.earSpan2,1);
+    steady = movement < .032 && sizeChange < .04;
   }
   virtualTryOnCalibration.lastMeasurement = measurement;
 
   if (!centred || !largeEnough || !frontal || !steady) {
     if (virtualTryOnCalibration.samples.length > 4) virtualTryOnCalibration.samples.splice(0, Math.ceil(virtualTryOnCalibration.samples.length*.45));
     const pct = (virtualTryOnCalibration.samples.length / VIRTUAL_CALIBRATION_FRAMES) * 100;
-    if (!largeEnough) setCalibrationUI(pct,'Move a little closer','Keep your whole face visible while the fit scan locks onto your features.');
+    if (!largeEnough) setCalibrationUI(pct,'Move a little closer','Keep your whole face visible so the scan can read your eye, nose and head width.');
     else if (!centred) setCalibrationUI(pct,'Centre your face','Keep both eyes and both sides of your face inside the guide.');
-    else if (!frontal) setCalibrationUI(pct,'Look straight ahead','Hold your head level for the initial fit scan.');
-    else setCalibrationUI(pct,'Hold still for a moment','The scan is averaging several frames so the fit does not jump.');
+    else if (!frontal) setCalibrationUI(pct,'Look straight ahead','Hold your head level for the personal fit scan.');
+    else setCalibrationUI(pct,'Hold still for a moment','Averaging multiple frames for a stable face-specific fit.');
     return false;
   }
 
+  const desiredFramePx = Math.max(
+    measurement.faceWidth2 * .96,
+    measurement.earSpan2 * .94,
+    measurement.templeSpan2 * 1.08,
+    measurement.eyeSpan2 * 2.12
+  );
+
   virtualTryOnCalibration.samples.push({
-    eyeTempleRatio:measurement.eyeSpan3/measurement.templeSpan3,
-    faceTempleRatio:measurement.faceHeight3/measurement.templeSpan3,
-    quaternion:rawQuaternion.clone()
+    eyeRatio: measurement.eyeSpan2 / Math.max(desiredFramePx, 1),
+    innerGapRatio: measurement.innerGap2 / Math.max(desiredFramePx, 1),
+    noseWidthRatio: measurement.noseWidth2 / Math.max(desiredFramePx, 1),
+    bridgeDropRatio: measurement.bridgeDrop2 / Math.max(desiredFramePx, 1),
+    eyeHeightRatio: measurement.eyeHeight2 / Math.max(measurement.eyeSpan2, 1),
+    faceRatio: measurement.faceWidth2 / Math.max(desiredFramePx, 1),
+    earRatio: measurement.earSpan2 / Math.max(desiredFramePx, 1),
+    frameScaleRatio: desiredFramePx / Math.max(measurement.earSpan2, 1),
+    quaternion: rawQuaternion.clone()
   });
   const count = virtualTryOnCalibration.samples.length;
   const pct = Math.min(100, count / VIRTUAL_CALIBRATION_FRAMES * 100);
-  setCalibrationUI(pct, count < VIRTUAL_CALIBRATION_FRAMES*.62 ? 'Scanning your face…' : 'Building your frame fit…', 'Pupils • nose bridge • temple line • head contour');
+  setCalibrationUI(pct, count < VIRTUAL_CALIBRATION_FRAMES*.62 ? 'Scanning your face…' : 'Building your personal eyewear fit…', 'Pupils • eye size • nose bridge • face width • side anchors');
 
   if (!virtualTryOnCalibration.neutralQuaternion) {
     virtualTryOnCalibration.neutralQuaternion = rawQuaternion.clone();
@@ -7722,24 +7823,35 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
 
   if (count < VIRTUAL_CALIBRATION_FRAMES) return false;
 
-  const eyeTempleRatio = median(virtualTryOnCalibration.samples.map(s => s.eyeTempleRatio));
-  const faceTempleRatio = median(virtualTryOnCalibration.samples.map(s => s.faceTempleRatio));
   const baseWidth = virtualTryOnAnchor?.userData?.baseWidth || 1;
-  const targetEyeX = Math.max(baseWidth*.17, Math.min(baseWidth*.235, baseWidth * eyeTempleRatio / (2*VIRTUAL_FRAME_TO_TEMPLE)));
   const modelTempleTipX = virtualTryOnAnchor?.userData?.modelTempleTipX || baseWidth*.268;
-  const targetTempleTipX = baseWidth*.405;
-  const templeOut = Math.max(0, targetTempleTipX-modelTempleTipX);
+  const eyeRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.eyeRatio)), .39, .60);
+  const innerGapRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.innerGapRatio)), .11, .26);
+  const noseWidthRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.noseWidthRatio)), .10, .24);
+  const bridgeDropRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.bridgeDropRatio)), .02, .14);
+  const eyeHeightRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.eyeHeightRatio)), .11, .34);
+  const frameScaleRatio = clampValue(median(virtualTryOnCalibration.samples.map(s => s.frameScaleRatio)), 1.0, 1.22);
+
+  const targetEyeX = clampValue(baseWidth * eyeRatio * .5, baseWidth*.198, baseWidth*.305);
+  const targetBridgeHalf = clampValue(baseWidth * Math.max(innerGapRatio*.48, noseWidthRatio*.62) * .5, baseWidth*.032, baseWidth*.09);
+  const targetTempleTipX = clampValue(baseWidth * .5 * 1.02, baseWidth*.39, baseWidth*.56);
+  const templeOut = Math.max(0, targetTempleTipX - modelTempleTipX);
+  const lensLift = clampValue(baseWidth * ((bridgeDropRatio * .22) + ((eyeHeightRatio - .18) * .06)), -baseWidth*.01, baseWidth*.018);
+
   virtualTryOnCalibration.profile = {
-    eyeTempleRatio:Math.max(.28, Math.min(.58, eyeTempleRatio)),
-    faceTempleRatio:Math.max(.75, Math.min(1.6, faceTempleRatio)),
-    neutralQuaternion:virtualTryOnCalibration.neutralQuaternion.clone().normalize(),
+    neutralQuaternion: virtualTryOnCalibration.neutralQuaternion.clone().normalize(),
     targetEyeX,
-    templeOut
+    targetBridgeHalf,
+    templeOut,
+    lensLift,
+    frameScaleBias: frameScaleRatio
   };
 
   if (virtualTryOnMorphUniforms) {
     virtualTryOnMorphUniforms.uTargetEyeX.value = targetEyeX;
+    virtualTryOnMorphUniforms.uTargetBridgeHalf.value = targetBridgeHalf;
     virtualTryOnMorphUniforms.uTempleOut.value = templeOut;
+    virtualTryOnMorphUniforms.uLensLift.value = lensLift;
   }
   finishCalibrationUI();
   return true;
@@ -7747,20 +7859,24 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
 
 function installEyewearMorph(root, box, size) {
   const baseWidth = Math.max(size.x,.001);
+  const modelBridgeHalf = baseWidth*.058;
   const modelEyeX = baseWidth*.262;
   const hingeX = baseWidth*.485;
   const templeStartX = baseWidth*.335;
   const frontZ = box.max.z-size.z*.17;
   const backZ = box.min.z+size.z*.08;
   virtualTryOnMorphUniforms = {
+    uModelBridgeHalf:{value:modelBridgeHalf},
+    uTargetBridgeHalf:{value:baseWidth*.052},
     uModelEyeX:{value:modelEyeX},
     uTargetEyeX:{value:baseWidth*.205},
     uHingeX:{value:hingeX},
     uTempleStartX:{value:templeStartX},
     uFrontZ:{value:frontZ},
     uBackZ:{value:backZ},
-    uTempleOut:{value:baseWidth*.13},
-    uTempleLift:{value:baseWidth*.003}
+    uTempleOut:{value:baseWidth*.16},
+    uTempleLift:{value:baseWidth*.0045},
+    uLensLift:{value:0}
   };
   root.traverse(node => {
     if (!node?.isMesh) return;
@@ -7770,6 +7886,8 @@ function installEyewearMorph(root, box, size) {
       material.onBeforeCompile = shader => {
         Object.assign(shader.uniforms, virtualTryOnMorphUniforms);
         shader.vertexShader = `
+uniform float uModelBridgeHalf;
+uniform float uTargetBridgeHalf;
 uniform float uModelEyeX;
 uniform float uTargetEyeX;
 uniform float uHingeX;
@@ -7778,39 +7896,38 @@ uniform float uFrontZ;
 uniform float uBackZ;
 uniform float uTempleOut;
 uniform float uTempleLift;
+uniform float uLensLift;
 ` + shader.vertexShader;
         shader.vertexShader = shader.vertexShader.replace('#include <begin_vertex>', `
 vec3 transformed = vec3(position);
 float sideSign = transformed.x < 0.0 ? -1.0 : 1.0;
 float ax = abs(transformed.x);
-
-// Keep the entire optical front coherent.  The previous version blended the
-// lens deformation by Z depth, which could move the front and rear surfaces
-// of one decorative wing by different amounts and make it look detached.
 float mappedAx = ax;
-if (ax <= uModelEyeX) {
-  mappedAx = ax * (uTargetEyeX / max(uModelEyeX, 0.0001));
+if (ax <= uModelBridgeHalf) {
+  mappedAx = ax * (uTargetBridgeHalf / max(uModelBridgeHalf, 0.0001));
+} else if (ax <= uModelEyeX) {
+  mappedAx = uTargetBridgeHalf + (ax-uModelBridgeHalf) * ((uTargetEyeX-uTargetBridgeHalf) / max(uModelEyeX-uModelBridgeHalf, 0.0001));
 } else if (ax <= uHingeX) {
   mappedAx = uTargetEyeX + (ax-uModelEyeX) * ((uHingeX-uTargetEyeX) / max(uHingeX-uModelEyeX, 0.0001));
 }
 if (ax <= uHingeX) transformed.x = sideSign * mappedAx;
 
-// Only the true side/rear region may flare outward.  Requiring both lateral
-// distance and rearward depth prevents the feather lenses and bridge from
-// being interpreted as temple geometry when the head rotates.
+float frontWeight = 1.0 - smoothstep(uTempleStartX, uHingeX, ax);
+transformed.y += uLensLift * pow(frontWeight, 0.85);
+
 float backProgress = clamp((uFrontZ-transformed.z) / max(uFrontZ-uBackZ, 0.0001), 0.0, 1.0);
-backProgress = smoothstep(0.18, 1.0, backProgress);
+backProgress = smoothstep(0.16, 1.0, backProgress);
 float sideWeight = smoothstep(uTempleStartX, uHingeX, ax);
 float templeWeight = sideWeight * backProgress;
-transformed.x += sideSign * uTempleOut * pow(templeWeight, 1.28);
-transformed.y += uTempleLift * pow(templeWeight, 1.25);
+transformed.x += sideSign * uTempleOut * pow(templeWeight, 1.22);
+transformed.y += uTempleLift * pow(templeWeight, 1.12);
 `);
       };
-      material.customProgramCacheKey = () => 'lensciaga-stable-personal-fit-v4';
+      material.customProgramCacheKey = () => 'lensciaga-precise-personal-fit-v5';
       material.needsUpdate = true;
     });
   });
-  return {modelEyeX,hingeX,frontZ,backZ};
+  return {modelEyeX, modelBridgeHalf, hingeX, frontZ, backZ};
 }
 
 function createFaceDepthMask(THREE) {
@@ -7993,6 +8110,7 @@ async function startVirtualTryOn() {
     virtualTryOnAnchor.add(virtualTryOnModel);
     virtualTryOnAnchor.userData.baseWidth = Math.max(size.x,.001);
     virtualTryOnAnchor.userData.modelEyeX = morphInfo.modelEyeX;
+    virtualTryOnAnchor.userData.modelBridgeHalf = morphInfo.modelBridgeHalf;
     virtualTryOnAnchor.userData.modelTempleTipX = size.x*.268;
     virtualTryOnAnchor.userData.targetPosition = new THREE.Vector3();
     virtualTryOnAnchor.userData.targetQuaternion = new THREE.Quaternion();
@@ -8037,12 +8155,17 @@ function updateVirtualTryOnPose(lm, video, stage) {
   if (!calibrated || !virtualTryOnCalibration?.profile) return false;
 
   const profile = virtualTryOnCalibration.profile;
-  const inferredTempleSpan = measurement.eyeSpan3 / Math.max(profile.eyeTempleRatio,.001);
-  const physicalTempleSpanPx = measurement.templeSpan3*.55 + inferredTempleSpan*.45;
-  const desiredPx = Math.max(measurement.eyeSpan2*1.55,physicalTempleSpanPx*VIRTUAL_FRAME_TO_TEMPLE);
+  const desiredPx = Math.max(
+    measurement.faceWidth2 * .96,
+    measurement.earSpan2 * .94,
+    measurement.templeSpan2 * 1.08,
+    measurement.eyeSpan2 * 2.12
+  ) * clampValue(profile.frameScaleBias || 1.0, 1.0, 1.2);
+
+  const yDrop = Math.max(measurement.eyeHeight2 * .42, (measurement.bridge.y - measurement.eyeMid.y) * .5, measurement.eyeSpan2 * .018);
   const fittedEyePoint = {
-    x:measurement.eyeMid.x,
-    y:measurement.eyeMid.y + measurement.eyeSpan2*.035
+    x:measurement.eyeMid.x * .82 + measurement.bridge.x * .18,
+    y:measurement.eyeMid.y + yDrop
   };
   const world = stagePointToWorld(fittedEyePoint,cover,virtualTryOnCamera,VIRTUAL_TRYON_PLANE_Z);
   const desiredWorldWidth = (desiredPx/cover.stageW)*world.viewWidth;
@@ -8052,17 +8175,16 @@ function updateVirtualTryOnPose(lm, video, stage) {
   const targetPosition = virtualTryOnAnchor.userData.targetPosition;
   targetPosition.set(world.x,world.y,VIRTUAL_TRYON_PLANE_Z);
 
-  // Calibration records the user's neutral head basis. Removing that neutral
-  // basis makes the front-on fit exactly the model's native orientation, then
-  // applies only the user's real motion from that point onward.
   const targetQuaternion = rawQuaternion.clone().multiply(profile.neutralQuaternion.clone().invert()).normalize();
   virtualTryOnAnchor.userData.targetQuaternion.copy(targetQuaternion);
 
   if (virtualTryOnMorphUniforms) {
     virtualTryOnMorphUniforms.uTargetEyeX.value = Number.isFinite(profile.targetEyeX) ? profile.targetEyeX : virtualTryOnAnchor.userData.modelEyeX;
+    virtualTryOnMorphUniforms.uTargetBridgeHalf.value = Number.isFinite(profile.targetBridgeHalf) ? profile.targetBridgeHalf : (virtualTryOnAnchor.userData.modelBridgeHalf || (baseWidth*.058));
     virtualTryOnMorphUniforms.uTempleOut.value = Number.isFinite(profile.templeOut) ? profile.templeOut : 0;
+    virtualTryOnMorphUniforms.uLensLift.value = Number.isFinite(profile.lensLift) ? profile.lensLift : 0;
   }
-  updateFaceDepthMask(lm,cover,desiredWorldWidth);
+  updateFaceDepthMask(lm,cover,desiredWorldWidth*1.03);
 
   if (!virtualTryOnPoseReady) {
     virtualTryOnAnchor.position.copy(targetPosition);
@@ -8072,17 +8194,17 @@ function updateVirtualTryOnPose(lm, video, stage) {
   } else {
     const positionError = virtualTryOnAnchor.position.distanceTo(targetPosition);
     const posNorm = positionError / Math.max(desiredWorldWidth,.001);
-    const posAlpha = adaptiveAlpha(posNorm,.18,.58,1.35);
+    const posAlpha = adaptiveAlpha(posNorm,.16,.46,1.05);
     virtualTryOnAnchor.position.lerp(targetPosition,posAlpha);
 
     const currentScale = virtualTryOnAnchor.scale.x || targetScale;
     const scaleError = Math.abs(targetScale-currentScale)/Math.max(targetScale,.001);
-    const scaleAlpha = adaptiveAlpha(scaleError,.14,.48,1.15);
+    const scaleAlpha = adaptiveAlpha(scaleError,.11,.36,.82);
     const nextScale = currentScale+(targetScale-currentScale)*scaleAlpha;
     virtualTryOnAnchor.scale.setScalar(nextScale);
 
     const angle = virtualTryOnAnchor.quaternion.angleTo(targetQuaternion);
-    const rotAlpha = adaptiveAlpha(angle,.16,.54,1.05);
+    const rotAlpha = adaptiveAlpha(angle,.14,.42,.9);
     virtualTryOnAnchor.quaternion.slerp(targetQuaternion,rotAlpha).normalize();
   }
 
@@ -8108,7 +8230,7 @@ function virtualTryOnLoop() {
     if (tracked) {
       stage.classList.add('is-tracking');
       stage.classList.remove('is-calibrating');
-      setVirtualTryOnProgress(100,'Ready','Stable personal fit active — move naturally.');
+      setVirtualTryOnProgress(100,'Ready','Personal face fit active — move naturally.');
     } else {
       virtualTryOnLostFrames += 1;
       if (virtualTryOnCalibration?.profile && virtualTryOnLostFrames > 5) {
