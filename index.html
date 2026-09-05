@@ -46,7 +46,7 @@ Public availability of this deployment does not grant an open-source licence.
 </div>
 <div class="virtual-tryon-error" id="virtualTryOnError" hidden><strong>Try-on could not start</strong><span id="virtualTryOnErrorText">Please allow camera access and try again.</span><button type="button" onclick="startVirtualTryOn()">Try again</button></div>
 </div>
-<div class="virtual-tryon-footer"><span><i class="virtual-live-dot"></i> Camera frames stay on your device</span><span>Move naturally — the frame follows your calibrated head fit</span><button class="virtual-refit-btn" id="virtualTryOnRefitBtn" type="button" hidden onclick="recalibrateVirtualTryOn()">Refit face</button></div>
+<div class="virtual-tryon-footer"><span><i class="virtual-live-dot"></i> Camera frames stay on your device</span><span>Move naturally — use “Scan new face” when another person takes over</span><button class="virtual-refit-btn" id="virtualTryOnRefitBtn" type="button" hidden onclick="recalibrateVirtualTryOn(true)">Scan new face</button></div>
 </div>
 </div><button aria-label="Previous project image" class="lens-nav-btn lens-nav-prev" id="modalLensPrevBtn" onclick="event.stopPropagation(); moveLensSlider(-1)" type="button">‹</button><button aria-label="Next project image" class="lens-nav-btn lens-nav-next" id="modalLensNextBtn" onclick="event.stopPropagation(); moveLensSlider(1)" type="button">›</button></div><script>let activeLensSlide = 0;
 let totalLensSlides = 5;
@@ -7493,6 +7493,8 @@ let virtualTryOnModel = null;
 let virtualTryOnAnchor = null;
 let virtualTryOnOccluder = null;
 let virtualTryOnMorphUniforms = null;
+let virtualTempleLeftPivot = null;
+let virtualTempleRightPivot = null;
 let virtualTryOnLights = null;
 let virtualTryOnPmrem = null;
 let virtualTryOnEnvironment = null;
@@ -7505,12 +7507,27 @@ let virtualLastVideoTime = -1;
 let virtualTryOnPoseReady = false;
 let virtualTryOnLostFrames = 0;
 let virtualTryOnCalibration = null;
+let virtualFaceMismatchFrames = 0;
+let virtualFaceWasLost = false;
+let virtualFaceReacquiredFrames = 0;
+let virtualTrackingLastMs = 0;
 const VIRTUAL_TRYON_PLANE_Z = 0;
 const VIRTUAL_CALIBRATION_FRAMES = 28;
 const VIRTUAL_FRAME_TO_TEMPLE = 1.035;
 const VIRTUAL_FACE_OVAL = [10,338,297,332,284,251,389,356,454,323,361,288,397,365,379,378,400,377,152,148,176,149,150,136,172,58,132,93,234,127,162,21,54,103,67,109];
 const VIRTUAL_EYE_A = [33,160,158,133,153,144];
 const VIRTUAL_EYE_B = [362,385,387,263,373,380];
+const VIRTUAL_TEMPLE_SOURCE_WIDTH = 0.97891235;
+const VIRTUAL_TEMPLE_MODEL = {
+  left:{
+    hinge:[-0.45276124,0.12599659,0.27257337],
+    tip:[-0.14993276,0.10591388,-0.41284605]
+  },
+  right:{
+    hinge:[0.45097795,0.12294191,0.28290300],
+    tip:[0.18236868,0.05903916,-0.41337355]
+  }
+};
 
 function setVirtualTryOnProgress(percent, status, substatus) {
   const bar = document.getElementById('virtualTryOnProgress');
@@ -7683,6 +7700,82 @@ function getPoseEarPoints(poseLm, cover) {
   return {left:candidates[0], right:candidates[candidates.length-1]};
 }
 
+function scaledTemplePoint(values, baseWidth, THREE) {
+  const s = baseWidth / VIRTUAL_TEMPLE_SOURCE_WIDTH;
+  return new THREE.Vector3(values[0]*s, values[1]*s, values[2]*s);
+}
+
+function solveRigidTempleFit(side, targetTipX, targetDropY, baseWidth) {
+  const THREE = virtualThree;
+  const spec = VIRTUAL_TEMPLE_MODEL[side];
+  if (!THREE || !spec) return {yaw:0,pitch:0};
+  const hinge = scaledTemplePoint(spec.hinge,baseWidth,THREE);
+  const tip = scaledTemplePoint(spec.tip,baseWidth,THREE);
+  const dx = tip.x-hinge.x;
+  const dy = tip.y-hinge.y;
+  const dz = tip.z-hinge.z;
+  const lengthXZ = Math.max(.001,Math.hypot(dx,dz));
+
+  // A real temple does not point to the outside edge of the pinna.  It runs
+  // along the temporal surface and reaches the superior ear root.  Limiting
+  // the final X displacement keeps the native curve close to the head while
+  // still opening the folded source arm enough to clear the cheek.
+  const maxLateral = baseWidth*.085;
+  const desiredDx = clampValue(targetTipX-hinge.x,-maxLateral,maxLateral);
+  const desiredDz = -Math.sqrt(Math.max(.000001,lengthXZ*lengthXZ-desiredDx*desiredDx));
+  const cosYaw = clampValue((dx*desiredDx+dz*desiredDz)/(lengthXZ*lengthXZ),-1,1);
+  const sinYaw = clampValue((dz*desiredDx-dx*desiredDz)/(lengthXZ*lengthXZ),-1,1);
+  let yaw = clampValue(Math.atan2(sinYaw,cosYaw),-.43,.43);
+  // Never let the source arm remain in its folded-inward pose.  The product
+  // photographs show an open temple angle around the head, which corresponds
+  // to roughly 18–23 degrees of rigid hinge opening for this scan.
+  yaw = side==='left' ? clampValue(yaw,.31,.405) : clampValue(yaw,-.405,-.31);
+
+  // Keep almost all of the original vertical ear-hook geometry.  Only a tiny
+  // rigid pitch correction is allowed; large pitch changes made the arm dive
+  // through the eye/skin in earlier builds.
+  const pitch = clampValue((targetDropY-dy)/Math.max(Math.abs(desiredDz),.001),-.035,.035);
+  return {yaw,pitch};
+}
+
+function configureRigidTemplePivots(root, baseWidth, THREE) {
+  virtualTempleLeftPivot = null;
+  virtualTempleRightPivot = null;
+  if (!root || !THREE) return;
+  const install = (name, side) => {
+    const node = root.getObjectByName(name);
+    if (!node) return null;
+    const spec = VIRTUAL_TEMPLE_MODEL[side];
+    const hinge = scaledTemplePoint(spec.hinge,baseWidth,THREE);
+    node.parent?.remove(node);
+    const pivot = new THREE.Group();
+    pivot.name = `${name}_hinge`;
+    pivot.position.copy(hinge);
+    pivot.rotation.order = 'YXZ';
+    // The GLB temple vertices are authored in the full-model coordinate system.
+    // Offsetting the child by the hinge keeps the folded source pose unchanged
+    // at zero rotation while giving us a real rigid hinge for opening the arm.
+    node.position.set(-hinge.x,-hinge.y,-hinge.z);
+    node.quaternion.identity();
+    node.scale.set(1,1,1);
+    pivot.add(node);
+    root.add(pivot);
+    return pivot;
+  };
+  virtualTempleLeftPivot = install('temple_left','left');
+  virtualTempleRightPivot = install('temple_right','right');
+}
+
+function applyRigidTempleFit(profile) {
+  if (!profile) return;
+  if (virtualTempleLeftPivot) {
+    virtualTempleLeftPivot.rotation.set(profile.templeLeftPitch||0,profile.templeLeftYaw||0,0,'YXZ');
+  }
+  if (virtualTempleRightPivot) {
+    virtualTempleRightPivot.rotation.set(profile.templeRightPitch||0,profile.templeRightYaw||0,0,'YXZ');
+  }
+}
+
 function getRawFaceQuaternion(lm, THREE, cover) {
   const left = landmarkToMetric(lm[127], cover, THREE);
   const right = landmarkToMetric(lm[356], cover, THREE);
@@ -7775,7 +7868,50 @@ function measureFace(lm, cover, THREE, poseLm = null) {
   };
 }
 
-function resetCalibrationState() {
+function getFaceShapeSignature(measurement) {
+  const face = Math.max(measurement?.faceWidth2 || 1,1);
+  const eye = Math.max(measurement?.eyeSpan2 || 1,1);
+  return {
+    eyeFace:(measurement?.eyeSpan2 || 0)/face,
+    innerFace:(measurement?.innerGap2 || 0)/face,
+    noseFace:(measurement?.noseWidth2 || 0)/face,
+    eyeShape:(measurement?.eyeHeight2 || 0)/eye
+  };
+}
+
+function signatureDistance(a,b) {
+  if (!a || !b) return 0;
+  const keys=['eyeFace','innerFace','noseFace','eyeShape'];
+  let total=0;
+  for (const k of keys) {
+    const denom=Math.max(Math.abs(b[k]||0),.035);
+    total += Math.abs((a[k]||0)-(b[k]||0))/denom;
+  }
+  return total/keys.length;
+}
+
+function checkForNewFace(measurement) {
+  const profile=virtualTryOnCalibration?.profile;
+  if (!profile?.faceSignature || !measurement) return false;
+  const frontal=Math.abs(measurement.roll)<.11 && Math.abs(measurement.yawSymmetry)<.09;
+  if (!frontal) { virtualFaceMismatchFrames=Math.max(0,virtualFaceMismatchFrames-1); return false; }
+  const score=signatureDistance(getFaceShapeSignature(measurement),profile.faceSignature);
+  const threshold=virtualFaceWasLost ? .075 : .12;
+  if (score>threshold) virtualFaceMismatchFrames += 1;
+  else virtualFaceMismatchFrames=Math.max(0,virtualFaceMismatchFrames-2);
+  const needed=virtualFaceWasLost ? 3 : 9;
+  if (virtualFaceMismatchFrames>=needed) {
+    resetCalibrationState('New face detected — scanning again');
+    return true;
+  }
+  if (virtualFaceWasLost && score<=threshold) {
+    virtualFaceReacquiredFrames += 1;
+    if (virtualFaceReacquiredFrames>3) virtualFaceWasLost=false;
+  }
+  return false;
+}
+
+function resetCalibrationState(reason = '') {
   virtualTryOnCalibration = {
     samples:[],
     neutralQuaternion:null,
@@ -7783,6 +7919,11 @@ function resetCalibrationState() {
     lastMeasurement:null
   };
   virtualTryOnPoseReady = false;
+  virtualFaceMismatchFrames=0;
+  virtualFaceWasLost=false;
+  virtualFaceReacquiredFrames=0;
+  virtualPoseLandmarks=null;
+  virtualPoseFrameCounter=0;
   if (virtualTryOnAnchor) virtualTryOnAnchor.visible = false;
   if (virtualTryOnOccluder) virtualTryOnOccluder.visible = false;
   const stage = document.getElementById('virtualTryOnStage');
@@ -7790,12 +7931,12 @@ function resetCalibrationState() {
   stage?.classList.add('is-calibrating');
   const btn = document.getElementById('virtualTryOnRefitBtn');
   if (btn) btn.hidden = true;
-  setCalibrationUI(0,'Look straight at the camera','Scanning pupils, eye shape, nose bridge, face width and ear level.');
+  setCalibrationUI(0, reason || 'Look straight at the camera','Scanning pupils, eye shape, nose bridge, face width and ear level.');
 }
 
-function recalibrateVirtualTryOn() {
+function recalibrateVirtualTryOn(manual = false) {
   if (!document.getElementById('virtualTryOn')?.classList.contains('is-open')) return;
-  resetCalibrationState();
+  resetCalibrationState(manual ? 'Scanning the new face…' : 'Look straight at the camera');
 }
 
 function processCalibration(lm, cover, measurement, rawQuaternion) {
@@ -7839,10 +7980,16 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
     eyeHeightRatio: measurement.eyeHeight2 / Math.max(measurement.eyeSpan2, 1),
     faceRatio: measurement.faceWidth2 / Math.max(desiredFramePx, 1),
     earRatio: measurement.earSpan2 / Math.max(desiredFramePx, 1),
+    earLeftOutRatio: (measurement.eyeMid.x-measurement.earL.x) / Math.max(desiredFramePx,1),
+    earRightOutRatio: (measurement.earR.x-measurement.eyeMid.x) / Math.max(desiredFramePx,1),
     frameScaleRatio: desiredFramePx / Math.max(measurement.earSpan2, 1),
     earDropLRatio: measurement.earDropL2 / Math.max(desiredFramePx, 1),
     earDropRRatio: measurement.earDropR2 / Math.max(desiredFramePx, 1),
     headDepthRatio: measurement.headDepth3 / Math.max(measurement.templeSpan3, 1),
+    eyeFaceRatio: measurement.eyeSpan2 / Math.max(measurement.faceWidth2,1),
+    innerFaceRatio: measurement.innerGap2 / Math.max(measurement.faceWidth2,1),
+    noseFaceRatio: measurement.noseWidth2 / Math.max(measurement.faceWidth2,1),
+    eyeShapeRatio: measurement.eyeHeight2 / Math.max(measurement.eyeSpan2,1),
     earsFromPose: measurement.earsFromPose,
     quaternion: rawQuaternion.clone()
   });
@@ -7877,23 +8024,36 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
   const targetEyeX = clampValue(baseWidth * eyeRatio * .5, baseWidth*.198, baseWidth*.305);
   const targetBridgeHalf = clampValue(baseWidth * Math.max(innerGapRatio*.48, noseWidthRatio*.62) * .5, baseWidth*.032, baseWidth*.09);
   const earSpanRatio = clampValue(median(earSource.map(s => s.earRatio)), .82, 1.08);
-  const templeRailX = baseWidth * clampValue(earSpanRatio * .5 + .035, .515, .585);
-  const templeDropL = -baseWidth * clampValue(earDropLRatio * .72, .018, .105);
-  const templeDropR = -baseWidth * clampValue(earDropRRatio * .72, .018, .105);
-  const templeBackStretch = clampValue(.018 + headDepthRatio * .28, .025, .095);
+  // The Pose ear point is near the pinna centre.  A spectacle temple rests
+  // slightly inboard at the superior ear root, so calibrate each side from its
+  // own detected ear and pull the target inward by about 16%.
+  const leftEarRootRatio=clampValue(median(earSource.map(s=>s.earLeftOutRatio))*.84,.398,.435);
+  const rightEarRootRatio=clampValue(median(earSource.map(s=>s.earRightOutRatio))*.84,.398,.435);
+  const targetEarDropL = -baseWidth * clampValue(earDropLRatio*.34,.024,.068);
+  const targetEarDropR = -baseWidth * clampValue(earDropRRatio*.34,.024,.072);
+  const leftTempleFit = solveRigidTempleFit('left',-baseWidth*leftEarRootRatio,targetEarDropL,baseWidth);
+  const rightTempleFit = solveRigidTempleFit('right',baseWidth*rightEarRootRatio,targetEarDropR,baseWidth);
   const lensLift = clampValue(baseWidth * ((bridgeDropRatio * .22) + ((eyeHeightRatio - .18) * .06)), -baseWidth*.01, baseWidth*.018);
+  const faceSignature={
+    eyeFace:median(virtualTryOnCalibration.samples.map(s=>s.eyeFaceRatio)),
+    innerFace:median(virtualTryOnCalibration.samples.map(s=>s.innerFaceRatio)),
+    noseFace:median(virtualTryOnCalibration.samples.map(s=>s.noseFaceRatio)),
+    eyeShape:median(virtualTryOnCalibration.samples.map(s=>s.eyeShapeRatio))
+  };
 
   virtualTryOnCalibration.profile = {
     neutralQuaternion: virtualTryOnCalibration.neutralQuaternion.clone().normalize(),
     targetEyeX,
     targetBridgeHalf,
-    templeRailX,
-    templeDropL,
-    templeDropR,
-    templeBackStretch,
+    templeLeftYaw:leftTempleFit.yaw,
+    templeRightYaw:rightTempleFit.yaw,
+    templeLeftPitch:leftTempleFit.pitch,
+    templeRightPitch:rightTempleFit.pitch,
     lensLift,
-    frameScaleBias: frameScaleRatio
+    frameScaleBias: frameScaleRatio,
+    faceSignature
   };
+  applyRigidTempleFit(virtualTryOnCalibration.profile);
 
   if (virtualTryOnMorphUniforms) {
     virtualTryOnMorphUniforms.uTargetEyeX.value = targetEyeX;
@@ -7910,10 +8070,12 @@ function installEyewearMorph(root, box, size) {
   const modelEyeX = baseWidth*.262;
   const hingeX = baseWidth*.485;
 
-  // The product geometry is now kept completely rigid.  The source GLB already
-  // contains the correct swept-back temple curve and ear hook.  Changing its
-  // vertices to fit an individual face makes the product itself inaccurate.
+  // Preserve the photogrammetry colour from the product itself.  The texture
+  // already contains the correct blue, gold, clear-pad and black-rubber colour
+  // information from the supplied product photographs, so room adaptation is
+  // deliberately applied mostly to brightness/direction rather than hue.
   virtualTryOnMorphUniforms = null;
+  const maxAniso=Math.min(8, virtualTryOnRenderer?.capabilities?.getMaxAnisotropy?.() || 1);
   root.traverse(node => {
     if (!node?.isMesh) return;
     node.renderOrder = 2;
@@ -7921,10 +8083,15 @@ function installEyewearMorph(root, box, size) {
     node.receiveShadow = false;
     const materials = Array.isArray(node.material) ? node.material : [node.material];
     materials.filter(Boolean).forEach(material => {
-      if ('envMapIntensity' in material) material.envMapIntensity=.72;
+      if (material.color) material.color.setRGB(1,1,1);
+      if ('envMapIntensity' in material) material.envMapIntensity=.12;
+      if ('metalness' in material) material.metalness=.22;
+      if ('roughness' in material) material.roughness=.78;
+      if (material.normalScale?.setScalar) material.normalScale.setScalar(.52);
+      material.dithering=true;
       if (material.map) {
         material.map.colorSpace = virtualThree?.SRGBColorSpace || material.map.colorSpace;
-        material.map.anisotropy = Math.min(8, virtualTryOnRenderer?.capabilities?.getMaxAnisotropy?.() || 1);
+        material.map.anisotropy = maxAniso;
         material.map.needsUpdate = true;
       }
       material.needsUpdate = true;
@@ -8032,19 +8199,17 @@ function drawFaceScan(lm,cover,active) {
 function setupVirtualTryOnLighting(THREE, RoomEnvironment) {
   if (!virtualTryOnScene || !virtualTryOnRenderer) return;
 
-  virtualTryOnRenderer.toneMapping = THREE.ACESFilmicToneMapping;
-  virtualTryOnRenderer.toneMappingExposure = 1.0;
+  // Neutral tone mapping protects the actual cyan/gold product colours better
+  // than the filmic curve used previously.
+  virtualTryOnRenderer.toneMapping = THREE.NeutralToneMapping ?? THREE.ACESFilmicToneMapping;
+  virtualTryOnRenderer.toneMappingExposure = .94;
   if ('useLegacyLights' in virtualTryOnRenderer) virtualTryOnRenderer.useLegacyLights = false;
 
-  // A neutral PMREM provides physically useful reflections for the GLB's
-  // metallic/roughness maps.  Colour and direction are then driven from the
-  // live camera image below so the model does not look studio-lit in every room.
   if (RoomEnvironment) {
     try {
       virtualTryOnPmrem = new THREE.PMREMGenerator(virtualTryOnRenderer);
-      virtualTryOnPmrem.compileEquirectangularShader?.();
       const room = new RoomEnvironment();
-      const generated = virtualTryOnPmrem.fromScene(room, .035);
+      const generated = virtualTryOnPmrem.fromScene(room, .045);
       virtualTryOnEnvironment = generated.texture;
       virtualTryOnScene.environment = virtualTryOnEnvironment;
       room.dispose?.();
@@ -8053,19 +8218,19 @@ function setupVirtualTryOnLighting(THREE, RoomEnvironment) {
     }
   }
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0x4b4b4b, .95);
-  const key = new THREE.DirectionalLight(0xffffff, 2.0);
-  const fill = new THREE.DirectionalLight(0xffffff, .65);
-  const rim = new THREE.DirectionalLight(0xffffff, .35);
-  key.position.set(3.2, 2.6, 4.5);
-  fill.position.set(-3.0, 1.1, 3.2);
-  rim.position.set(0, 2.4, -2.4);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x595959, .50);
+  const key = new THREE.DirectionalLight(0xffffff, 1.05);
+  const fill = new THREE.DirectionalLight(0xffffff, .24);
+  const rim = new THREE.DirectionalLight(0xffffff, .10);
+  key.position.set(3.0, 2.3, 4.4);
+  fill.position.set(-3.0, .8, 3.0);
+  rim.position.set(0, 2.1, -2.6);
   virtualTryOnScene.add(hemi, key, fill, rim);
   virtualTryOnLights = {hemi, key, fill, rim};
 
   virtualLightingCanvas = document.createElement('canvas');
-  virtualLightingCanvas.width = 32;
-  virtualLightingCanvas.height = 24;
+  virtualLightingCanvas.width = 24;
+  virtualLightingCanvas.height = 18;
   virtualLightingContext = virtualLightingCanvas.getContext('2d', {willReadFrequently:true});
 }
 
@@ -8097,7 +8262,7 @@ function setLightColourFromSample(light, sample, THREE, whiteMix=.34) {
 function updateVirtualTryOnLighting(video, now) {
   const THREE=virtualThree;
   if(!THREE || !virtualTryOnLights || !virtualLightingContext || !video || video.readyState<2) return;
-  if(now-virtualLastLightingSample<140) return;
+  if(now-virtualLastLightingSample<260) return;
   virtualLastLightingSample=now;
   try {
     const ctx=virtualLightingContext;
@@ -8112,20 +8277,22 @@ function updateVirtualTryOnLighting(video, now) {
     const darker=left.luma>=right.luma?right:left;
     const side=left.luma>=right.luma?-1:1; // webcam feed is visually mirrored
 
-    setLightColourFromSample(virtualTryOnLights.hemi,all,THREE,.58);
-    setLightColourFromSample(virtualTryOnLights.key,brighter,THREE,.26);
-    setLightColourFromSample(virtualTryOnLights.fill,darker,THREE,.48);
-    setLightColourFromSample(virtualTryOnLights.rim,top,THREE,.42);
+    // Keep room colour influence subtle: the product photographs define the
+    // actual blue/gold colour; the camera primarily controls illumination.
+    setLightColourFromSample(virtualTryOnLights.hemi,all,THREE,.92);
+    setLightColourFromSample(virtualTryOnLights.key,brighter,THREE,.86);
+    setLightColourFromSample(virtualTryOnLights.fill,darker,THREE,.94);
+    setLightColourFromSample(virtualTryOnLights.rim,top,THREE,.90);
 
-    virtualTryOnLights.hemi.intensity=clampValue(.48+all.luma*.9,.55,1.25);
-    virtualTryOnLights.key.intensity=clampValue(.9+brighter.luma*2.25,1.15,2.65);
-    virtualTryOnLights.fill.intensity=clampValue(.22+darker.luma*.85,.28,.88);
-    virtualTryOnLights.rim.intensity=clampValue(.18+top.luma*.62,.2,.62);
-    virtualTryOnLights.key.position.set(side*3.3,2.5,4.4);
-    virtualTryOnLights.fill.position.set(-side*3.0,.8,3.0);
-    virtualTryOnRenderer.toneMappingExposure=clampValue(.84+all.luma*.42,.88,1.16);
+    virtualTryOnLights.hemi.intensity=clampValue(.31+all.luma*.34,.36,.62);
+    virtualTryOnLights.key.intensity=clampValue(.62+brighter.luma*.78,.72,1.18);
+    virtualTryOnLights.fill.intensity=clampValue(.10+darker.luma*.26,.13,.32);
+    virtualTryOnLights.rim.intensity=clampValue(.05+top.luma*.14,.06,.17);
+    virtualTryOnLights.key.position.set(side*3.1,2.35,4.45);
+    virtualTryOnLights.fill.position.set(-side*2.9,.75,3.1);
+    virtualTryOnRenderer.toneMappingExposure=clampValue(.90+all.luma*.08,.91,.98);
 
-    const envIntensity=clampValue(.48+all.luma*.72,.52,1.02);
+    const envIntensity=clampValue(.075+all.luma*.10,.09,.16);
     virtualTryOnModel?.traverse?.(node=>{
       if(!node?.isMesh)return;
       const mats=Array.isArray(node.material)?node.material:[node.material];
@@ -8157,9 +8324,9 @@ async function startVirtualTryOn() {
       audio:false,
       video:{
         facingMode:{ideal:'user'},
-        width:{ideal:1280},
-        height:{ideal:720},
-        frameRate:{ideal:30,max:60}
+        width:{ideal:960,max:1280},
+        height:{ideal:540,max:720},
+        frameRate:{ideal:60,min:30,max:60}
       }
     });
     const video = document.getElementById('virtualTryOnVideo');
@@ -8225,12 +8392,12 @@ async function startVirtualTryOn() {
     }
     virtualPoseLandmarks = null;
     virtualPoseFrameCounter = 0;
-    setVirtualTryOnProgress(68,'Tracking ready','Loading your Winged Rimless 3D model…');
+    setVirtualTryOnProgress(68,'Tracking ready','Loading the articulated Winged Rimless model…');
 
     const canvas = document.getElementById('virtualTryOnCanvas');
     const stage = document.getElementById('virtualTryOnStage');
     const rect = stage.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     virtualTryOnRenderer = new THREE.WebGLRenderer({canvas,alpha:true,antialias:true,premultipliedAlpha:true});
     virtualTryOnRenderer.setPixelRatio(dpr);
     virtualTryOnRenderer.setSize(rect.width,rect.height,false);
@@ -8258,6 +8425,7 @@ async function startVirtualTryOn() {
     const lensPlaneZ = box.max.z - size.z*.08;
     virtualTryOnAnchor = new THREE.Group();
     virtualTryOnModel.position.set(-center.x,-opticalLineY,-lensPlaneZ);
+    configureRigidTemplePivots(virtualTryOnModel,Math.max(size.x,.001),THREE);
     const morphInfo = installEyewearMorph(virtualTryOnModel,box,size);
     virtualTryOnAnchor.add(virtualTryOnModel);
     virtualTryOnAnchor.userData.baseWidth = Math.max(size.x,.001);
@@ -8307,6 +8475,8 @@ function updateVirtualTryOnPose(lm, video, stage) {
   if (!calibrated || !virtualTryOnCalibration?.profile) return false;
 
   const profile = virtualTryOnCalibration.profile;
+  if (checkForNewFace(measurement)) return false;
+  applyRigidTempleFit(profile);
   const desiredPx = Math.max(
     measurement.faceWidth2 * 1.00,
     measurement.earSpan2 * .985,
@@ -8345,18 +8515,26 @@ function updateVirtualTryOnPose(lm, video, stage) {
   } else {
     const positionError = virtualTryOnAnchor.position.distanceTo(targetPosition);
     const posNorm = positionError / Math.max(desiredWorldWidth,.001);
-    const posAlpha = adaptiveAlpha(posNorm,.16,.46,1.05);
-    virtualTryOnAnchor.position.lerp(targetPosition,posAlpha);
+    // High response with a tiny dead-zone: much less perceptible follow-lag
+    // while still suppressing sub-pixel landmark shimmer.
+    if (posNorm>.0015) {
+      const posAlpha=clampValue(.60+posNorm*2.8,.60,.94);
+      virtualTryOnAnchor.position.lerp(targetPosition,posAlpha);
+    }
 
     const currentScale = virtualTryOnAnchor.scale.x || targetScale;
     const scaleError = Math.abs(targetScale-currentScale)/Math.max(targetScale,.001);
-    const scaleAlpha = adaptiveAlpha(scaleError,.11,.36,.82);
-    const nextScale = currentScale+(targetScale-currentScale)*scaleAlpha;
-    virtualTryOnAnchor.scale.setScalar(nextScale);
+    if (scaleError>.0025) {
+      const scaleAlpha=clampValue(.34+scaleError*2.1,.34,.72);
+      const nextScale=currentScale+(targetScale-currentScale)*scaleAlpha;
+      virtualTryOnAnchor.scale.setScalar(nextScale);
+    }
 
     const angle = virtualTryOnAnchor.quaternion.angleTo(targetQuaternion);
-    const rotAlpha = adaptiveAlpha(angle,.14,.42,.9);
-    virtualTryOnAnchor.quaternion.slerp(targetQuaternion,rotAlpha).normalize();
+    if (angle>.0012) {
+      const rotAlpha=clampValue(.64+angle*1.9,.64,.96);
+      virtualTryOnAnchor.quaternion.slerp(targetQuaternion,rotAlpha).normalize();
+    }
   }
 
   virtualTryOnAnchor.visible = true;
@@ -8377,7 +8555,10 @@ function virtualTryOnLoop() {
     let result = null;
     try { result = virtualTryOnLandmarker?.detectForVideo(video,now); } catch(e) {}
     virtualPoseFrameCounter += 1;
-    if (virtualPoseLandmarker && (virtualPoseFrameCounter % 3 === 1 || !virtualPoseLandmarks)) {
+    // Ear landmarks are needed to build the fit, not to animate every frame.
+    // Running the second ML model continuously was a major source of latency.
+    const needsEarScan=!virtualTryOnCalibration?.profile;
+    if (needsEarScan && virtualPoseLandmarker && (virtualPoseFrameCounter % 6 === 1 || !virtualPoseLandmarks)) {
       try {
         const poseResult = virtualPoseLandmarker.detectForVideo(video, now);
         const candidate = poseResult?.landmarks?.[0];
@@ -8391,10 +8572,12 @@ function virtualTryOnLoop() {
     if (tracked) {
       stage.classList.add('is-tracking');
       stage.classList.remove('is-calibrating');
-      setVirtualTryOnProgress(100,'Ready','Native frame geometry + adaptive room lighting active — move naturally.');
+      setVirtualTryOnProgress(100,'Ready','Fast face tracking + rigid ear-fit temples + adaptive lighting active.');
     } else {
       virtualTryOnLostFrames += 1;
       if (virtualTryOnCalibration?.profile && virtualTryOnLostFrames > 5) {
+        virtualFaceWasLost=true;
+        virtualFaceReacquiredFrames=0;
         virtualTryOnAnchor.visible = false;
         if (virtualTryOnOccluder) virtualTryOnOccluder.visible = false;
         virtualTryOnPoseReady = false;
@@ -8456,6 +8639,7 @@ function stopVirtualTryOn() {
   virtualLastLightingSample=0;
   virtualThree=null;
   virtualTryOnCalibration=null;
+  virtualFaceMismatchFrames=0; virtualFaceWasLost=false; virtualFaceReacquiredFrames=0; virtualTrackingLastMs=0;
   virtualTryOnPoseReady=false;
   virtualTryOnLostFrames=0;
   ['virtualTryOnCanvas','virtualTryOnScanCanvas'].forEach(id=>{
