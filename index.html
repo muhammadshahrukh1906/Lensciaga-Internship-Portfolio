@@ -8149,8 +8149,8 @@ function installEyewearMorph(root, box, size, runtimeTextures) {
     uLensCameraScale:{value:new THREE.Vector2(1,1)},
     uLensCameraOffset:{value:new THREE.Vector2(0,0)},
     uLensRefract:{value:.00115},
-    uLensAbsorption:{value:new THREE.Vector3(1.34,.45,.16)},
-    uLensDensity:{value:.40},
+    uLensAbsorption:{value:new THREE.Vector3(1.02,.25,.065)},
+    uLensDensity:{value:.31},
     uLensReflectBoost:{value:1.0},
     uLensEnvLuma:{value:.5},
     uLensHighlightSide:{value:0.0},
@@ -8287,12 +8287,22 @@ lensCameraColor=lensSRGBToLinear(cameraSrgb);
 // eyes and skin keep their natural local contrast instead of turning milky.
 vec3 lensAbsorb=exp(-uLensAbsorption*(uLensDensity*lensPath));
 vec3 lensTransmission=lensCameraColor*lensAbsorb;
+// Preserve the product's real muted blue-cyan identity even over dark skin or
+// dim backgrounds. This is a weak body/scatter term, not an opaque overlay:
+// camera detail remains dominant, while the lens can no longer collapse to
+// charcoal/black when the transmitted scene is dark.
+float lensSceneLuma=max(dot(lensCameraColor,vec3(.2126,.7152,.0722)),0.0);
+vec3 lensBlueBody=vec3(.055,.205,.285);
+float lensBodyStrength=(.050+.052*uLensEnvLuma)*(.80+.20*lensPath);
+lensTransmission+=lensBlueBody*lensBodyStrength*(.55+.45*sqrt(lensSceneLuma));
+// A subtle spectral bias keeps the transmission blue-cyan rather than grey.
+lensTransmission*=vec3(.93,1.015,1.055);
 
 // Dielectric reflection: ~4% head-on, growing at grazing angles and along the
 // cut lens edge. Room colour only affects the reflected component, while the
 // product's turquoise identity comes from spectral absorption.
 vec3 envTint=clamp(uLensAmbientTint,vec3(.68),vec3(1.38));
-vec3 lensReflection=envTint*(0.055+0.105*uLensEnvLuma);
+vec3 lensReflection=mix(envTint,vec3(.78,.96,1.05),.13)*(0.050+0.098*uLensEnvLuma);
 float lightDir=mix(-.66,.66,clamp(uLensHighlightSide*.5+.5,0.0,1.0));
 vec3 lightVector=normalize(vec3(lightDir,.78,1.20));
 float spec=pow(max(dot(lensPseudoNormal,lightVector),0.0),78.0);
@@ -8310,7 +8320,7 @@ gl_FragColor.rgb=mix(gl_FragColor.rgb,lensOptical,lensMask);
 gl_FragColor.a=mix(gl_FragColor.a,1.0,lensMask);
 `);
         };
-        material.customProgramCacheKey=()=> 'lensciaga-fast-real-glass-v12';
+        material.customProgramCacheKey=()=> 'lensciaga-blue-cyan-hyperglass-v13';
         virtualFrontOpticalMaterial=material;
       }
       material.needsUpdate=true;
@@ -8561,10 +8571,10 @@ function updateVirtualTryOnLighting(video, now) {
       // In dim rooms the lens opens up; in bright rooms the cyan absorption and
       // surface reflections become slightly stronger, just as the real product
       // appears under changing illumination.
-      virtualLensUniforms.uLensDensity.value=clampValue(.34+all.luma*.20,.35,.53);
+      virtualLensUniforms.uLensDensity.value=clampValue(.265+all.luma*.105,.27,.36);
       virtualLensUniforms.uLensReflectBoost.value=clampValue(.92+.17*contrast+.08*all.luma,.93,1.17);
       virtualLensUniforms.uLensRefract.value=clampValue(.00075+contrast*.00072,.00075,.00147);
-      virtualLensUniforms.uLensAbsorption.value.set(1.34,.45,.16);
+      virtualLensUniforms.uLensAbsorption.value.set(1.02,.25,.065);
     }
   } catch (_) {}
 }
