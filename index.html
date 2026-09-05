@@ -7501,6 +7501,9 @@ let virtualTryOnEnvironment = null;
 let virtualLightingCanvas = null;
 let virtualLightingContext = null;
 let virtualLastLightingSample = 0;
+let virtualLensUniforms = null;
+let virtualFrontOpticalMaterial = null;
+let virtualCameraVideoTexture = null;
 let virtualThree = null;
 let virtualTryOnBusy = false;
 let virtualLastVideoTime = -1;
@@ -8065,37 +8068,148 @@ function processCalibration(lm, cover, measurement, rawQuaternion) {
 }
 
 function installEyewearMorph(root, box, size) {
+  const THREE=virtualThree;
   const baseWidth = Math.max(size.x,.001);
   const modelBridgeHalf = baseWidth*.058;
   const modelEyeX = baseWidth*.262;
   const hingeX = baseWidth*.485;
-
-  // Preserve the photogrammetry colour from the product itself.  The texture
-  // already contains the correct blue, gold, clear-pad and black-rubber colour
-  // information from the supplied product photographs, so room adaptation is
-  // deliberately applied mostly to brightness/direction rather than hue.
-  virtualTryOnMorphUniforms = null;
   const maxAniso=Math.min(8, virtualTryOnRenderer?.capabilities?.getMaxAnisotropy?.() || 1);
+
+  virtualTryOnMorphUniforms = null;
+  virtualLensUniforms = THREE ? {
+    uLensAmbientTint:{value:new THREE.Vector3(1,1,1)},
+    uLensOpacity:{value:.38},
+    uLensAdapt:{value:.52},
+    uLensFresnelBoost:{value:.19},
+    uLensRoughness:{value:.115},
+    uLensLightScale:{value:1.0},
+    uLensViewport:{value:new THREE.Vector2(1,1)},
+    uLensCameraScale:{value:new THREE.Vector2(1,1)},
+    uLensCameraOffset:{value:new THREE.Vector2(0,0)},
+    uLensRefract:{value:.0034},
+    uLensSurfaceMix:{value:.14}
+  } : null;
+
+  const liveVideo=document.getElementById('virtualTryOnVideo');
+  if(THREE && liveVideo && !virtualCameraVideoTexture){
+    virtualCameraVideoTexture=new THREE.VideoTexture(liveVideo);
+    virtualCameraVideoTexture.colorSpace=THREE.SRGBColorSpace;
+    virtualCameraVideoTexture.minFilter=THREE.LinearFilter;
+    virtualCameraVideoTexture.magFilter=THREE.LinearFilter;
+    virtualCameraVideoTexture.generateMipmaps=false;
+  }
+  if(virtualLensUniforms) virtualLensUniforms.uCameraTexture={value:virtualCameraVideoTexture};
+
   root.traverse(node => {
     if (!node?.isMesh) return;
-    node.renderOrder = 2;
     node.castShadow = false;
     node.receiveShadow = false;
-    const materials = Array.isArray(node.material) ? node.material : [node.material];
-    materials.filter(Boolean).forEach(material => {
+    const isFront=(node.name||'').toLowerCase()==='front';
+    const sourceMaterials = Array.isArray(node.material) ? node.material : [node.material];
+    const nextMaterials=sourceMaterials.map(source => {
+      if(!source) return source;
+      const material=source.clone?.() || source;
       if (material.color) material.color.setRGB(1,1,1);
-      if ('envMapIntensity' in material) material.envMapIntensity=.12;
-      if ('metalness' in material) material.metalness=.22;
-      if ('roughness' in material) material.roughness=.78;
-      if (material.normalScale?.setScalar) material.normalScale.setScalar(.52);
       material.dithering=true;
+      if ('envMapIntensity' in material) material.envMapIntensity=isFront?.26:.22;
+      // Respect the supplied roughness/metalness texture instead of flattening
+      // everything into a matte photogrammetry surface. Cyan lens pixels are
+      // overridden in the shader below; gold keeps its metallic response.
+      if ('metalness' in material) material.metalness=.82;
+      if ('roughness' in material) material.roughness=.86;
+      if (material.normalScale?.setScalar) material.normalScale.setScalar(isFront?.16:.38);
       if (material.map) {
-        material.map.colorSpace = virtualThree?.SRGBColorSpace || material.map.colorSpace;
+        material.map.colorSpace = THREE?.SRGBColorSpace || material.map.colorSpace;
         material.map.anisotropy = maxAniso;
         material.map.needsUpdate = true;
       }
+      if (material.normalMap) material.normalMap.anisotropy=maxAniso;
+      if (material.roughnessMap) material.roughnessMap.anisotropy=maxAniso;
+      if (material.metalnessMap) material.metalnessMap.anisotropy=maxAniso;
+
+      if(isFront && virtualLensUniforms){
+        material.transparent=true;
+        material.opacity=1;
+        material.depthWrite=true;
+        material.depthTest=true;
+        material.alphaTest=.005;
+        material.side=THREE.DoubleSide;
+        if('forceSinglePass' in material) material.forceSinglePass=true;
+        const previousCompile=material.onBeforeCompile;
+        material.onBeforeCompile=shader=>{
+          if(typeof previousCompile==='function') previousCompile(shader);
+          Object.assign(shader.uniforms,virtualLensUniforms);
+          shader.fragmentShader=`
+uniform vec3 uLensAmbientTint;
+uniform float uLensOpacity;
+uniform float uLensAdapt;
+uniform float uLensFresnelBoost;
+uniform float uLensRoughness;
+uniform float uLensLightScale;
+uniform sampler2D uCameraTexture;
+uniform vec2 uLensViewport;
+uniform vec2 uLensCameraScale;
+uniform vec2 uLensCameraOffset;
+uniform float uLensRefract;
+uniform float uLensSurfaceMix;
+`+shader.fragmentShader;
+          shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
+// The GLB uses one photogrammetry texture for the whole front. Identify the
+// genuinely cyan optical material by chroma, leaving gold, screws and pads
+// fully opaque. This makes the webcam/eyes physically visible through only
+// the blue lens region.
+float lensCyanG = smoothstep(0.025, 0.14, diffuseColor.g - diffuseColor.r);
+float lensCyanB = smoothstep(0.055, 0.19, diffuseColor.b - diffuseColor.r);
+float lensBluePresence = smoothstep(0.18, 0.43, diffuseColor.b);
+float lensMask = clamp(lensCyanG * lensCyanB * lensBluePresence, 0.0, 1.0);
+vec3 lensEnvTint = clamp(uLensAmbientTint, vec3(0.72), vec3(1.32));
+diffuseColor.rgb *= mix(vec3(1.0), lensEnvTint, lensMask * uLensAdapt);
+diffuseColor.rgb *= mix(1.0, uLensLightScale, lensMask * 0.62);
+vec3 lensBaseTint = diffuseColor.rgb;
+vec3 lensCameraColor = vec3(0.0);
+float lensOpticalFresnel = 0.0;
+`);
+          shader.fragmentShader=shader.fragmentShader.replace('#include <roughnessmap_fragment>',`#include <roughnessmap_fragment>
+roughnessFactor = mix(roughnessFactor, uLensRoughness, lensMask);
+`);
+          shader.fragmentShader=shader.fragmentShader.replace('#include <metalnessmap_fragment>',`#include <metalnessmap_fragment>
+metalnessFactor = mix(metalnessFactor, 0.0, lensMask);
+`);
+          shader.fragmentShader=shader.fragmentShader.replace('#include <normal_fragment_maps>',`#include <normal_fragment_maps>
+float lensFacing = abs(dot(normalize(normal), normalize(-vViewPosition)));
+lensOpticalFresnel = pow(clamp(1.0-lensFacing,0.0,1.0), 2.1);
+float lensAlpha = clamp(uLensOpacity + lensOpticalFresnel * uLensFresnelBoost, 0.24, 0.68);
+diffuseColor.a *= mix(1.0, lensAlpha, lensMask);
+vec2 lensScreenUv = gl_FragCoord.xy / max(uLensViewport, vec2(1.0));
+vec2 lensCameraUv = lensScreenUv * uLensCameraScale + uLensCameraOffset;
+vec2 lensRefractionOffset = normal.xy * uLensRefract * (0.38 + lensOpticalFresnel * 0.62);
+lensCameraUv = clamp(lensCameraUv + lensRefractionOffset, vec2(0.001), vec2(0.999));
+lensCameraColor = texture2D(uCameraTexture, lensCameraUv).rgb;
+`);
+          shader.fragmentShader=shader.fragmentShader.replace('#include <opaque_fragment>',`#include <opaque_fragment>
+// Screen-space optical transmission. The live camera supplies the real eye,
+// skin and room pixels behind the lens; the PBR surface remains as the
+// reflection layer. This is substantially more convincing than an opaque or
+// alpha-only photogrammetry texture.
+float lensBaseLum = max(dot(lensBaseTint, vec3(0.2126,0.7152,0.0722)), 0.04);
+vec3 lensAbsorption = clamp(lensBaseTint / lensBaseLum, vec3(0.78), vec3(1.22));
+vec3 lensTransmitted = lensCameraColor * mix(vec3(1.0), lensAbsorption, 0.20);
+float lensReflectionMix = clamp(uLensSurfaceMix + lensOpticalFresnel * 0.46, 0.10, 0.62);
+vec3 lensOpticalColour = mix(lensTransmitted, gl_FragColor.rgb, lensReflectionMix);
+gl_FragColor.rgb = mix(gl_FragColor.rgb, lensOpticalColour, lensMask);
+// The transmitted camera image is already the real background, so make the
+// optical pixels opaque in the overlay to avoid double-blending that image.
+gl_FragColor.a = mix(gl_FragColor.a, 1.0, lensMask);
+`);
+        };
+        material.customProgramCacheKey=()=> 'lensciaga-optical-transmission-v7';
+        virtualFrontOpticalMaterial=material;
+      }
       material.needsUpdate = true;
+      return material;
     });
+    node.material=Array.isArray(node.material)?nextMaterials:nextMaterials[0];
+    node.renderOrder=isFront?4:3;
   });
   return {modelEyeX, modelBridgeHalf, hingeX, frontZ:box.max.z};
 }
@@ -8199,8 +8313,6 @@ function drawFaceScan(lm,cover,active) {
 function setupVirtualTryOnLighting(THREE, RoomEnvironment) {
   if (!virtualTryOnScene || !virtualTryOnRenderer) return;
 
-  // Neutral tone mapping protects the actual cyan/gold product colours better
-  // than the filmic curve used previously.
   virtualTryOnRenderer.toneMapping = THREE.NeutralToneMapping ?? THREE.ACESFilmicToneMapping;
   virtualTryOnRenderer.toneMappingExposure = .94;
   if ('useLegacyLights' in virtualTryOnRenderer) virtualTryOnRenderer.useLegacyLights = false;
@@ -8209,7 +8321,7 @@ function setupVirtualTryOnLighting(THREE, RoomEnvironment) {
     try {
       virtualTryOnPmrem = new THREE.PMREMGenerator(virtualTryOnRenderer);
       const room = new RoomEnvironment();
-      const generated = virtualTryOnPmrem.fromScene(room, .045);
+      const generated = virtualTryOnPmrem.fromScene(room, .035);
       virtualTryOnEnvironment = generated.texture;
       virtualTryOnScene.environment = virtualTryOnEnvironment;
       room.dispose?.();
@@ -8218,16 +8330,18 @@ function setupVirtualTryOnLighting(THREE, RoomEnvironment) {
     }
   }
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0x595959, .50);
-  const key = new THREE.DirectionalLight(0xffffff, 1.05);
-  const fill = new THREE.DirectionalLight(0xffffff, .24);
-  const rim = new THREE.DirectionalLight(0xffffff, .10);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x555555, .52);
+  const key = new THREE.DirectionalLight(0xffffff, 1.0);
+  const fill = new THREE.DirectionalLight(0xffffff, .26);
+  const rim = new THREE.DirectionalLight(0xffffff, .12);
   key.position.set(3.0, 2.3, 4.4);
   fill.position.set(-3.0, .8, 3.0);
   rim.position.set(0, 2.1, -2.6);
   virtualTryOnScene.add(hemi, key, fill, rim);
   virtualTryOnLights = {hemi, key, fill, rim};
 
+  // Tiny sampling buffer: fast enough to update room colour/light several
+  // times per second without competing with the face tracker.
   virtualLightingCanvas = document.createElement('canvas');
   virtualLightingCanvas.width = 24;
   virtualLightingCanvas.height = 18;
@@ -8259,40 +8373,62 @@ function setLightColourFromSample(light, sample, THREE, whiteMix=.34) {
   light.color.copy(c);
 }
 
+function updateLensCameraMapping(video, stage) {
+  if(!virtualLensUniforms || !virtualTryOnRenderer || !video || !stage) return;
+  const cover=getCoverTransform(video,stage);
+  const canvas=virtualTryOnRenderer.domElement;
+  virtualLensUniforms.uLensViewport.value.set(Math.max(1,canvas.width),Math.max(1,canvas.height));
+  virtualLensUniforms.uLensCameraScale.value.set(cover.stageW/cover.drawnW,cover.stageH/cover.drawnH);
+  virtualLensUniforms.uLensCameraOffset.value.set(-cover.offsetX/cover.drawnW,-cover.offsetY/cover.drawnH);
+}
+
 function updateVirtualTryOnLighting(video, now) {
   const THREE=virtualThree;
   if(!THREE || !virtualTryOnLights || !virtualLightingContext || !video || video.readyState<2) return;
-  if(now-virtualLastLightingSample<260) return;
+  if(now-virtualLastLightingSample<120) return;
   virtualLastLightingSample=now;
   try {
     const ctx=virtualLightingContext;
     const w=virtualLightingCanvas.width,h=virtualLightingCanvas.height;
     ctx.drawImage(video,0,0,w,h);
     const pixels=ctx.getImageData(0,0,w,h).data;
-    const all=sampleVirtualLightingRegion(pixels,w,h,0,1,0,1);
-    const left=sampleVirtualLightingRegion(pixels,w,h,0,.5,.04,.76);
-    const right=sampleVirtualLightingRegion(pixels,w,h,.5,1,.04,.76);
-    const top=sampleVirtualLightingRegion(pixels,w,h,.12,.88,0,.34);
+
+    // Read the room mainly from the border/corners, not from the centre of the
+    // face. That makes the glasses respond to the actual environment instead
+    // of simply inheriting skin colour.
+    const left=sampleVirtualLightingRegion(pixels,w,h,0,.27,.03,.82);
+    const right=sampleVirtualLightingRegion(pixels,w,h,.73,1,.03,.82);
+    const top=sampleVirtualLightingRegion(pixels,w,h,.18,.82,0,.28);
+    const bottomL=sampleVirtualLightingRegion(pixels,w,h,0,.32,.72,1);
+    const bottomR=sampleVirtualLightingRegion(pixels,w,h,.68,1,.72,1);
+    const all={
+      r:(left.r+right.r+top.r+bottomL.r+bottomR.r)/5,
+      g:(left.g+right.g+top.g+bottomL.g+bottomR.g)/5,
+      b:(left.b+right.b+top.b+bottomL.b+bottomR.b)/5
+    };
+    all.luma=.2126*all.r+.7152*all.g+.0722*all.b;
     const brighter=left.luma>=right.luma?left:right;
     const darker=left.luma>=right.luma?right:left;
-    const side=left.luma>=right.luma?-1:1; // webcam feed is visually mirrored
+    const side=left.luma>=right.luma?-1:1;
+    const contrast=clampValue(Math.abs(brighter.luma-darker.luma)*2.2,0,1);
 
-    // Keep room colour influence subtle: the product photographs define the
-    // actual blue/gold colour; the camera primarily controls illumination.
-    setLightColourFromSample(virtualTryOnLights.hemi,all,THREE,.92);
-    setLightColourFromSample(virtualTryOnLights.key,brighter,THREE,.86);
-    setLightColourFromSample(virtualTryOnLights.fill,darker,THREE,.94);
-    setLightColourFromSample(virtualTryOnLights.rim,top,THREE,.90);
+    // Unlike the previous build, room colour is allowed to produce a real
+    // colour cast on highlights. The product's cyan/gold base texture remains
+    // unchanged; only illumination carries the environment hue.
+    setLightColourFromSample(virtualTryOnLights.hemi,all,THREE,.68);
+    setLightColourFromSample(virtualTryOnLights.key,brighter,THREE,.42);
+    setLightColourFromSample(virtualTryOnLights.fill,darker,THREE,.62);
+    setLightColourFromSample(virtualTryOnLights.rim,top,THREE,.48);
 
-    virtualTryOnLights.hemi.intensity=clampValue(.31+all.luma*.34,.36,.62);
-    virtualTryOnLights.key.intensity=clampValue(.62+brighter.luma*.78,.72,1.18);
-    virtualTryOnLights.fill.intensity=clampValue(.10+darker.luma*.26,.13,.32);
-    virtualTryOnLights.rim.intensity=clampValue(.05+top.luma*.14,.06,.17);
-    virtualTryOnLights.key.position.set(side*3.1,2.35,4.45);
+    virtualTryOnLights.hemi.intensity=clampValue(.25+all.luma*.50,.30,.70);
+    virtualTryOnLights.key.intensity=clampValue(.48+brighter.luma*1.05,.62,1.36);
+    virtualTryOnLights.fill.intensity=clampValue(.07+darker.luma*.42,.10,.40);
+    virtualTryOnLights.rim.intensity=clampValue(.035+top.luma*.28,.05,.24);
+    virtualTryOnLights.key.position.set(side*3.15,2.35,4.45);
     virtualTryOnLights.fill.position.set(-side*2.9,.75,3.1);
-    virtualTryOnRenderer.toneMappingExposure=clampValue(.90+all.luma*.08,.91,.98);
+    virtualTryOnRenderer.toneMappingExposure=clampValue(.80+all.luma*.36,.84,1.08);
 
-    const envIntensity=clampValue(.075+all.luma*.10,.09,.16);
+    const envIntensity=clampValue(.13+all.luma*.34+.08*contrast,.16,.43);
     virtualTryOnModel?.traverse?.(node=>{
       if(!node?.isMesh)return;
       const mats=Array.isArray(node.material)?node.material:[node.material];
@@ -8300,6 +8436,27 @@ function updateVirtualTryOnLighting(video, now) {
         if('envMapIntensity' in mat) mat.envMapIntensity=envIntensity;
       });
     });
+
+    if(virtualLensUniforms){
+      const lum=Math.max(.055,all.luma);
+      // Chroma-only environmental tint: normalise around luminance so a dim
+      // room does not simply repaint the lens darker. The underlying webcam
+      // image supplies the actual transmitted light/eye detail.
+      const tr=clampValue(all.r/lum,.76,1.25);
+      const tg=clampValue(all.g/lum,.76,1.25);
+      const tb=clampValue(all.b/lum,.76,1.25);
+      virtualLensUniforms.uLensAmbientTint.value.set(tr,tg,tb);
+      const chroma=Math.max(all.r,all.g,all.b)-Math.min(all.r,all.g,all.b);
+      virtualLensUniforms.uLensAdapt.value=clampValue(.44+chroma*.95,.44,.76);
+      // A real tinted lens is still transparent: bright surroundings produce
+      // a slightly stronger surface reflection, while eyes remain visible.
+      virtualLensUniforms.uLensOpacity.value=clampValue(.315+all.luma*.16,.33,.455);
+      virtualLensUniforms.uLensFresnelBoost.value=clampValue(.14+contrast*.17,.14,.31);
+      virtualLensUniforms.uLensLightScale.value=clampValue(.80+all.luma*.40,.84,1.12);
+      virtualLensUniforms.uLensRoughness.value=clampValue(.095+.035*(1-contrast),.095,.13);
+      virtualLensUniforms.uLensSurfaceMix.value=clampValue(.105+contrast*.09+all.luma*.035,.11,.22);
+      virtualLensUniforms.uLensRefract.value=clampValue(.0024+contrast*.0024,.0024,.0048);
+    }
   } catch (_) {}
 }
 
@@ -8566,13 +8723,14 @@ function virtualTryOnLoop() {
       } catch (e) {}
     }
     const lm = result?.faceLandmarks?.[0];
+    updateLensCameraMapping(video, stage);
     updateVirtualTryOnLighting(video, now);
     const tracked = updateVirtualTryOnPose(lm,video,stage);
 
     if (tracked) {
       stage.classList.add('is-tracking');
       stage.classList.remove('is-calibrating');
-      setVirtualTryOnProgress(100,'Ready','Fast face tracking + rigid ear-fit temples + adaptive lighting active.');
+      setVirtualTryOnProgress(100,'Ready','Fast tracking + transparent optical lens + live environment lighting active.');
     } else {
       virtualTryOnLostFrames += 1;
       if (virtualTryOnCalibration?.profile && virtualTryOnLostFrames > 5) {
@@ -8670,6 +8828,8 @@ function resizeVirtualTryOnRenderer() {
       virtualTryOnRenderer.setSize(r.width,r.height,false);
       virtualTryOnCamera.aspect=r.width/r.height;
       virtualTryOnCamera.updateProjectionMatrix();
+      const video=document.getElementById('virtualTryOnVideo');
+      if(video?.videoWidth) updateLensCameraMapping(video,stage);
     }
   }
   resizeScanCanvas();
